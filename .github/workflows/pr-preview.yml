@@ -43,5 +43,5 @@ jobs:
           source-dir: dist
           preview-branch: gh-pages
           umbrella-dir: pr-preview
-          wait-for-pages-deployment: false
+          wait-for-pages-deployment: true
           qr-code: false

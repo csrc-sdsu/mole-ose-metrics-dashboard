@@ -32,7 +32,20 @@ def test_release_metrics_count_assets_and_periods():
     assert data["latest_release_age_days"] == 28.0
     assert data["median_release_interval_days"] == 31.0
     assert data["release_asset_downloads"] == 9
+    assert data["period_summaries"]["feb"]["releases"] == 1
+    assert data["period_summaries"]["feb"]["asset_downloads"] == 7
+    assert data["period_comparisons"]["feb"]["releases"]["previous"] == 1
     assert "source archives" in data["note"]
+
+
+def test_zero_release_download_explains_missing_uploaded_assets():
+    data = build_releases(
+        [{"tag_name": "v1", "published_at": "2026-01-01T00:00:00Z", "assets": []}],
+        "2026-02-01T00:00:00Z",
+        [],
+    )
+    assert data["release_asset_downloads"] == 0
+    assert "No uploaded release assets" in data["zero_download_explanation"]
 
 
 def test_contributor_metrics_do_not_infer_core_contributors():
@@ -53,7 +66,14 @@ def test_contributor_metrics_do_not_infer_core_contributors():
         {"login": "alice", "type": "User", "contributions": 5, "html_url": "https://github.test/a"},
         {"login": "ci-bot", "type": "Bot", "contributions": 99, "html_url": "https://github.test/b"},
     ]
-    data = build_contributors(items, github_contributors, core_contributors=None)
+    data = build_contributors(
+        items,
+        github_contributors,
+        core_contributors=None,
+        period_options=[
+            {"id": "jan", "start": "2026-01-01T00:00:00Z", "end": "2026-01-31T00:00:00Z"}
+        ],
+    )
     assert data["unique_contributors"] == 2
     assert data["commit_contributors"] == 1
     assert data["issue_or_pr_authors"] == 2
@@ -63,6 +83,9 @@ def test_contributor_metrics_do_not_infer_core_contributors():
     assert data["external_contributor_share"] is None
     assert data["contributor_trend"] == [{"month": "2026-01", "contributors": 2}]
     assert data["top_contributors"][0]["login"] == "alice"
+    assert data["contribution_concentration"]["top_1_share"] == 1
+    assert data["period_summaries"]["jan"]["new_contributors"] == 2
+    assert data["period_summaries"]["jan"]["first_time_pr_authors"] == 1
 
 
 def test_impact_metrics_shape_zenodo_and_openalex_fixture():

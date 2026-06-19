@@ -73,7 +73,8 @@ assert(
   previewWorkflow.includes('/pr-preview/pr-${{ github.event.number }}/'),
   'PR preview must use nested base path'
 );
-assert(previewWorkflow.includes('wait-for-pages-deployment: false'), 'PR preview wait must be false');
+assert(previewWorkflow.includes('wait-for-pages-deployment: true'), 'PR preview wait must be true');
+assert(previewWorkflow.includes('pr-preview-action@v1'), 'PR preview action must publish previews');
 assert(previewWorkflow.includes('qr-code: false'), 'PR preview QR code must be disabled');
 
 const reportWorkflow = readFileSync('.github/workflows/generate-report.yml', 'utf8');

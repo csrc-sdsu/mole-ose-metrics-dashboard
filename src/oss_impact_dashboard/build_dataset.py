@@ -22,6 +22,7 @@ from oss_impact_dashboard.schema import (
     unavailable,
     validate_dashboard_dataset,
 )
+from oss_impact_dashboard.snapshots import impact_trends, load_snapshot_history
 
 
 def _try_source(name: str, enabled: bool, fn, *, source_url: str | None = None, limitation: str):
@@ -114,11 +115,18 @@ def build_dataset(config: ProjectConfig, manual_root: Path | None = None) -> dic
             operations["items"],
             github_raw.get("contributors", []),
             core_contributors=config.core_contributors,
+            period_options=operations.get("periods", {}).get("options", []),
         )
     else:
         operations = {"summary": {}, "items": [], "trends": {}, "queues": {}, "label_metrics": []}
         releases = {}
         contributors = {}
+
+    snapshot_cfg = config.sources.get("snapshots") or {}
+    snapshot_history = {"schema_version": 1, "snapshots": []}
+    if snapshot_cfg.get("history_path"):
+        snapshot_history = load_snapshot_history(snapshot_cfg["history_path"])
+    snapshot_trends = impact_trends(snapshot_history)
 
     data = {
         "schema_version": SCHEMA_VERSION,
@@ -143,10 +151,26 @@ def build_dataset(config: ProjectConfig, manual_root: Path | None = None) -> dic
                 "requests_used": (github_raw or {}).get("requests_used"),
                 "rate_limit_remaining": (github_raw or {}).get("rate_limit_remaining"),
                 "authenticated": (github_raw or {}).get("authenticated", False),
+                "review_collection_error": (github_raw or {}).get("review_collection_error"),
             },
+            "engagement": source_status(
+                "available" if operations.get("engagement", {}).get("available") else "unavailable",
+                "Derived from collected issue comments and bounded recent PR review data."
+                if operations.get("engagement", {}).get("available")
+                else "Issue comment or PR review data was not collected.",
+                limitation=operations.get("engagement", {}).get("limitations"),
+            ),
             "github_traffic": traffic_status,
             "github_actions": actions_status,
             "readthedocs": readthedocs_status,
+            "snapshots": source_status(
+                "available" if snapshot_history.get("snapshots") else "unavailable",
+                source_url=snapshot_cfg.get("history_path"),
+                limitation=(
+                    "Stores only cumulative metrics that cannot be reconstructed from issue, PR "
+                    "or release timestamps."
+                ),
+            ),
             "zenodo": zenodo_status,
             "openalex": openalex_status,
         },
@@ -168,6 +192,10 @@ def build_dataset(config: ProjectConfig, manual_root: Path | None = None) -> dic
         "github_traffic": traffic_raw or {},
         "github_actions": actions_raw or {},
         "readthedocs": readthedocs_raw or {},
+        "snapshots": {
+            "history": snapshot_history,
+            "trends": snapshot_trends,
+        },
         "trends": operations.get("trends", {}),
         "items": operations.get("items", []),
         "metric_definitions": {
@@ -180,6 +208,18 @@ def build_dataset(config: ProjectConfig, manual_root: Path | None = None) -> dic
             ),
             "release_asset_downloads": (
                 "GitHub release asset downloads, excluding generated source archives."
+            ),
+            "median_first_response_days": (
+                "Median days until the first issue or PR comment by someone other than the author."
+            ),
+            "median_first_review_days": (
+                "Median days until the first pull-request review by someone other than the author."
+            ),
+            "github_actions_success_rate": (
+                "Completed successful workflow runs divided by completed runs."
+            ),
+            "readthedocs_no_result_searches": (
+                "Documentation search queries that returned zero results."
             ),
         },
     }

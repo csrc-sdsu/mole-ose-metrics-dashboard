@@ -36,7 +36,7 @@ reporting:
     manual.mkdir()
     (manual / "funding.yml").write_text("accomplishments: []\n", encoding="utf-8")
     data = build_dataset(load_project_config(project), manual_root=manual)
-    assert data["schema_version"] == 2
+    assert data["schema_version"] == 3
     assert data["source_status"]["github"]["status"] == "unavailable"
     assert data["items"] == []
 

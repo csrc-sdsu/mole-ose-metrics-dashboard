@@ -14,6 +14,9 @@ sources:
     enabled: false
   readthedocs:
     enabled: false
+  snapshots:
+    enabled: true
+    history_path: metrics-history.json
   zenodo:
     enabled: true
     record_or_doi: https://zenodo.org/records/20128874

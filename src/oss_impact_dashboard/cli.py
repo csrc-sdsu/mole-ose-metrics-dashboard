@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 
 from oss_impact_dashboard.build_dataset import build_dataset
 from oss_impact_dashboard.config import load_project_config
+from oss_impact_dashboard.snapshots import append_snapshot, load_snapshot_history, snapshot_record
 
 
 def write_json(path: Path, data: dict) -> None:
@@ -21,6 +23,24 @@ def build_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def snapshot_append_command(args: argparse.Namespace) -> int:
+    dataset = json.loads(Path(args.dataset).read_text(encoding="utf-8"))
+    history = load_snapshot_history(args.history)
+    branch = args.branch or os.environ.get("GITHUB_REF_NAME")
+    next_history = append_snapshot(
+        history,
+        snapshot_record(dataset),
+        branch=branch,
+        protected_branch=args.protected_branch,
+    )
+    if not next_history.get("write_allowed", True):
+        print(next_history["blocked_reason"])
+        return 0
+    write_json(Path(args.history), next_history)
+    print(f"Wrote {args.history} with {len(next_history.get('snapshots', []))} snapshots")
+    return 0
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(prog="oss-impact-dashboard")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -29,6 +49,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     build.add_argument("--output", required=True, help="Output dashboard JSON")
     build.add_argument("--manual-root", default="manual", help="Manual evidence YAML directory")
     build.set_defaults(func=build_command)
+
+    snapshot = sub.add_parser(
+        "snapshot-append", help="Append cumulative metrics to snapshot history"
+    )
+    snapshot.add_argument("--dataset", required=True, help="Built dashboard JSON")
+    snapshot.add_argument("--history", required=True, help="Snapshot history JSON")
+    snapshot.add_argument("--branch", help="Current branch name; defaults to GITHUB_REF_NAME")
+    snapshot.add_argument("--protected-branch", default="main")
+    snapshot.set_defaults(func=snapshot_append_command)
     return parser.parse_args(argv)
 
 
@@ -39,4 +68,3 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

@@ -40,6 +40,10 @@ jobs:
           cache: npm
       - run: python -m pip install -e ".[dev]"
       - run: npm ci
+      - name: Restore snapshot history
+        run: |
+          git fetch origin gh-pages --depth=1 || true
+          git show origin/gh-pages:metrics-history.json > metrics-history.json 2>/dev/null || printf '{"schema_version":1,"snapshots":[]}\n' > metrics-history.json
       - run: python -m oss_impact_dashboard.cli build --project projects/mole.yml --output web/public/data/dashboard.json
         env:
           OSS_DASHBOARD_GITHUB_TOKEN: ${{ secrets.OSS_DASHBOARD_GITHUB_TOKEN }}
@@ -49,6 +53,8 @@ jobs:
       - run: npm run test:frontend
       - run: npm run build
       - run: npm run test:build
+      - run: python -m oss_impact_dashboard.cli snapshot-append --dataset web/public/data/dashboard.json --history metrics-history.json --branch "${GITHUB_REF_NAME}"
+      - run: cp metrics-history.json dist/metrics-history.json
       - run: touch dist/.nojekyll
       - name: Deploy to gh-pages
         uses: JamesIves/github-pages-deploy-action@v4
@@ -58,3 +64,4 @@ jobs:
           clean: true
           clean-exclude: |
             pr-preview/
+            metrics-history.json
