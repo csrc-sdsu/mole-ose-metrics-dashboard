@@ -96,6 +96,14 @@ def test_snapshot_history_policy_and_trends():
                 "citation_count": 5,
             },
             "github_traffic": {"clones_total": 3},
+            "project": {"id": "demo", "environment": "development"},
+            "documentation_analytics": {
+                "visitor_count": 11,
+                "page_hit_count": 22,
+                "search_count": 3,
+                "no_result_search_count": 4,
+                "not_found_count": 5,
+            },
         }
     )
     blocked = append_snapshot({"snapshots": []}, record, branch="feature", protected_branch="main")
@@ -104,4 +112,7 @@ def test_snapshot_history_policy_and_trends():
     history = append_snapshot(history, {**record, "zenodo_downloads": 31}, branch="main")
     assert len(history["snapshots"]) == 1
     assert history["snapshots"][0]["zenodo_downloads"] == 31
+    assert history["snapshots"][0]["environment"] == "development"
+    assert history["snapshots"][0]["documentation_visitors"] == 11
     assert impact_trends(history)["dates"] == ["2026-01-02"]
+    assert impact_trends(history)["documentation_search_count"] == [3]

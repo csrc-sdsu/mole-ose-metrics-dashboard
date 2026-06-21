@@ -148,6 +148,19 @@ input:focus, select:focus, button:focus-visible, a:focus-visible {
 .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .panel { padding: 16px; overflow: hidden; }
+.environment-banner {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 18px;
+  padding: 12px 14px;
+  border: 1px solid #b8872c;
+  border-left: 5px solid #936514;
+  border-radius: var(--radius);
+  background: #fff8e6;
+  color: #513600;
+}
+.environment-banner strong { font-size: 13px; letter-spacing: 0; }
+.environment-banner span { overflow-wrap: anywhere; }
 .page-head {
   display: flex;
   justify-content: space-between;
@@ -184,6 +197,7 @@ details .definition-grid {
 .ok { color: var(--green); font-weight: 900; }
 .bad { color: var(--red); font-weight: 900; }
 .muted { color: var(--muted); font-weight: 900; }
+.muted-text { color: var(--muted); font-size: 12px; }
 
 .definition-grid {
   display: grid;
@@ -277,6 +291,12 @@ details .definition-grid {
   padding: 22px 0;
   border-top: 1px solid var(--line);
 }
+.development-disclaimer {
+  border: 1px solid #b8872c;
+  border-left: 5px solid #936514;
+  padding: 14px;
+  background: #fff8e6;
+}
 .report-section p { font-size: 16px; color: var(--ink); }
 .compact-table {
   width: 100%;
@@ -324,5 +344,5 @@ details .definition-grid {
   .panel, .hero, .page-head, .stats { box-shadow: none; break-inside: avoid; }
   a[href]::after { content: " (" attr(href) ")"; color: var(--muted); font-size: 10px; }
   .button::after { content: ""; }
-  .report-section, .report-kpis, .compact-table { break-inside: avoid; }
+  .report-section, .report-kpis, .compact-table, .environment-banner { break-inside: avoid; }
 }

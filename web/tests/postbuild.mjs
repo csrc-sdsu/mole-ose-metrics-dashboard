@@ -23,6 +23,7 @@ function assetPathFromUrl(url) {
 
 assertExists(dist, 'dist directory');
 assertExists(join(dist, 'data', 'dashboard.json'), 'dashboard dataset');
+assertExists(join(dist, 'rtd-goatcounter.js'), 'Read the Docs GoatCounter tracker');
 
 for (const page of pages) {
   const pagePath = join(dist, page);

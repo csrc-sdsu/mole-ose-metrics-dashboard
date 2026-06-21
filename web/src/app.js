@@ -80,6 +80,40 @@ function setChartSummary(id, textValue) {
   if (host) host.textContent = textValue;
 }
 
+function documentationAvailable(data) {
+  return data.documentation_analytics?.status === 'available'
+    || data.documentation_analytics?.status === 'partial';
+}
+
+function documentationValue(data, key) {
+  return documentationAvailable(data) ? number(data.documentation_analytics?.[key]) : 'Unavailable';
+}
+
+function providerLabel(data) {
+  return data.documentation_analytics?.provider || 'not configured';
+}
+
+function reportingPeriodText(period = {}) {
+  if (!period.start && !period.end) return 'Reporting period unavailable';
+  return `${period.start || 'unknown'} to ${period.end || 'unknown'}`;
+}
+
+function renderEnvironmentBanner(data) {
+  if (data.project?.environment === 'production') return;
+  if (document.querySelector('[data-environment-banner]')) return;
+  const banner = element('aside', {
+    className: 'environment-banner',
+    role: 'status',
+    dataset: { environmentBanner: data.project?.environment || 'non-production' }
+  }, [
+    element('strong', { textContent: 'DEVELOPMENT SANDBOX' }),
+    element('span', { textContent: `Data source: ${data.project?.repository || 'unknown'}` }),
+    element('span', { textContent: 'Not official CSRC/MOLE impact data' })
+  ]);
+  const target = document.querySelector('.shell, .report-shell');
+  target?.prepend(banner);
+}
+
 async function loadData() {
   const dataUrl = `${import.meta.env.BASE_URL}data/dashboard.json`;
   const response = await fetch(dataUrl, { cache: 'no-store' });
@@ -126,6 +160,14 @@ function renderSummary(data, periodId = activePeriodId(data)) {
     ['Net backlog change', number(periodSummary.net_backlog_change ?? summary.net_backlog_change), '', comparisonText(comparisons.net_backlog_change)],
     ['Latest release age', days(summary.latest_release_age_days)]
   ];
+  cards.push(
+    ['Documentation visitors', documentationValue(data, 'visitor_count')],
+    ['Search events', documentationValue(data, 'search_count')],
+    ['No-result searches', documentationValue(data, 'no_result_search_count')],
+    ['Documentation 404s', documentationValue(data, 'not_found_count')],
+    ['Provider', providerLabel(data)],
+    ['Last docs collection', readableDate(data.documentation_analytics?.collected_at) || 'Unavailable']
+  );
   for (const [label, value, href, detail] of cards) appendStat(host, label, value, href, detail);
 }
 
@@ -676,13 +718,19 @@ function renderDocumentationAnalytics(data) {
   if (!host) return;
   clear(host);
   host.append(element('h2', { textContent: 'Documentation analytics' }));
-  const docs = data.readthedocs || {};
+  const docs = data.documentation_analytics || {};
+  if (!documentationAvailable(data)) {
+    host.append(element('p', { textContent: docs.message || 'Documentation analytics are unavailable.' }));
+    return;
+  }
   const rows = [
-    ['Page views', number(docs.views_total)],
-    ['Unique pages', number(docs.unique_pages)],
-    ['Searches', number(docs.search_total)],
-    ['No-result searches', number((docs.no_result_searches || []).reduce((sum, item) => sum + (item.count || 0), 0))],
-    ['404 pages', number((docs.not_found_pages || []).length)]
+    ['Visitors', number(docs.visitor_count)],
+    ['Page hits', number(docs.page_hit_count)],
+    ['Provider', providerLabel(data)],
+    ['Reporting period', reportingPeriodText(docs.reporting_period)],
+    ['Search events', number(docs.search_count)],
+    ['No-result searches', number(docs.no_result_search_count)],
+    ['Documentation 404s', number(docs.not_found_count)]
   ];
   for (const [label, value] of rows) {
     host.append(element('div', { className: 'compact-row' }, [
@@ -690,11 +738,38 @@ function renderDocumentationAnalytics(data) {
       element('span', { textContent: value })
     ]));
   }
-  for (const item of (docs.top_pages || []).slice(0, 5)) {
-    host.append(element('p', { textContent: `${item.page}: ${number(item.views)} views` }));
+  const canvas = element('canvas', { id: 'documentationTrendChart', height: '160' });
+  host.append(canvas);
+  host.append(element('p', { className: 'chart-summary', dataset: { chartSummary: 'documentationTrendChart' } }));
+  setChartSummary('documentationTrendChart', `${number((docs.trend || []).reduce((sum, item) => sum + (item.count || 0), 0))} documentation hits in the daily trend.`);
+  chart('documentationTrendChart', {
+    type: 'line',
+    data: {
+      labels: (docs.trend || []).map((item) => item.date),
+      datasets: [{ label: 'Documentation hits', data: (docs.trend || []).map((item) => item.count), borderColor: '#2457a6', tension: 0.25 }]
+    },
+    options: {
+      responsive: true,
+      plugins: { ...chartPlugins(data, 'Daily documentation trend'), legend: { display: false } },
+      scales: { x: { title: { display: true, text: 'Date' } }, y: { title: { display: true, text: 'Hits' } } }
+    }
+  });
+  host.append(element('h2', { textContent: 'Popular pages' }));
+  for (const item of (docs.popular_pages || []).slice(0, 5)) {
+    host.append(element('p', { textContent: `${item.path}: ${number(item.count)} hits` }));
   }
-  for (const item of (docs.no_result_searches || []).slice(0, 5)) {
-    host.append(element('p', { textContent: `No-result search: ${item.query} (${number(item.count)})` }));
+  host.append(element('h2', { textContent: 'Top referrers' }));
+  for (const item of (docs.top_referrers || []).slice(0, 5)) {
+    host.append(element('p', { textContent: `${item.referrer}: ${number(item.count)}` }));
+  }
+  host.append(element('h2', { textContent: 'Missing documentation paths' }));
+  const missing = (docs.not_found_pages || []).slice(0, 8);
+  if (!missing.length) host.append(element('p', { textContent: 'No missing documentation paths reported.' }));
+  for (const item of missing) {
+    host.append(element('p', { textContent: `${item.path}: ${number(item.count)}` }));
+  }
+  for (const limitation of docs.limitations || []) {
+    host.append(element('p', { className: 'muted-text', textContent: limitation }));
   }
 }
 
@@ -708,7 +783,7 @@ function renderSnapshotTrend(data) {
       datasets: [
         { label: 'Zenodo downloads', data: trends.zenodo_downloads || [], borderColor: '#2457a6' },
         { label: 'Citations', data: trends.citation_count || [], borderColor: '#247a52' },
-        { label: 'Docs views', data: trends.readthedocs_views || [], borderColor: '#936514' }
+        { label: 'Documentation visitors', data: trends.documentation_visitors || trends.readthedocs_views || [], borderColor: '#936514' }
       ]
     },
     options: {
@@ -827,6 +902,12 @@ function renderReport(data) {
       localLink('Download latest PDF', './reports/latest.pdf', 'button primary')
     ])
   );
+  if (data.project?.environment !== 'production') {
+    host.append(element('section', { className: 'report-section development-disclaimer' }, [
+      element('h2', { textContent: 'DEVELOPMENT SANDBOX' }),
+      element('p', { textContent: `Data source: ${data.project.repository}. Not official CSRC/MOLE impact data.` })
+    ]));
+  }
   host.append(element('section', { className: 'report-kpis' }, [
     element('article', {}, [element('strong', { textContent: number(data.summary.open_issues) }), element('span', { textContent: 'Open issues' })]),
     element('article', {}, [element('strong', { textContent: number(data.summary.open_pull_requests) }), element('span', { textContent: 'Open PRs' })]),
@@ -855,9 +936,34 @@ function renderReport(data) {
       ['Zenodo downloads', number(data.summary.zenodo_downloads)],
       ['Zenodo views', number(data.summary.zenodo_views)],
       ['Release asset downloads', number(data.releases.release_asset_downloads)],
-      ['Documentation views', number(data.summary.readthedocs_views)]
+      ['Documentation visitors', documentationValue(data, 'visitor_count')],
+      ['Documentation page hits', documentationValue(data, 'page_hit_count')]
     ])
   ]));
+  host.append(element('section', { className: 'report-section' }, [
+    element('h2', { textContent: 'Documentation Reach' }),
+    compactTable(['Metric', 'Value'], [
+      ['Provider', providerLabel(data)],
+      ['Reporting period', reportingPeriodText(data.documentation_analytics?.reporting_period)],
+      ['Visitors', documentationValue(data, 'visitor_count')],
+      ['Page hits', documentationValue(data, 'page_hit_count')],
+      ['Search events', documentationValue(data, 'search_count')],
+      ['No-result searches', documentationValue(data, 'no_result_search_count')],
+      ['Documentation 404s', documentationValue(data, 'not_found_count')]
+    ])
+  ]));
+  const docs = data.documentation_analytics || {};
+  const docsRows = [
+    ...((docs.popular_pages || []).slice(0, 5).map((item) => ['Popular page', `${item.path}: ${number(item.count)}`])),
+    ...((docs.not_found_pages || []).slice(0, 5).map((item) => ['Missing path', `${item.path}: ${number(item.count)}`])),
+    ...((docs.limitations || []).map((item) => ['Limitation', item]))
+  ];
+  if (docsRows.length) {
+    host.append(element('section', { className: 'report-section' }, [
+      element('h2', { textContent: 'Documentation Details' }),
+      compactTable(['Type', 'Value'], docsRows)
+    ]));
+  }
   host.append(element('section', { className: 'report-section' }, [
     element('h2', { textContent: 'Development and Maintenance Activity' }),
     compactTable(['Metric', 'Value'], [
@@ -969,6 +1075,7 @@ loadData()
     }
     if (page === 'impact') renderImpact(dashboardData);
     if (page === 'report') renderReport(dashboardData);
+    renderEnvironmentBanner(dashboardData);
   })
   .catch((error) => {
     document.body.prepend(

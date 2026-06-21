@@ -38,12 +38,21 @@ def write_snapshot(path: str | Path, data: dict[str, Any]) -> None:
 
 def snapshot_record(data: dict[str, Any]) -> dict[str, Any]:
     summary = data.get("summary") or {}
+    project = data.get("project") or {}
+    docs = data.get("documentation_analytics") or {}
     return {
         "date": (data.get("generated_at") or "")[:10],
         "generated_at": data.get("generated_at"),
+        "project_id": project.get("id"),
+        "environment": project.get("environment", "production"),
         "github_traffic_views": summary.get("github_traffic_views"),
         "github_traffic_clones": (data.get("github_traffic") or {}).get("clones_total"),
         "readthedocs_views": summary.get("readthedocs_views"),
+        "documentation_visitors": docs.get("visitor_count"),
+        "documentation_page_hits": docs.get("page_hit_count"),
+        "documentation_search_count": docs.get("search_count"),
+        "documentation_no_result_search_count": docs.get("no_result_search_count"),
+        "documentation_not_found_count": docs.get("not_found_count"),
         "zenodo_downloads": summary.get("zenodo_downloads"),
         "zenodo_views": summary.get("zenodo_views"),
         "citation_count": summary.get("citation_count"),
@@ -63,11 +72,16 @@ def append_snapshot(
             "write_allowed": False,
             "blocked_reason": f"Snapshot writes are restricted to {protected_branch}.",
         }
-    snapshots = [
-        item
-        for item in history.get("snapshots", [])
-        if item.get("date") != record.get("date")
-    ]
+    def same_identity(item: dict[str, Any]) -> bool:
+        item_project = item.get("project_id", record.get("project_id"))
+        item_environment = item.get("environment", "production")
+        return (
+            item.get("date") == record.get("date")
+            and item_project == record.get("project_id")
+            and item_environment == record.get("environment", "production")
+        )
+
+    snapshots = [item for item in history.get("snapshots", []) if not same_identity(item)]
     snapshots.append(record)
     snapshots.sort(key=lambda item: item.get("date") or "")
     return {
@@ -75,6 +89,7 @@ def append_snapshot(
         "policy": {
             "protected_branch": protected_branch,
             "dedupe": "one snapshot per date",
+            "identity": "date, project_id and environment",
             "retention": (
                 "Persistent cumulative metrics only; issue and PR history is reconstructed."
             ),
@@ -90,6 +105,17 @@ def impact_trends(history: dict[str, Any]) -> dict[str, Any]:
         "dates": [item.get("date") for item in snapshots],
         "github_traffic_views": [item.get("github_traffic_views") for item in snapshots],
         "readthedocs_views": [item.get("readthedocs_views") for item in snapshots],
+        "documentation_visitors": [item.get("documentation_visitors") for item in snapshots],
+        "documentation_page_hits": [item.get("documentation_page_hits") for item in snapshots],
+        "documentation_search_count": [
+            item.get("documentation_search_count") for item in snapshots
+        ],
+        "documentation_no_result_search_count": [
+            item.get("documentation_no_result_search_count") for item in snapshots
+        ],
+        "documentation_not_found_count": [
+            item.get("documentation_not_found_count") for item in snapshots
+        ],
         "zenodo_downloads": [item.get("zenodo_downloads") for item in snapshots],
         "citation_count": [item.get("citation_count") for item in snapshots],
     }

@@ -57,10 +57,15 @@ for (const basePath of ['/oss-impact-dashboard/', '/oss-impact-dashboard/pr-prev
 
 const refreshWorkflow = readFileSync('.github/workflows/refresh-deploy.yml', 'utf8');
 assert(refreshWorkflow.includes('branches:\n      - main'), 'production deploy must stay on main');
+assert(refreshWorkflow.includes('vars.PROJECT_CONFIG'), 'production deploy must use PROJECT_CONFIG variable');
+assert(refreshWorkflow.includes('project_config:'), 'production deploy must allow manual project_config override');
 assert(refreshWorkflow.includes('clean-exclude:'), 'production deploy must preserve previews');
 assert(refreshWorkflow.includes('pr-preview/'), 'production deploy must preserve pr-preview/');
+assert(refreshWorkflow.includes('metrics-history-dev.json'), 'production deploy must preserve dev snapshot history');
 assert(refreshWorkflow.includes('".github/workflows/**"'), 'production deploy must watch workflows');
 assert(refreshWorkflow.includes('"scripts/**"'), 'production deploy must watch scripts');
+assert(refreshWorkflow.includes('GOATCOUNTER_API_KEY: ${{ secrets.GOATCOUNTER_API_KEY }}'), 'production data collection needs GoatCounter API secret');
+assert(refreshWorkflow.includes('GOATCOUNTER_SITE_URL: ${{ vars.GOATCOUNTER_SITE_URL }}'), 'production build needs public GoatCounter site URL');
 
 const previewWorkflow = readFileSync('.github/workflows/pr-preview.yml', 'utf8');
 assert(
@@ -76,11 +81,20 @@ assert(
 assert(previewWorkflow.includes('wait-for-pages-deployment: true'), 'PR preview wait must be true');
 assert(previewWorkflow.includes('pr-preview-action@v1'), 'PR preview action must publish previews');
 assert(previewWorkflow.includes('qr-code: false'), 'PR preview QR code must be disabled');
+assert(!previewWorkflow.includes('secrets.OSS_DASHBOARD_GITHUB_TOKEN'), 'PR preview must not expose GitHub dashboard secret');
+assert(!previewWorkflow.includes('secrets.GOATCOUNTER_API_KEY'), 'PR preview must not expose GoatCounter API key');
 
 const reportWorkflow = readFileSync('.github/workflows/generate-report.yml', 'utf8');
+assert(reportWorkflow.includes('vars.PROJECT_CONFIG'), 'report workflow must use PROJECT_CONFIG variable');
+assert(reportWorkflow.includes('project_config:'), 'report workflow must allow manual project_config override');
 assert(reportWorkflow.includes('node scripts/wait-for-url.mjs'), 'report workflow must wait for preview');
 assert(reportWorkflow.includes('node scripts/publish-report-pdf.mjs'), 'report PDF publish script missing');
 assert(reportWorkflow.includes('ref: gh-pages'), 'report workflow must checkout gh-pages');
 assert(reportWorkflow.includes('git add reports/latest.pdf'), 'report workflow must only stage latest PDF');
+
+const diagnosticsWorkflow = readFileSync('.github/workflows/integration-diagnostics.yml', 'utf8');
+assert(diagnosticsWorkflow.includes('workflow_dispatch:'), 'diagnostics must be manual only');
+assert(diagnosticsWorkflow.includes("github.ref == 'refs/heads/main'"), 'diagnostics must run from main');
+assert(diagnosticsWorkflow.includes('doctor --project "$PROJECT_CONFIG"'), 'diagnostics must run doctor command');
 
 console.log('deployment tests ok');

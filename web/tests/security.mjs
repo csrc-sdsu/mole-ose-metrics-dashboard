@@ -37,4 +37,13 @@ if (badLink.getAttribute('href') !== '#') {
   throw new Error('Unsafe link href was not neutralized');
 }
 
+const trackerSource = await import('../../scripts/generate-rtd-goatcounter.mjs');
+const activeTracker = trackerSource.trackerSource({
+  siteUrl: 'https://example.goatcounter.com',
+  trackedDomain: 'docs.example.org'
+});
+if (activeTracker.includes('GOATCOUNTER_API_KEY') || activeTracker.includes('secret')) {
+  throw new Error('Tracker source must not contain API-key material');
+}
+
 console.log('frontend security ok');
