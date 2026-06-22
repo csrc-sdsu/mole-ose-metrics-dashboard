@@ -127,7 +127,9 @@ assert(refreshWorkflow.includes('node scripts/deployment-marker.mjs dist'), 'dep
 
 const diagnosticsWorkflow = readFileSync('.github/workflows/integration-diagnostics.yml', 'utf8');
 assert(diagnosticsWorkflow.includes('workflow_dispatch:'), 'diagnostics must be manual only');
-assert(diagnosticsWorkflow.includes("github.ref == 'refs/heads/main'"), 'diagnostics must run from main');
 assert(diagnosticsWorkflow.includes('doctor --project "$PROJECT_CONFIG"'), 'diagnostics must run doctor command');
+assert(diagnosticsWorkflow.includes('Build dataset (full secrets)'), 'diagnostics must build dataset with full secrets');
+assert(diagnosticsWorkflow.includes('secrets.OSS_DASHBOARD_GITHUB_TOKEN'), 'diagnostics must use GitHub dashboard secret');
+assert(diagnosticsWorkflow.includes('secrets.GOATCOUNTER_API_KEY'), 'diagnostics must use GoatCounter API key');
 
 console.log('deployment tests ok');

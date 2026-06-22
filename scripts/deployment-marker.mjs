@@ -37,3 +37,4 @@ if (invokedPath === modulePath) {
     generatedAt: process.argv[5] || new Date().toISOString()
   });
   console.log(`Wrote ${markerPath}`);
+}
