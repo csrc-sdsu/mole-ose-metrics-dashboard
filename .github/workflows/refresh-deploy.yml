@@ -53,7 +53,9 @@ jobs:
           HISTORY_PATH="$(python -m oss_impact_dashboard.cli project-info --project "$PROJECT_CONFIG" --field snapshot_history)"
           echo "HISTORY_PATH=$HISTORY_PATH" >> "$GITHUB_ENV"
           git fetch origin gh-pages --depth=1 || true
-          git show "origin/gh-pages:$HISTORY_PATH" > "$HISTORY_PATH" 2>/dev/null || printf '{"schema_version":1,"snapshots":[]}\n' > "$HISTORY_PATH"
+          for path in metrics-history.json metrics-history-dev.json; do
+            git show "origin/gh-pages:$path" > "$path" 2>/dev/null || printf '{"schema_version":1,"snapshots":[]}\n' > "$path"
+          done
       - run: python -m oss_impact_dashboard.cli build --project "$PROJECT_CONFIG" --safe-project --output web/public/data/dashboard.json
         env:
           OSS_DASHBOARD_GITHUB_TOKEN: ${{ secrets.OSS_DASHBOARD_GITHUB_TOKEN }}
@@ -70,7 +72,7 @@ jobs:
           GOATCOUNTER_TRACKED_DOMAIN: ${{ vars.GOATCOUNTER_TRACKED_DOMAIN }}
       - run: npm run test:build
       - run: python -m oss_impact_dashboard.cli snapshot-append --dataset web/public/data/dashboard.json --history "$HISTORY_PATH" --branch "${GITHUB_REF_NAME}"
-      - run: cp "$HISTORY_PATH" "dist/$HISTORY_PATH"
+      - run: cp metrics-history.json metrics-history-dev.json dist/
       - run: touch dist/.nojekyll
       - name: Deploy to gh-pages
         uses: JamesIves/github-pages-deploy-action@v4
@@ -80,5 +82,3 @@ jobs:
           clean: true
           clean-exclude: |
             pr-preview/
-            metrics-history.json
-            metrics-history-dev.json

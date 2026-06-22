@@ -43,6 +43,10 @@ class GoatCounterAPIError(RuntimeError):
     pass
 
 
+class GoatCounterSchemaError(GoatCounterAPIError):
+    pass
+
+
 def _normalize_site_url(value: str | None) -> str:
     if not value:
         raise GoatCounterConfigError("GOATCOUNTER_SITE_URL is missing")
@@ -177,17 +181,76 @@ def _count(row: dict[str, Any], *keys: str) -> int:
     return 0
 
 
+def _optional_count(row: dict[str, Any], *keys: str) -> int | None:
+    for key in keys:
+        value = row.get(key)
+        if isinstance(value, int | float):
+            return int(value)
+        if isinstance(value, str) and value.isdigit():
+            return int(value)
+    return None
+
+
 def _path(row: dict[str, Any]) -> str:
     return str(row.get("path") or row.get("page") or row.get("name") or "")
 
 
-def parse_total(payload: Any) -> dict[str, int]:
+def validate_official_total_response(payload: Any) -> None:
+    if not isinstance(payload, dict):
+        raise GoatCounterSchemaError("GoatCounter /stats/total schema error: object expected")
+    for key in ("total", "total_events", "total_utc"):
+        if not isinstance(payload.get(key), int | float):
+            raise GoatCounterSchemaError(
+                f"GoatCounter /stats/total schema error: numeric {key} missing"
+            )
+    if not isinstance(payload.get("stats"), list):
+        raise GoatCounterSchemaError(
+            "GoatCounter /stats/total schema error: stats list missing"
+        )
+
+
+def parse_total(payload: Any) -> dict[str, int | None]:
     if not isinstance(payload, dict):
         raise GoatCounterAPIError("GoatCounter total response must be an object")
+    if all(key in payload for key in ("total", "total_events", "total_utc", "stats")):
+        validate_official_total_response(payload)
+        total = _count(payload, "total")
+        total_events = _count(payload, "total_events")
+        total_utc = _count(payload, "total_utc")
+        return {
+            "visitor_count": max(total - total_events, 0),
+            "page_hit_count": None,
+            "total": total,
+            "total_events": total_events,
+            "total_utc": total_utc,
+        }
     source = payload.get("total") if isinstance(payload.get("total"), dict) else payload
-    page_hits = _count(source, "pageviews", "page_hits", "hits", "count")
-    visitors = _count(source, "visitors", "visitor_count", "visits", "uniques", "unique")
-    return {"page_hit_count": page_hits, "visitor_count": visitors or page_hits}
+    page_hits = _optional_count(source, "pageviews", "page_hits", "hits")
+    visitors = _optional_count(source, "visitors", "visitor_count", "visits", "uniques", "unique")
+    if visitors is None and page_hits is not None:
+        visitors = page_hits
+    if page_hits is None:
+        page_hits = _optional_count(source, "count")
+    return {"page_hit_count": page_hits, "visitor_count": visitors or page_hits or 0}
+
+
+def _daily_stats(row: dict[str, Any]) -> dict[str, int]:
+    daily: dict[str, int] = {}
+    stats = row.get("stats")
+    if isinstance(stats, list):
+        for item in stats:
+            if not isinstance(item, dict):
+                raise GoatCounterAPIError("GoatCounter hit stats rows must be objects")
+            day = item.get("day")
+            count = _optional_count(item, "daily", "count")
+            if day and count is not None:
+                key = str(day)[:10]
+                daily[key] = daily.get(key, 0) + count
+    if not daily:
+        day = str(row.get("day") or row.get("date") or row.get("period") or "")
+        if day:
+            daily[day[:10]] = _count(row, "count", "hits", "pageviews", "visits")
+    return daily
 
 
 def parse_hits(payload: Any) -> dict[str, Any]:
@@ -200,7 +263,6 @@ def parse_hits(payload: Any) -> dict[str, Any]:
         path = _path(row)
         count = _count(row, "count", "hits", "pageviews", "visits")
         event = bool(row.get("event"))
-        day = str(row.get("day") or row.get("date") or row.get("period") or "")
         if event or path.startswith("event:"):
             if path == EVENT_SEARCH:
                 search_count += count
@@ -210,8 +272,8 @@ def parse_hits(payload: Any) -> dict[str, Any]:
                 missing_path = path.removeprefix(EVENT_404_PREFIX) or "/"
                 not_found[missing_path] = not_found.get(missing_path, 0) + count
             continue
-        if day:
-            trend[day[:10]] = trend.get(day[:10], 0) + count
+        for day, daily_count in _daily_stats(row).items():
+            trend[day] = trend.get(day, 0) + daily_count
         if path:
             existing = pages.setdefault(
                 path,
@@ -240,7 +302,7 @@ def parse_hits(payload: Any) -> dict[str, Any]:
 
 def parse_toprefs(payload: Any) -> list[dict[str, Any]]:
     refs = []
-    for row in _rows(payload, ("toprefs", "refs", "referrers", "items")):
+    for row in _rows(payload, ("stats", "toprefs", "refs", "referrers", "items")):
         referrer = str(row.get("referrer") or row.get("name") or row.get("path") or "")
         if referrer:
             refs.append({"referrer": referrer, "count": _count(row, "count", "hits", "visits")})

@@ -83,6 +83,74 @@ def test_goatcounter_response_parsing():
     assert refs == [{"referrer": "github.com", "count": 8}]
 
 
+def test_goatcounter_official_total_response_parsing():
+    total = parse_total(
+        {
+            "total": 17,
+            "total_events": 5,
+            "total_utc": 18,
+            "stats": [],
+        }
+    )
+    assert total["visitor_count"] == 12
+    assert total["page_hit_count"] is None
+    assert total["total"] == 17
+    assert total["total_events"] == 5
+    assert total["total_utc"] == 18
+    assert parse_total({"total": 2, "total_events": 5, "total_utc": 2, "stats": []})[
+        "visitor_count"
+    ] == 0
+
+
+def test_goatcounter_official_hits_and_toprefs_response_parsing():
+    hits = parse_hits(
+        {
+            "hits": [
+                {
+                    "count": 10,
+                    "path_id": 1,
+                    "path": "/docs/page/",
+                    "event": False,
+                    "title": "Page",
+                    "stats": [
+                        {
+                            "day": "2026-06-20",
+                            "hourly": [],
+                            "daily": 10,
+                            "weekly": 10,
+                            "monthly": 10,
+                        }
+                    ],
+                },
+                {
+                    "count": 3,
+                    "path_id": 2,
+                    "path": "event:documentation-search",
+                    "event": True,
+                    "title": "Documentation search",
+                    "stats": [{"day": "2026-06-20", "daily": 3}],
+                },
+                {
+                    "count": 2,
+                    "path_id": 3,
+                    "path": "event:documentation-404:/missing/",
+                    "event": True,
+                    "title": "Documentation 404",
+                    "stats": [{"day": "2026-06-21", "daily": 2}],
+                },
+            ],
+            "total": 15,
+            "more": False,
+        }
+    )
+    assert hits["trend"] == [{"date": "2026-06-20", "count": 10}]
+    assert hits["popular_pages"] == [{"path": "/docs/page/", "title": "Page", "count": 10}]
+    assert hits["search_count"] == 3
+    assert hits["not_found_pages"] == [{"path": "/missing/", "count": 2}]
+    refs = parse_toprefs({"stats": [{"id": "example", "name": "Example", "count": 4}]})
+    assert refs == [{"referrer": "Example", "count": 4}]
+
+
 def test_goatcounter_malformed_response():
     try:
         parse_total([])
@@ -116,9 +184,9 @@ class FakeResponse:
 def test_goatcounter_fetch_uses_authorization_and_three_requests(monkeypatch):
     calls = []
     payloads = [
-        {"count": 10, "visits": 6},
+        {"total": 10, "total_events": 4, "total_utc": 10, "stats": []},
         {"hits": [{"path": "/index.html", "count": 10, "day": "2026-01-01"}]},
-        {"toprefs": [{"referrer": "github.com", "count": 3}]},
+        {"stats": [{"name": "github.com", "count": 3}]},
     ]
 
     def fake_urlopen(request, timeout):
@@ -136,6 +204,7 @@ def test_goatcounter_fetch_uses_authorization_and_three_requests(monkeypatch):
     )
     assert data["requests_used"] == 3
     assert data["visitor_count"] == 6
+    assert data["page_hit_count"] is None
     assert calls[0][0].headers["Authorization"] == "Bearer secret-token"
     assert all(call[1] == 20 for call in calls)
 
@@ -191,9 +260,54 @@ sources:
     monkeypatch.setenv("GOATCOUNTER_API_KEY", "secret-token")
     monkeypatch.setenv("GOATCOUNTER_SITE_URL", "https://example.goatcounter.com")
     monkeypatch.setenv("GOATCOUNTER_TRACKED_DOMAIN", "docs.example.org")
-    monkeypatch.setattr(GoatCounterClient, "get_json", lambda self, endpoint, params: {"count": 1})
+    monkeypatch.setattr(
+        GoatCounterClient,
+        "get_json",
+        lambda self, endpoint, params: {
+            "total": 1,
+            "total_events": 0,
+            "total_utc": 1,
+            "stats": [],
+        },
+    )
     assert main(["doctor", "--project", "projects/dev.yml"]) == 0
     output = capsys.readouterr().out
     assert "Project config: valid" in output
     assert "GoatCounter API key: configured" in output
     assert "secret-token" not in output
+
+
+def test_doctor_command_reports_sanitized_total_schema_error(
+    tmp_path: Path,
+    monkeypatch,
+    capsys,
+):
+    project_dir = tmp_path / "projects"
+    project_dir.mkdir()
+    project = project_dir / "dev.yml"
+    project.write_text(
+        """
+project:
+  id: demo
+  name: Demo
+  repository: owner/repo
+sources:
+  github:
+    enabled: false
+  documentation_analytics:
+    provider: goatcounter
+    enabled: true
+""",
+        encoding="utf-8",
+    )
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("GOATCOUNTER_API_KEY", "secret-token")
+    monkeypatch.setenv("GOATCOUNTER_SITE_URL", "https://example.goatcounter.com")
+    monkeypatch.setenv("GOATCOUNTER_TRACKED_DOMAIN", "docs.example.org")
+    monkeypatch.setattr(GoatCounterClient, "get_json", lambda self, endpoint, params: {"count": 1})
+    assert main(["doctor", "--project", "projects/dev.yml"]) == 1
+    output = capsys.readouterr().out
+    assert "GoatCounter API: error" in output
+    assert "GoatCounter /stats/total schema error" in output
+    assert "secret-token" not in output
+    assert "Authorization" not in output

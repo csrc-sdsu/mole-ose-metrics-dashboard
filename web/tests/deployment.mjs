@@ -61,7 +61,21 @@ assert(refreshWorkflow.includes('vars.PROJECT_CONFIG'), 'production deploy must 
 assert(refreshWorkflow.includes('project_config:'), 'production deploy must allow manual project_config override');
 assert(refreshWorkflow.includes('clean-exclude:'), 'production deploy must preserve previews');
 assert(refreshWorkflow.includes('pr-preview/'), 'production deploy must preserve pr-preview/');
-assert(refreshWorkflow.includes('metrics-history-dev.json'), 'production deploy must preserve dev snapshot history');
+assert(
+  refreshWorkflow.includes('for path in metrics-history.json metrics-history-dev.json'),
+  'deploy must restore both snapshot history files'
+);
+assert(
+  refreshWorkflow.includes('printf \'{"schema_version":1,"snapshots":[]}\\n\' > "$path"'),
+  'deploy must create missing history files for first deployment'
+);
+assert(
+  refreshWorkflow.includes('cp metrics-history.json metrics-history-dev.json dist/'),
+  'deploy must publish both snapshot history files'
+);
+const cleanExcludeBlock = refreshWorkflow.split('clean-exclude:')[1] || '';
+assert(!cleanExcludeBlock.includes('metrics-history.json'), 'production history must not be clean-excluded');
+assert(!cleanExcludeBlock.includes('metrics-history-dev.json'), 'development history must not be clean-excluded');
 assert(refreshWorkflow.includes('".github/workflows/**"'), 'production deploy must watch workflows');
 assert(refreshWorkflow.includes('"scripts/**"'), 'production deploy must watch scripts');
 assert(refreshWorkflow.includes('GOATCOUNTER_API_KEY: ${{ secrets.GOATCOUNTER_API_KEY }}'), 'production data collection needs GoatCounter API secret');
