@@ -10,7 +10,9 @@ from oss_impact_dashboard.collectors.github import github_token
 from oss_impact_dashboard.collectors.goatcounter import (
     GoatCounterClient,
     GoatCounterConfigError,
+    GoatCounterSchemaError,
     settings_from_env,
+    validate_official_total_response,
 )
 from oss_impact_dashboard.config import load_project_config, source_enabled, validate_project_path
 from oss_impact_dashboard.snapshots import append_snapshot, load_snapshot_history, snapshot_record
@@ -123,10 +125,15 @@ def doctor_command(args: argparse.Namespace) -> int:
             raise GoatCounterConfigError("GoatCounter configuration is incomplete")
         if goatcounter_required and settings and api_key_configured:
             client = GoatCounterClient(settings)
-            client.get_json("/stats/total", {})
+            validate_official_total_response(client.get_json("/stats/total", {}))
             print(_status_line("GoatCounter API", "available"))
         else:
             print(_status_line("GoatCounter API", "disabled"))
+    except GoatCounterSchemaError as exc:
+        print(_status_line("GoatCounter API", "error"))
+        print(str(exc))
+        if goatcounter_required:
+            failures.append(str(exc))
     except Exception as exc:  # noqa: BLE001 - diagnostics only prints sanitized messages.
         print(_status_line("GoatCounter API", "error"))
         if goatcounter_required:

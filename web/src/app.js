@@ -93,6 +93,13 @@ function providerLabel(data) {
   return data.documentation_analytics?.provider || 'not configured';
 }
 
+function hasDistinctPageHitCount(data) {
+  const docs = data.documentation_analytics || {};
+  return docs.page_hit_count !== null
+    && docs.page_hit_count !== undefined
+    && docs.page_hit_count !== docs.visitor_count;
+}
+
 function reportingPeriodText(period = {}) {
   if (!period.start && !period.end) return 'Reporting period unavailable';
   return `${period.start || 'unknown'} to ${period.end || 'unknown'}`;
@@ -725,13 +732,13 @@ function renderDocumentationAnalytics(data) {
   }
   const rows = [
     ['Visitors', number(docs.visitor_count)],
-    ['Page hits', number(docs.page_hit_count)],
     ['Provider', providerLabel(data)],
     ['Reporting period', reportingPeriodText(docs.reporting_period)],
     ['Search events', number(docs.search_count)],
     ['No-result searches', number(docs.no_result_search_count)],
     ['Documentation 404s', number(docs.not_found_count)]
   ];
+  if (hasDistinctPageHitCount(data)) rows.splice(1, 0, ['Page hits', number(docs.page_hit_count)]);
   for (const [label, value] of rows) {
     host.append(element('div', { className: 'compact-row' }, [
       element('b', { textContent: label }),
@@ -937,7 +944,9 @@ function renderReport(data) {
       ['Zenodo views', number(data.summary.zenodo_views)],
       ['Release asset downloads', number(data.releases.release_asset_downloads)],
       ['Documentation visitors', documentationValue(data, 'visitor_count')],
-      ['Documentation page hits', documentationValue(data, 'page_hit_count')]
+      ...(hasDistinctPageHitCount(data)
+        ? [['Documentation page hits', documentationValue(data, 'page_hit_count')]]
+        : [])
     ])
   ]));
   host.append(element('section', { className: 'report-section' }, [
@@ -946,7 +955,9 @@ function renderReport(data) {
       ['Provider', providerLabel(data)],
       ['Reporting period', reportingPeriodText(data.documentation_analytics?.reporting_period)],
       ['Visitors', documentationValue(data, 'visitor_count')],
-      ['Page hits', documentationValue(data, 'page_hit_count')],
+      ...(hasDistinctPageHitCount(data)
+        ? [['Page hits', documentationValue(data, 'page_hit_count')]]
+        : []),
       ['Search events', documentationValue(data, 'search_count')],
       ['No-result searches', documentationValue(data, 'no_result_search_count')],
       ['Documentation 404s', documentationValue(data, 'not_found_count')]
