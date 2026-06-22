@@ -25,6 +25,8 @@ jobs:
       PROJECT_CONFIG: ${{ inputs.project_config || vars.PROJECT_CONFIG || 'projects/mole.yml' }}
     steps:
       - uses: actions/checkout@v4
+      - name: Record workflow start
+        run: echo "WORKFLOW_STARTED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_ENV"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -59,25 +61,34 @@ jobs:
         with:
           ref: gh-pages
           path: gh-pages
-      - run: node scripts/publish-report-pdf.mjs reports/latest.pdf gh-pages
+      - name: Synchronize gh-pages
+        run: |
+          cd gh-pages
+          git fetch origin gh-pages
+          git reset --hard origin/gh-pages
+      - name: Publish PDF into checkout
+        env:
+          REPORT_BUILD_ID: ${{ github.run_id }}-${{ github.run_attempt }}
+        run: node scripts/publish-report-pdf.mjs reports/latest.pdf gh-pages
       - run: |
           cd gh-pages
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin gh-pages --depth=1
-          git pull --rebase origin gh-pages
           git add reports/latest.pdf report-status.json
           git diff --cached --quiet || git commit -m "Publish latest PDF report"
           for attempt in 1 2 3; do
             git push && break
             if [ "$attempt" = "3" ]; then exit 1; fi
-            git pull --rebase origin gh-pages
+            git fetch origin gh-pages
+            git reset --hard origin/gh-pages
+            git add reports/latest.pdf report-status.json
+            git diff --cached --quiet || git commit -m "Publish latest PDF report"
           done
       - name: Post-report smoke
         run: |
           BASE_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
           node scripts/wait-for-url.mjs "${BASE_URL}reports/latest.pdf" 120000
-          node scripts/post-deploy-smoke.mjs "$BASE_URL" "$REPORT_PROJECT_ID" "$REPORT_ENVIRONMENT" metrics-history-dev.json report
+          node scripts/post-deploy-smoke.mjs "$BASE_URL" "$REPORT_PROJECT_ID" "$REPORT_ENVIRONMENT" metrics-history-dev.json report "${{ github.run_id }}-${{ github.run_attempt }}" "$WORKFLOW_STARTED_AT"
       - uses: actions/upload-artifact@v4
         with:
           name: latest-impact-report

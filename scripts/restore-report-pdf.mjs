@@ -11,15 +11,34 @@ function readPreviousStatus(path) {
   }
 }
 
+function identityMatches(status, metadata) {
+  return (
+    status.available === true
+    && status.project_id === metadata.projectId
+    && status.environment === metadata.environment
+  );
+}
+
 export function restoreReportPdf(sourceDir = '.gh-pages-report', distDir = 'dist', metadata = {}) {
   const sourcePdf = resolve(sourceDir, 'latest.pdf');
   const sourceStatus = resolve(sourceDir, 'report-status.json');
   const status = readPreviousStatus(sourceStatus);
   const destination = resolve(distDir, 'reports', 'latest.pdf');
 
-  if (!existsSync(sourcePdf)) {
-    writeReportStatus(distDir, { ...metadata, available: false });
-    return { available: false, statusPath: resolve(distDir, 'report-status.json') };
+  if (!existsSync(sourcePdf) || !identityMatches(status, metadata)) {
+    const message = !existsSync(sourcePdf)
+      ? undefined
+      : 'report identity mismatch';
+    writeReportStatus(distDir, {
+      ...metadata,
+      available: false,
+      message
+    });
+    return {
+      available: false,
+      statusPath: resolve(distDir, 'report-status.json'),
+      message
+    };
   }
 
   const sizeBytes = validateReportPdf(sourcePdf);
@@ -29,8 +48,9 @@ export function restoreReportPdf(sourceDir = '.gh-pages-report', distDir = 'dist
     ...metadata,
     available: true,
     generatedAt: status.generated_at || metadata.generatedAt,
-    projectId: status.project_id || metadata.projectId,
-    environment: status.environment || metadata.environment,
+    projectId: status.project_id,
+    environment: status.environment,
+    buildId: status.build_id || metadata.buildId,
     sizeBytes
   });
   return { available: true, pdfPath: destination, statusPath: resolve(distDir, 'report-status.json') };

@@ -68,4 +68,32 @@ assert(
   'refresh deployment should preserve generated_at'
 );
 
+const mismatchSource = join(root, 'mismatch-source');
+mkdirSync(mismatchSource, { recursive: true });
+writeFileSync(join(mismatchSource, 'latest.pdf'), readFileSync(destination));
+writeFileSync(
+  join(mismatchSource, 'report-status.json'),
+  JSON.stringify(
+    {
+      available: true,
+      generated_at: '2026-06-21T00:00:00.000Z',
+      project_id: 'mole-dev',
+      environment: 'development'
+    },
+    null,
+    2
+  ) + '\n'
+);
+const mismatchDist = join(root, 'mismatch-dist');
+const mismatch = restoreReportPdf(mismatchSource, mismatchDist, {
+  projectId: 'mole',
+  environment: 'production'
+});
+assert(mismatch.available === false, 'mismatched report identity must not restore PDF');
+assert(!existsSync(join(mismatchDist, 'reports', 'latest.pdf')), 'mismatched report must not copy PDF');
+assert(
+  JSON.parse(readFileSync(join(mismatchDist, 'report-status.json'), 'utf8')).message === 'report identity mismatch',
+  'mismatched report should publish identity mismatch message'
+);
+
 console.log('pdf publish tests ok');

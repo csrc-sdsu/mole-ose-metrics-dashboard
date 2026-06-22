@@ -29,7 +29,9 @@ export function writeReportStatus(
     generatedAt = new Date().toISOString(),
     projectId = '',
     environment = '',
-    sizeBytes = 0
+    buildId = '',
+    sizeBytes = 0,
+    message
   } = {}
 ) {
   const statusPath = resolve(pagesDir, REPORT_STATUS_FILE);
@@ -41,6 +43,7 @@ export function writeReportStatus(
         generated_at: generatedAt,
         project_id: projectId,
         environment,
+        build_id: buildId,
         size_bytes: sizeBytes
       }
     : {
@@ -49,7 +52,9 @@ export function writeReportStatus(
         generated_at: null,
         project_id: projectId,
         environment,
-        size_bytes: 0
+        build_id: buildId || null,
+        size_bytes: 0,
+        ...(message ? { message } : {})
       };
   writeFileSync(statusPath, `${JSON.stringify(payload, null, 2)}\n`, {
     encoding: 'utf8',
@@ -75,7 +80,8 @@ const modulePath = fileURLToPath(import.meta.url);
 if (invokedPath === modulePath) {
   const destination = publishReportPdf(process.argv[2], process.argv[3], {
     projectId: process.env.REPORT_PROJECT_ID || '',
-    environment: process.env.REPORT_ENVIRONMENT || ''
+    environment: process.env.REPORT_ENVIRONMENT || '',
+    buildId: process.env.REPORT_BUILD_ID || ''
   });
   console.log(`Published report PDF to ${destination}`);
 }

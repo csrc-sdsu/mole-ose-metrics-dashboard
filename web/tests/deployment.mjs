@@ -118,10 +118,12 @@ assert(reportWorkflow.includes('project_config:'), 'report workflow must allow m
 assert(reportWorkflow.includes('node scripts/wait-for-url.mjs'), 'report workflow must wait for preview');
 assert(reportWorkflow.includes('node scripts/publish-report-pdf.mjs'), 'report PDF publish script missing');
 assert(reportWorkflow.includes('ref: gh-pages'), 'report workflow must checkout gh-pages');
-assert(reportWorkflow.includes('git pull --rebase origin gh-pages'), 'report workflow must rebase before publishing');
+assert(reportWorkflow.includes('name: Synchronize gh-pages'), 'report workflow must synchronize gh-pages before publishing');
+assert(reportWorkflow.includes('git reset --hard origin/gh-pages'), 'report workflow must reset gh-pages before publishing');
 assert(reportWorkflow.includes('for attempt in 1 2 3'), 'report workflow must retry bounded push conflicts');
 assert(reportWorkflow.includes('git add reports/latest.pdf report-status.json'), 'report workflow must stage latest PDF and status');
 assert(reportWorkflow.includes('node scripts/post-deploy-smoke.mjs'), 'report workflow must run report smoke');
+assert(refreshWorkflow.includes('node scripts/deployment-marker.mjs dist'), 'deploy must write deployment marker');
 
 const diagnosticsWorkflow = readFileSync('.github/workflows/integration-diagnostics.yml', 'utf8');
 assert(diagnosticsWorkflow.includes('workflow_dispatch:'), 'diagnostics must be manual only');

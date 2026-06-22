@@ -193,7 +193,7 @@ def test_goatcounter_fetch_uses_authorization_and_three_requests(monkeypatch):
 
     def fake_urlopen(request, timeout):
         calls.append((request, timeout))
-        return FakeResponse(payloads[len(calls) - 1], {"X-RateLimit-Remaining": "99"})
+        return FakeResponse(payloads[len(calls) - 1], {"X-Rate-Limit-Remaining": "99"})
 
     monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
     data = fetch_goatcounter_analytics(
@@ -244,7 +244,41 @@ def test_goatcounter_hits_pagination_collects_later_events(monkeypatch):
     assert data["popular_pages"] == [{"path": "/one", "title": "/one", "count": 1}]
     assert data["no_result_search_count"] == 3
     assert data["partial"] is False
-    assert calls[1][1]["exclude"] == "1"
+    assert calls[1][1]["exclude_paths"] == ["1"]
+
+
+def test_goatcounter_hits_pagination_encodes_exclude_paths_url(monkeypatch):
+    captured_urls = []
+
+    def fake_urlopen(request, timeout):
+        captured_urls.append(request.full_url)
+        if len(captured_urls) == 1:
+            payload = {"hits": [{"path_id": 1, "path": "/one", "count": 1}], "more": True}
+        else:
+            payload = {
+                "hits": [
+                    {
+                        "path_id": 2,
+                        "path": "event:documentation-search-no-results",
+                        "event": True,
+                        "count": 3,
+                    }
+                ],
+                "more": False,
+            }
+        return FakeResponse(payload)
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+    client = GoatCounterClient(
+        GoatCounterSettings(
+            api_key="secret-token",
+            site_url="https://example.goatcounter.com",
+            tracked_domain="docs.example.org",
+        )
+    )
+    fetch_paginated_hits(client, reporting_window(1), limit=1, max_pages=4)
+    assert "exclude_paths=1" in captured_urls[1]
+    assert "exclude=" not in captured_urls[1]
 
 
 def test_goatcounter_hits_pagination_marks_partial_on_budget(monkeypatch):

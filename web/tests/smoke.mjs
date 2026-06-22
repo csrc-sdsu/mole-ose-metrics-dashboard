@@ -22,7 +22,7 @@ for (const expected of [
   'report-status.json',
   'Download latest PDF',
   'PDF report has not been generated yet',
-  'reportStatus.available === true',
+  'reportStatus.project_id === data.project?.id',
   'API key invalid',
   'last successful collection: ${lastSuccess'
 ]) {

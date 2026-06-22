@@ -929,7 +929,10 @@ function reportList(title, items, formatter = manualItemText) {
 }
 
 function renderReportDownload(data, reportStatus = {}) {
-  const available = reportStatus.available === true;
+  const identityMatches = reportStatus.available === true
+    && reportStatus.project_id === data.project?.id
+    && reportStatus.environment === data.project?.environment;
+  const available = identityMatches;
   const generated = reportStatus.generated_at || '';
   const identity = [
     reportStatus.project_id || data.project?.id,
@@ -944,7 +947,9 @@ function renderReportDownload(data, reportStatus = {}) {
       className: available ? 'report-status available' : 'report-status unavailable',
       textContent: available
         ? `PDF available${generated ? `, generated ${generated}` : ''}${identity ? ` for ${identity}` : ''}.`
-        : 'PDF report has not been generated yet. It is created by the scheduled report workflow after dashboard data is available.'
+        : reportStatus.available === true && !identityMatches
+          ? 'PDF report identity does not match the current dashboard project or environment.'
+          : 'PDF report has not been generated yet. It is created by the scheduled report workflow after dashboard data is available.'
     })
   ];
   if (stale) {

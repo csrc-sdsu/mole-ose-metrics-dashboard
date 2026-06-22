@@ -145,14 +145,14 @@ class GoatCounterClient:
         self.rate_limit_remaining: str | None = None
         self.rate_limit_reset: str | None = None
 
-    def get_json(self, endpoint: str, params: dict[str, str]) -> Any:
+    def get_json(self, endpoint: str, params: dict[str, Any]) -> Any:
         if self.requests_used >= self.max_requests:
             raise GoatCounterAPIError(
                 "GoatCounter request limit exceeded",
                 endpoint=endpoint,
                 requests_used=self.requests_used,
             )
-        query = urllib.parse.urlencode(params)
+        query = urllib.parse.urlencode(params, doseq=True)
         url = (
             f"{self.settings.api_base}{endpoint}?{query}"
             if query
@@ -168,8 +168,8 @@ class GoatCounterClient:
             self.requests_used += 1
             try:
                 with urllib.request.urlopen(request, timeout=self.timeout) as response:
-                    self.rate_limit_remaining = response.headers.get("X-RateLimit-Remaining")
-                    self.rate_limit_reset = response.headers.get("X-RateLimit-Reset")
+                    self.rate_limit_remaining = response.headers.get("X-Rate-Limit-Remaining")
+                    self.rate_limit_reset = response.headers.get("X-Rate-Limit-Reset")
                     payload = json.loads(response.read().decode("utf-8"))
                     return payload
             except urllib.error.HTTPError as error:
@@ -400,7 +400,7 @@ def fetch_paginated_hits(
         pages_requested += 1
         params = {**period, "group": "day", "limit": str(limit)}
         if excluded:
-            params["exclude"] = ",".join(excluded)
+            params["exclude_paths"] = list(excluded)
         payload = client.get_json("/stats/hits", params)
         page_rows = _hit_rows(payload)
         rows.extend(page_rows)
