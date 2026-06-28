@@ -7,7 +7,6 @@ from oss_impact_dashboard.collectors.github import (
     GitHubClient,
     fetch_community_standards,
     fetch_github,
-    github_token,
 )
 from oss_impact_dashboard.collectors.github_actions import fetch_github_actions
 from oss_impact_dashboard.collectors.github_traffic import fetch_github_traffic
@@ -19,7 +18,7 @@ from oss_impact_dashboard.collectors.goatcounter import (
     GoatCounterConfigError,
     fetch_goatcounter_analytics,
     reporting_window,
-    settings_from_env,
+    settings_from_project,
     tracker_metadata,
     unavailable_documentation_analytics,
 )
@@ -30,6 +29,7 @@ from oss_impact_dashboard.collectors.package_adoption import fetch_package_adopt
 from oss_impact_dashboard.collectors.readthedocs import fetch_readthedocs_analytics
 from oss_impact_dashboard.collectors.zenodo import fetch_zenodo
 from oss_impact_dashboard.config import ProjectConfig, source_enabled
+from oss_impact_dashboard.credentials import github_token_for_project
 from oss_impact_dashboard.metrics.adoption import build_adoption
 from oss_impact_dashboard.metrics.community import build_community_standards
 from oss_impact_dashboard.metrics.contributors import build_contributors
@@ -126,8 +126,15 @@ def _documentation_analytics(
             limitation="Enable documentation_analytics with provider goatcounter.",
         )
     provider = docs_cfg.get("provider", "goatcounter")
+    goatcounter_settings = None
     try:
-        tracker = tracker_metadata(settings_from_env(require_api_key=False))
+        goatcounter_settings = settings_from_project(
+            config.id,
+            config.documentation_url,
+            docs_cfg,
+            require_api_key=False,
+        )
+        tracker = tracker_metadata(goatcounter_settings)
     except GoatCounterConfigError:
         tracker = tracker_metadata(None)
     if provider != "goatcounter":
@@ -144,9 +151,17 @@ def _documentation_analytics(
             limitation="Only goatcounter is supported.",
         )
     try:
-        data = fetch_goatcounter_analytics(period_months=config.period_months)
+        data = fetch_goatcounter_analytics(
+            period_months=config.period_months,
+            settings=settings_from_project(
+                config.id,
+                config.documentation_url,
+                docs_cfg,
+                require_api_key=True,
+            ),
+        )
         if data is None:
-            raise GoatCounterConfigError("GoatCounter environment configuration is missing")
+            raise GoatCounterConfigError("GoatCounter configuration is missing")
         return data, source_status(
             data.get("status", "available"),
             data.get("message") or None,
@@ -156,15 +171,6 @@ def _documentation_analytics(
             requests_used=data.get("requests_used"),
         )
     except Exception as exc:  # noqa: BLE001 - docs analytics must not fail the dashboard.
-        if readthedocs_raw:
-            data = _readthedocs_documentation_analytics(readthedocs_raw, reporting_period=period)
-            data["tracker"] = tracker
-            return data, source_status(
-                "partial",
-                data["message"],
-                limitation="GoatCounter unavailable; using explicit Read the Docs CSV fallback.",
-                provider=data["provider"],
-            )
         goatcounter_error = exc if isinstance(exc, GoatCounterAPIError) else None
         data = unavailable_documentation_analytics(
             str(exc),
@@ -187,10 +193,11 @@ def _documentation_analytics(
 def build_dataset(config: ProjectConfig, manual_root: Path | None = None) -> dict[str, Any]:
     generated_at = now_iso()
     owner, repo = config.owner_repo
+    github_token = github_token_for_project(config.id)
     github_raw, github_status = _try_source(
         "github",
         source_enabled(config, "github"),
-        lambda: fetch_github(owner, repo),
+        lambda: fetch_github(owner, repo, token=github_token),
         source_url=f"https://github.com/{config.repository}",
         limitation=(
             "Uses public GitHub repository, issue, pull request, release and contributor APIs. "
@@ -218,7 +225,7 @@ def build_dataset(config: ProjectConfig, manual_root: Path | None = None) -> dic
     traffic_raw, traffic_status = _try_source(
         "github_traffic",
         source_enabled(config, "github_traffic"),
-        lambda: fetch_github_traffic(owner, repo),
+        lambda: fetch_github_traffic(owner, repo, token=github_token),
         source_url=f"https://api.github.com/repos/{config.repository}/traffic",
         limitation=(
             "Requires repository traffic permissions; implementation is credential-gated."
@@ -227,7 +234,7 @@ def build_dataset(config: ProjectConfig, manual_root: Path | None = None) -> dic
     actions_raw, actions_status = _try_source(
         "github_actions",
         source_enabled(config, "github_actions"),
-        lambda: fetch_github_actions(owner, repo),
+        lambda: fetch_github_actions(owner, repo, token=github_token),
         source_url=f"https://api.github.com/repos/{config.repository}/actions/runs",
         limitation="Requires Actions read permissions and an authenticated token.",
     )
@@ -260,11 +267,13 @@ def build_dataset(config: ProjectConfig, manual_root: Path | None = None) -> dic
 
     # Community standards
     community_raw = None
+    github_token_variable = f"OSS_DASHBOARD_GITHUB_TOKEN_{config.id.upper().replace('-', '_')}"
     community_status = source_status(
-        "unavailable", "Community standards check requires GitHub token"
+        "error",
+        f"Community standards check requires {github_token_variable}",
     )
     if source_enabled(config, "community_standards"):
-        token = github_token()
+        token = github_token
         if token:
             try:
                 client = GitHubClient(token=token)

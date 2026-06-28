@@ -1,8 +1,8 @@
 project:
-  id: mole
-  name: MOLE
-  repository: csrc-sdsu/mole
-  environment: production
+  id: mole-local
+  name: MOLE (local dev fork)
+  repository: pritkc/mole
+  environment: development
   documentation_url: https://mole-docs.readthedocs.io
   citation_url: https://github.com/csrc-sdsu/mole/blob/main/CITATION.cff
 

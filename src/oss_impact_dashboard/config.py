@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 import yaml
 
@@ -98,3 +99,23 @@ def load_project_config(path: str | Path) -> ProjectConfig:
 
 def source_enabled(config: ProjectConfig, source: str) -> bool:
     return bool((config.sources.get(source) or {}).get("enabled"))
+
+
+def documentation_analytics_config(config: ProjectConfig) -> dict[str, Any]:
+    return config.sources.get("documentation_analytics") or {}
+
+
+def goatcounter_site_url(config: ProjectConfig) -> str | None:
+    value = documentation_analytics_config(config).get("site_url")
+    return str(value) if value else None
+
+
+def tracker_config_for_project(config: ProjectConfig) -> dict[str, str]:
+    hostname = ""
+    if config.documentation_url:
+        parsed = urlparse(config.documentation_url)
+        hostname = (parsed.hostname or "").lower()
+    return {
+        "site_url": goatcounter_site_url(config) or "",
+        "tracked_domain": hostname,
+    }

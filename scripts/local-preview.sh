@@ -3,7 +3,7 @@
 # that would be published to GitHub Pages after merge.
 #
 # Prerequisites:
-#   1. Copy .env.example to .env and fill in your token + GoatCounter values
+#   1. Copy .env.example to .env and fill in your token + GoatCounter API key
 #   2. pip install -e ".[report]"
 #   3. npm ci
 #
@@ -11,7 +11,7 @@
 #   bash scripts/local-preview.sh [project_config] [port]
 #
 # Defaults:
-#   project_config = projects/mole.yml
+#   projects       = projects/mole.yml projects/mole-local.yml
 #   port           = 4173
 
 set -euo pipefail
@@ -19,8 +19,6 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$ROOT_DIR"
-
-PROJECT_CONFIG="${1:-projects/mole.yml}"
 PORT="${2:-4173}"
 
 # --- Load .env if it exists ---
@@ -35,25 +33,35 @@ else
   echo "  Continuing without env — some data sources will be unavailable."
 fi
 
+if [ -n "${1:-}" ]; then
+  BUILD_PROJECTS=("$1")
+else
+  BUILD_PROJECTS=("projects/mole.yml" "projects/mole-local.yml")
+fi
+
 # --- Derive VITE_BASE_PATH from repo name if not set ---
 if [ -z "${VITE_BASE_PATH:-}" ]; then
   REPO_NAME=$(basename "$(git -C "$ROOT_DIR" remote get-url origin 2>/dev/null)" .git 2>/dev/null || echo "oss-impact-dashboard")
   export VITE_BASE_PATH="/${REPO_NAME}/"
 fi
 echo "✓ VITE_BASE_PATH=$VITE_BASE_PATH"
+echo "✓ BUILD_PROJECTS=${BUILD_PROJECTS[*]}"
 
-# --- Step 1: Validate project config ---
+# --- Step 1: Validate project configs ---
 echo ""
-echo "=== Step 1/5: Validate project config ==="
-python -m oss_impact_dashboard.cli validate-project --project "$PROJECT_CONFIG"
+echo "=== Step 1/5: Validate project configs ==="
+for project_config in "${BUILD_PROJECTS[@]}"; do
+  python -m oss_impact_dashboard.cli validate-project --project "$project_config"
+done
 
-# --- Step 2: Build dashboard JSON (uses tokens from .env) ---
+# --- Step 2: Build dashboard datasets (per-project credentials from .env) ---
 echo ""
-echo "=== Step 2/5: Build dashboard JSON ==="
-python -m oss_impact_dashboard.cli build \
-  --project "$PROJECT_CONFIG" \
+echo "=== Step 2/5: Build dashboard datasets ==="
+python -m oss_impact_dashboard.cli build-index \
+  --projects "${BUILD_PROJECTS[@]}" \
   --safe-project \
-  --output web/public/data/dashboard.json
+  --default-project mole-local \
+  --output-dir web/public/data
 
 # --- Step 3: Build Vite assets (uses VITE_BASE_PATH) ---
 echo ""
@@ -69,9 +77,8 @@ npm run test:build
 echo ""
 echo "=== Step 5/5: Start preview server ==="
 echo "  Dashboard:  http://127.0.0.1:${PORT}${VITE_BASE_PATH}index.html"
+echo "  Settings:   http://127.0.0.1:${PORT}${VITE_BASE_PATH}settings.html"
 echo "  Report:     http://127.0.0.1:${PORT}${VITE_BASE_PATH}report.html"
-echo "  Operations: http://127.0.0.1:${PORT}${VITE_BASE_PATH}operations.html"
-echo "  Impact:     http://127.0.0.1:${PORT}${VITE_BASE_PATH}impact.html"
 echo ""
 echo "  Press Ctrl+C to stop."
 exec node scripts/preview-pages.mjs "$PORT"

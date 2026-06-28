@@ -4,12 +4,29 @@ import { JSDOM } from 'jsdom';
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const dom = new JSDOM(html);
 
-if (!dom.window.document.querySelector('[data-page="overview"]')) {
-  throw new Error('Overview page is missing its page marker');
+if (!dom.window.document.querySelector('[data-page="dashboard"]')) {
+  throw new Error('Dashboard page is missing its page marker');
 }
 
-if (!dom.window.document.querySelector('[data-summary]')) {
-  throw new Error('Overview page is missing the summary host');
+if (!dom.window.document.querySelector('[data-overview-summary]')) {
+  throw new Error('Dashboard page is missing the overview summary host');
+}
+
+if (!dom.window.document.querySelector('#operations')) {
+  throw new Error('Dashboard page is missing the operations section');
+}
+
+if (!dom.window.document.querySelector('#impact')) {
+  throw new Error('Dashboard page is missing the impact section');
+}
+
+if (!dom.window.document.querySelector('[data-project-picker]')) {
+  throw new Error('Dashboard page is missing the project picker');
+}
+
+const settingsHtml = readFileSync(new URL('../settings.html', import.meta.url), 'utf8');
+if (!settingsHtml.includes('data-page="settings"')) {
+  throw new Error('Settings page is missing its page marker');
 }
 
 const reportHtml = readFileSync(new URL('../report.html', import.meta.url), 'utf8');
@@ -20,14 +37,18 @@ if (reportHtml.includes('reports/latest.pdf')) {
 const appSource = readFileSync(new URL('../src/app.js', import.meta.url), 'utf8');
 for (const expected of [
   'report-status.json',
-  'Download latest PDF',
-  'PDF report has not been generated yet',
+  'data-pdf-download',
   'reportStatus.project_id === data.project?.id',
   'API key invalid',
-  'last successful collection: ${lastSuccess'
+  'last successful collection: ${lastSuccess',
+  'renderProjectConfig',
+  "page === 'dashboard'",
+  'data/projects.json',
+  'data-project-picker',
+  'resolveProjectId'
 ]) {
   if (!appSource.includes(expected)) {
-    throw new Error(`Report UI state is missing ${expected}`);
+    throw new Error(`App source is missing ${expected}`);
   }
 }
 
@@ -52,8 +73,8 @@ for (const expected of [
   'contributorDiversity',
   'targetsProgress'
 ]) {
-  if (!html.includes(expected)) {
-    throw new Error(`Overview page is missing section: ${expected}`);
+  if (!settingsHtml.includes(expected)) {
+    throw new Error(`Settings page is missing section: ${expected}`);
   }
 }
 

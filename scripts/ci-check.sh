@@ -66,37 +66,45 @@ echo "  Node:   $(node --version)"
 echo "  Base:   $VITE_BASE_PATH"
 
 echo
-echo "[1/8] Validate shell scripts"
+echo "[1/9] Validate shell scripts"
 bash -n scripts/*.sh
 
 echo
-echo "[2/8] Validate GitHub Actions workflows"
+echo "[2/9] Validate GitHub Actions workflows"
 bash scripts/validate-workflows.sh
 
 echo
-echo "[3/8] Validate project configurations"
+echo "[3/9] Validate project configurations"
 for project_config in projects/*.yml; do
   python -m oss_impact_dashboard.cli validate-project --project "$project_config"
 done
 
 echo
-echo "[4/8] Ruff"
+echo "[4/9] Ruff"
 python -m ruff check .
 
 echo
-echo "[5/8] Pytest"
+echo "[5/9] Pytest"
 python -m pytest tests/ -q
 
 echo
-echo "[6/8] Frontend and workflow contract tests"
+echo "[6/9] Frontend and workflow contract tests"
 npm run test:frontend
 
 echo
-echo "[7/8] GitHub Pages build"
+echo "[7/9] Build project datasets"
+PROJECT_CONFIG="${PROJECT_CONFIG:-projects/mole.yml}"
+python -m oss_impact_dashboard.cli build-index \
+  --projects "$PROJECT_CONFIG" \
+  --safe-project \
+  --output-dir web/public/data
+
+echo
+echo "[8/9] GitHub Pages build"
 npm run build
 
 echo
-echo "[8/8] Post-build verification"
+echo "[9/9] Post-build verification"
 npm run test:build
 
 echo

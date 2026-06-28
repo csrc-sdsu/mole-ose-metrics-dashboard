@@ -6,7 +6,7 @@
     <link rel="icon" href="data:," />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
     <title>OSS Impact Report</title>
     <script>
       (function(){
@@ -17,19 +17,14 @@
     </script>
     <script type="module" src="./src/app.js"></script>
   </head>
-  <body data-page="report">
-    <header class="topbar no-print">
-      <a class="brand" href="./">OSS Impact Dashboard</a>
-      <nav>
-        <a href="./">Overview</a>
-        <a href="./operations.html">Operations</a>
-        <a href="./impact.html">Impact</a>
-        <a aria-current="page" href="./report.html">Report</a>
-      </nav>
-      <div class="topbar-actions">
-        <button class="theme-toggle no-print" type="button" aria-label="Toggle theme">☽</button>
+  <body data-page="report" class="print-document-page">
+    <header class="report-toolbar no-print">
+      <a class="report-back" href="./" data-project-nav>← Back to dashboard</a>
+      <div class="report-toolbar-actions">
+        <a class="button" href="#" data-pdf-download hidden>Download PDF</a>
+        <button class="button primary" type="button" data-print-report>Print report</button>
       </div>
     </header>
-    <main class="report-shell" data-report></main>
+    <main class="report-shell print-document" data-report></main>
   </body>
 </html>

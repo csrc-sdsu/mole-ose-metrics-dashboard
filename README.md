@@ -55,10 +55,10 @@ npm ci
 Build the dataset:
 
 ```bash
-python -m oss_impact_dashboard.cli build \
-  --project projects/mole.yml \
+python -m oss_impact_dashboard.cli build-index \
+  --projects projects/mole.yml \
   --safe-project \
-  --output web/public/data/dashboard.json
+  --output-dir web/public/data
 ```
 
 Run the dev server:
@@ -152,17 +152,33 @@ Set these in GitHub for live collection on `main`:
 
 | Name | Type | Purpose |
 | --- | --- | --- |
-| `OSS_DASHBOARD_GITHUB_TOKEN` | secret | GitHub traffic and Actions |
-| `GOATCOUNTER_API_KEY` | secret | Documentation analytics API |
-| `GOATCOUNTER_SITE_URL` | variable | HTTPS origin, e.g. `https://example.goatcounter.com` |
-| `GOATCOUNTER_TRACKED_DOMAIN` | variable | Hostname only, e.g. `docs.example.org` |
+| `OSS_DASHBOARD_GITHUB_TOKEN_MOLE` | secret | Official MOLE GitHub traffic and Actions |
+| `GOATCOUNTER_API_KEY_MOLE` | secret | Official MOLE documentation analytics API |
 | `PROJECT_CONFIG` | variable | Project file, e.g. `projects/mole.yml` |
 
-Local token variables, first match wins:
+Project-specific public settings such as the GitHub repository, documentation URL, and GoatCounter site URL live in `projects/*.yml`. Only API keys and tokens stay in secrets.
 
-- `OSS_DASHBOARD_GITHUB_TOKEN`
-- `GH_TOKEN`
-- `GITHUB_TOKEN`
+Credential variables are project-specific. There are no shared fallbacks:
+
+- `OSS_DASHBOARD_GITHUB_TOKEN_<PROJECT_ID>` (for example `OSS_DASHBOARD_GITHUB_TOKEN_MOLE_LOCAL`)
+
+GoatCounter keys follow the same no-fallback pattern:
+
+- `GOATCOUNTER_API_KEY_<PROJECT_ID>`
+
+For local preview with both official MOLE and your fork:
+
+```bash
+# .env
+OSS_DASHBOARD_GITHUB_TOKEN_MOLE_LOCAL=github_pat_your_fork_token
+GOATCOUNTER_API_KEY_MOLE=your_goatcounter_key
+GOATCOUNTER_API_KEY_MOLE_LOCAL=your_goatcounter_key
+
+bash scripts/local-preview.sh
+```
+
+The project picker opens on your fork by default. Official MOLE populates fully only after
+`OSS_DASHBOARD_GITHUB_TOKEN_MOLE` is set.
 
 Tokens and API keys are used only by Python collectors. They must never appear in generated JSON, frontend files, logs, or deployed artifacts.
 
@@ -185,12 +201,12 @@ GET /api/v0/stats/toprefs
 The RTD tracker script is generated at build time:
 
 ```bash
-GOATCOUNTER_SITE_URL=https://example.goatcounter.com \
-GOATCOUNTER_TRACKED_DOMAIN=docs.example.org \
+GOATCOUNTER_API_KEY_MOLE=your_api_key \
+PROJECT_CONFIG=projects/mole.yml \
 npm run generate:rtd-tracker
 ```
 
-Deploy `rtd-goatcounter.js` from GitHub Pages and add that URL to Read the Docs custom JavaScript. The tracker sends pageviews plus three fixed event names:
+The docs hostname is derived from `project.documentation_url` in the selected project YAML. Deploy `rtd-goatcounter.js` from GitHub Pages and add that URL to Read the Docs custom JavaScript. The tracker sends pageviews plus three fixed event names:
 
 - `event:documentation-search`
 - `event:documentation-search-no-results`
@@ -198,7 +214,7 @@ Deploy `rtd-goatcounter.js` from GitHub Pages and add that URL to Read the Docs 
 
 Search query text is not collected.
 
-If GoatCounter is unavailable and a Read the Docs CSV is configured, the dashboard uses that CSV as an explicit fallback.
+If GoatCounter is unavailable or its project-specific API key is missing, the dashboard reports the source error on the Settings page instead of substituting another data source.
 
 ## Workflows
 

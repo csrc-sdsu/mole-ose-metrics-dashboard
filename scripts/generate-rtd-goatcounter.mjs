@@ -1,15 +1,17 @@
+import { execSync } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const output = join(root, 'web', 'public', 'rtd-goatcounter.js');
+const projectConfig = process.env.PROJECT_CONFIG || 'projects/mole.yml';
 
 function normalizeSiteUrl(value) {
   if (!value) return '';
   const url = new URL(value);
   if (url.protocol !== 'https:' || url.pathname !== '/') {
-    throw new Error('GOATCOUNTER_SITE_URL must be an HTTPS origin');
+    throw new Error('documentation_analytics.site_url must be an HTTPS origin');
   }
   return url.origin;
 }
@@ -17,11 +19,11 @@ function normalizeSiteUrl(value) {
 function normalizeHostname(value) {
   if (!value) return '';
   if (value.includes('://') || value.includes('/') || value.includes('?') || value.includes('#')) {
-    throw new Error('GOATCOUNTER_TRACKED_DOMAIN must be a hostname');
+    throw new Error('project.documentation_url must provide a hostname');
   }
   const url = new URL(`https://${value}`);
   if (url.hostname !== value.toLowerCase()) {
-    throw new Error('GOATCOUNTER_TRACKED_DOMAIN must be a hostname');
+    throw new Error('project.documentation_url must provide a hostname');
   }
   return url.hostname;
 }
@@ -157,13 +159,23 @@ export function trackerSource({ siteUrl = '', trackedDomain = '' } = {}) {
 })();`;
 }
 
+function trackerConfigFromProject(projectPath) {
+  const raw = execSync(
+    `python -m oss_impact_dashboard.cli tracker-config --project ${projectPath}`,
+    { cwd: root, encoding: 'utf8' }
+  );
+  const config = JSON.parse(raw);
+  return {
+    siteUrl: config.site_url || '',
+    trackedDomain: config.tracked_domain || ''
+  };
+}
+
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
-  const source = trackerSource({
-    siteUrl: process.env.GOATCOUNTER_SITE_URL || '',
-    trackedDomain: process.env.GOATCOUNTER_TRACKED_DOMAIN || ''
-  });
+  const trackerConfig = trackerConfigFromProject(projectConfig);
+  const source = trackerSource(trackerConfig);
 
   mkdirSync(dirname(output), { recursive: true });
   writeFileSync(output, `${source}\n`, { encoding: 'utf8', flag: 'w' });
-  console.log(`Wrote ${output}`);
+  console.log(`Wrote ${output} from ${projectConfig}`);
 }

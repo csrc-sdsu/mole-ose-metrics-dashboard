@@ -24,7 +24,85 @@ const dateFormat = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' });
 const page = document.body.dataset.page;
 let table;
 let dashboardData;
+let projectManifest;
+let activeProjectId;
 const filterState = new URLSearchParams(window.location.search);
+const PROJECT_STORAGE_KEY = 'oss-dashboard-project';
+
+function projectQueryString(projectId = activeProjectId) {
+  return projectId ? `?project=${encodeURIComponent(projectId)}` : '';
+}
+
+function withProjectQuery(path, projectId = activeProjectId) {
+  const query = projectQueryString(projectId);
+  if (!query) return path;
+  if (path.includes('?')) {
+    return `${path}&${query.slice(1)}`;
+  }
+  return `${path}${query}`;
+}
+
+function resolveProjectId(manifest) {
+  if (!manifest?.projects?.length) return null;
+  const fromUrl = filterState.get('project');
+  if (fromUrl && manifest.projects.some((entry) => entry.id === fromUrl)) {
+    return fromUrl;
+  }
+  const stored = localStorage.getItem(PROJECT_STORAGE_KEY);
+  if (stored && manifest.projects.some((entry) => entry.id === stored)) {
+    return stored;
+  }
+  return manifest.default_project || manifest.projects[0].id;
+}
+
+async function loadProjectManifest() {
+  const manifestUrl = `${import.meta.env.BASE_URL}data/projects.json`;
+  const response = await fetch(manifestUrl, { cache: 'no-store' });
+  if (!response.ok) return null;
+  return response.json();
+}
+
+function initProjectPicker(manifest, selectedId) {
+  const picker = document.querySelector('[data-project-picker]');
+  if (!picker || !manifest?.projects?.length) return;
+  if (manifest.projects.length <= 1) {
+    picker.hidden = true;
+    return;
+  }
+  picker.hidden = false;
+  clear(picker);
+  for (const entry of manifest.projects) {
+    const option = document.createElement('option');
+    option.value = entry.id;
+    option.textContent = `${entry.name} (${entry.repository})`;
+    option.selected = entry.id === selectedId;
+    picker.append(option);
+  }
+  picker.addEventListener('change', () => {
+    localStorage.setItem(PROJECT_STORAGE_KEY, picker.value);
+    const url = new URL(window.location.href);
+    url.searchParams.set('project', picker.value);
+    window.location.href = url.toString();
+  });
+}
+
+function syncProjectNavigation(projectId = activeProjectId) {
+  const query = projectQueryString(projectId);
+  for (const link of document.querySelectorAll('[data-project-nav]')) {
+    const base = link.getAttribute('href') || './';
+    const hashIndex = base.indexOf('#');
+    const path = hashIndex >= 0 ? base.slice(0, hashIndex) : base;
+    const hash = hashIndex >= 0 ? base.slice(hashIndex) : '';
+    link.setAttribute('href', `${path}${query}${hash}`);
+  }
+}
+
+function opsLink(params = {}) {
+  const qs = new URLSearchParams(params).toString();
+  const projectQuery = projectQueryString();
+  const combined = [projectQuery ? projectQuery.slice(1) : '', qs].filter(Boolean).join('&');
+  return `./${combined ? `?${combined}` : ''}#operations`;
+}
 
 function number(value) {
   return value === null || value === undefined ? 'N/A' : numberFormat.format(value);
@@ -122,14 +200,20 @@ function renderEnvironmentBanner(data) {
   }, [
     element('strong', { textContent: 'DEVELOPMENT SANDBOX' }),
     element('span', { textContent: `Data source: ${data.project?.repository || 'unknown'}` }),
-    element('span', { textContent: 'Not official CSRC/MOLE impact data' })
+    element('span', { textContent: `Environment: ${data.project?.environment || 'non-production'}` })
   ]);
   const target = document.querySelector('.shell, .report-shell');
   target?.prepend(banner);
 }
 
 async function loadData() {
-  const dataUrl = `${import.meta.env.BASE_URL}data/dashboard.json`;
+  projectManifest = await loadProjectManifest();
+  let dataUrl = `${import.meta.env.BASE_URL}data/dashboard.json`;
+  if (projectManifest?.projects?.length) {
+    activeProjectId = resolveProjectId(projectManifest);
+    localStorage.setItem(PROJECT_STORAGE_KEY, activeProjectId);
+    dataUrl = `${import.meta.env.BASE_URL}data/projects/${activeProjectId}.json`;
+  }
   const response = await fetch(dataUrl, { cache: 'no-store' });
   if (!response.ok) throw new Error(`Unable to load dashboard data: ${response.status}`);
   return response.json();
@@ -185,37 +269,53 @@ function appendStat(host, label, value, href, detail = '') {
   host.append(card);
 }
 
-function renderSummary(data, periodId = activePeriodId(data)) {
-  const host = document.querySelector('[data-summary]');
+function renderKpiStrip(hostSelector, cards) {
+  const host = document.querySelector(hostSelector);
   if (!host) return;
   clear(host);
+  for (const [label, value, href, detail] of cards) appendStat(host, label, value, href, detail);
+}
+
+function renderOverviewSummary(data, periodId = activePeriodId(data)) {
   const summary = data.summary || {};
   const periodSummary = data.operations?.period_summaries?.[periodId] || {};
   const comparisons = data.operations?.period_comparisons?.[periodId] || {};
   const threshold = data.reporting_period?.stale_days || 90;
-  const cards = [
-    ['Open issues', number(summary.open_issues), './operations.html?type=issue&state=open'],
-    ['Open PRs', number(summary.open_pull_requests), './operations.html?type=pull_request&state=open'],
-    ['Untriaged', number(summary.untriaged_items), './operations.html?queue=untriaged'],
-    [`Open over ${threshold} days`, number(summary.open_over_threshold_items ?? summary.stale_items), './operations.html?queue=open_over_threshold'],
+  const ciRate = data.github_actions?.success_rate;
+  renderKpiStrip('[data-overview-summary]', [
+    ['Open issues', number(summary.open_issues), opsLink({ type: 'issue', state: 'open' })],
+    ['Open PRs', number(summary.open_pull_requests), opsLink({ type: 'pull_request', state: 'open' })],
+    ['Untriaged', number(summary.untriaged_items), opsLink({ queue: 'untriaged' })],
+    ['PRs awaiting review', number(summary.awaiting_review_count), opsLink({ queue: 'awaiting_review' })],
+    ['Net backlog change', number(periodSummary.net_backlog_change ?? summary.net_backlog_change), '', comparisonText(comparisons.net_backlog_change)],
+    ['Median first response', days(summary.median_first_response_days)],
+    ['Latest release age', days(summary.latest_release_age_days)],
+    ['CI success rate', ciRate === null || ciRate === undefined ? 'N/A' : percent(ciRate)],
+    [`Open over ${threshold} days`, number(summary.open_over_threshold_items ?? summary.stale_items), opsLink({ queue: 'open_over_threshold' })]
+  ]);
+}
+
+function renderOperationsSummary(data, periodId = activePeriodId(data)) {
+  const summary = data.summary || {};
+  const periodSummary = data.operations?.period_summaries?.[periodId] || {};
+  const comparisons = data.operations?.period_comparisons?.[periodId] || {};
+  const threshold = data.reporting_period?.stale_days || 90;
+  const ciRate = data.github_actions?.success_rate;
+  renderKpiStrip('[data-operations-summary]', [
+    ['Untriaged', number(summary.untriaged_items), opsLink({ queue: 'untriaged' })],
+    [`Stale (>${threshold}d)`, number(summary.open_over_threshold_items ?? summary.stale_items), opsLink({ queue: 'open_over_threshold' })],
+    ['Awaiting review', number(summary.awaiting_review_count), opsLink({ queue: 'awaiting_review' })],
+    ['Unanswered issues', number(summary.unanswered_issues_count ?? summary.issues_without_response_count), opsLink({ queue: 'issues_without_external_response' })],
     ['Median issue close', days(periodSummary.median_issue_close_days ?? summary.median_issue_close_days), '', comparisonText(comparisons.median_issue_close_days, 'days')],
     ['Median PR merge', days(periodSummary.median_pr_merge_days ?? summary.median_pr_merge_days), '', comparisonText(comparisons.median_pr_merge_days, 'days')],
-    ['Median first response', days(summary.median_first_response_days)],
-    ['Median first review', days(summary.median_first_review_days)],
     ['P90 first response', days(summary.p90_first_response_days)],
-    ['PRs awaiting review', number(summary.awaiting_review_count), './operations.html?queue=awaiting_review'],
-    ['Net backlog change', number(periodSummary.net_backlog_change ?? summary.net_backlog_change), '', comparisonText(comparisons.net_backlog_change)],
-    ['Latest release age', days(summary.latest_release_age_days)]
-  ];
-  cards.push(
-    ['Documentation visitors', documentationValue(data, 'visitor_count')],
-    ['Search events', documentationValue(data, 'search_count')],
-    ['No-result searches', documentationValue(data, 'no_result_search_count')],
-    ['Documentation 404s', documentationValue(data, 'not_found_count')],
-    ['Provider', providerLabel(data)],
-    ['Last docs collection', readableDate(data.documentation_analytics?.collected_at) || 'Unavailable']
-  );
-  for (const [label, value, href, detail] of cards) appendStat(host, label, value, href, detail);
+    ['CI success rate', ciRate === null || ciRate === undefined ? 'N/A' : percent(ciRate)]
+  ]);
+}
+
+function renderSummary(data, periodId = activePeriodId(data)) {
+  renderOverviewSummary(data, periodId);
+  renderOperationsSummary(data, periodId);
 }
 
 function renderImpactSummary(data, periodId = activePeriodId(data)) {
@@ -299,7 +399,7 @@ function renderDefinitions(data) {
 function renderSecurityHealth(data) {
   const host = document.querySelector('[data-section="securityHealth"]');
   if (!host) return;
-  const h2 = host.querySelector('h2');
+  const h2 = host.querySelector('h2, h3');
   clear(host);
   if (h2) host.append(h2);
   const security = data.security || {};
@@ -335,7 +435,7 @@ function renderSecurityHealth(data) {
 function renderAdoptionMatrix(data) {
   const host = document.querySelector('[data-section="adoptionMatrix"]');
   if (!host) return;
-  const h2 = host.querySelector('h2');
+  const h2 = host.querySelector('h2, h3');
   clear(host);
   if (h2) host.append(h2);
   const adoption = data.adoption || {};
@@ -371,7 +471,7 @@ function renderAdoptionMatrix(data) {
 function renderCommunityStandards(data) {
   const host = document.querySelector('[data-section="communityStandards"]');
   if (!host) return;
-  const h2 = host.querySelector('h2');
+  const h2 = host.querySelector('h2, h3');
   clear(host);
   if (h2) host.append(h2);
   const standards = data.community_standards || {};
@@ -406,7 +506,7 @@ function renderCommunityStandards(data) {
 function renderGovernanceHealth(data) {
   const host = document.querySelector('[data-section="governanceHealth"]');
   if (!host) return;
-  const h2 = host.querySelector('h2');
+  const h2 = host.querySelector('h2, h3');
   clear(host);
   if (h2) host.append(h2);
   const governance = data.governance || {};
@@ -448,7 +548,7 @@ function renderGovernanceHealth(data) {
 function renderContributorDiversity(data) {
   const host = document.querySelector('[data-section="contributorDiversity"]');
   if (!host) return;
-  const h2 = host.querySelector('h2');
+  const h2 = host.querySelector('h2, h3');
   clear(host);
   if (h2) host.append(h2);
   const contributors = data.contributors || {};
@@ -477,7 +577,7 @@ function renderContributorDiversity(data) {
 function renderTargetsProgress(data) {
   const host = document.querySelector('[data-section="targetsProgress"]');
   if (!host) return;
-  const h2 = host.querySelector('h2');
+  const h2 = host.querySelector('h2, h3');
   clear(host);
   if (h2) host.append(h2);
   const targets = data.targets_progress || {};
@@ -814,11 +914,11 @@ function renderQueues(data) {
     for (const item of (items || []).slice(0, 5)) {
       list.append(element('li', {}, [externalLink(`#${item.number}`, item.url), ` ${item.title}`]));
     }
-    if (!items?.length) list.append(element('li', { textContent: 'No items' }));
+    if (!items?.length) continue;
     const panel = element('article', { className: 'panel col-4' }, [
-      element('h2', { textContent: queueLabels[name] || name.replaceAll('_', ' ') }),
+      element('h3', { textContent: queueLabels[name] || name.replaceAll('_', ' ') }),
       list,
-      localLink('View all', `./operations.html?queue=${encodeURIComponent(name)}`, 'subtle-link')
+      localLink('View all', opsLink({ queue: name }), 'subtle-link')
     ]);
     host.append(panel);
   }
@@ -910,9 +1010,39 @@ function syncFilterUrl(filters) {
   for (const [key, value] of Object.entries(filters)) {
     if (value) params.set(key, value);
   }
-  const nextUrl = `${window.location.pathname}${params.toString() ? `?${params}` : ''}`;
+  const hash = window.location.hash || '#operations';
+  const nextUrl = `${window.location.pathname}${params.toString() ? `?${params}` : ''}${hash}`;
   window.history.replaceState({}, '', nextUrl);
   if (filters.period) localStorage.setItem('oss-dashboard-period', filters.period);
+}
+
+function initSectionNav() {
+  const nav = document.querySelector('.section-nav');
+  if (!nav) return;
+  const links = nav.querySelectorAll('a[href^="#"]');
+  const sections = [...links].map((link) => document.querySelector(link.getAttribute('href'))).filter(Boolean);
+  if (!sections.length) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      for (const link of links) {
+        link.removeAttribute('aria-current');
+        if (link.getAttribute('href') === `#${entry.target.id}`) {
+          link.setAttribute('aria-current', 'true');
+        }
+      }
+    }
+  }, { rootMargin: '-20% 0px -60% 0px', threshold: 0 });
+
+  for (const section of sections) observer.observe(section);
+
+  if (window.location.hash) {
+    const target = document.querySelector(window.location.hash);
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else if (filterState.toString()) {
+    document.querySelector('#operations')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 function updateFilterSummary(filters, count) {
@@ -1049,14 +1179,12 @@ function renderImpact(data) {
   renderContributorAnalytics(data, periodId);
   renderDocumentationAnalytics(data);
   renderSnapshotTrend(data);
-  renderManualSection('[data-section="manualProjectData"]', 'Project evidence', data.impact?.manual?.project_data || {});
-  renderCaseStudies(data.impact?.manual?.case_studies || []);
 }
 
 function renderReleaseAnalytics(data, periodId = activePeriodId(data)) {
   const host = document.querySelector('[data-section="releases"]');
   if (host) {
-    const h2 = host.querySelector('h2');
+    const h2 = host.querySelector('h2, h3');
     clear(host);
     if (h2) host.append(h2);
     for (const release of data.releases?.by_release || []) {
@@ -1089,7 +1217,7 @@ function renderReleaseAnalytics(data, periodId = activePeriodId(data)) {
 function renderContributorAnalytics(data, periodId = activePeriodId(data)) {
   const host = document.querySelector('[data-section="contributors"]');
   if (host) {
-    const h2 = host.querySelector('h2');
+    const h2 = host.querySelector('h2, h3');
     clear(host);
     if (h2) host.append(h2);
     const period = data.contributors?.period_summaries?.[periodId] || {};
@@ -1136,7 +1264,7 @@ function renderContributorAnalytics(data, periodId = activePeriodId(data)) {
 function renderDocumentationAnalytics(data) {
   const host = document.querySelector('[data-section="docsAnalytics"]');
   if (!host) return;
-  const h2 = host.querySelector('h2');
+  const h2 = host.querySelector('h2, h3');
   clear(host);
   if (h2) host.append(h2);
   const docs = data.documentation_analytics || {};
@@ -1198,7 +1326,11 @@ function renderDocumentationAnalytics(data) {
 
 function renderSnapshotTrend(data) {
   const trends = data.snapshots?.trends || {};
-  if (!(trends.dates || []).length) return;
+  const panel = document.getElementById('snapshotTrendChart')?.closest('.panel');
+  if (!(trends.dates || []).length || trends.dates.length < 2) {
+    if (panel) panel.style.display = 'none';
+    return;
+  }
   chart('snapshotTrendChart', {
     type: 'line',
     data: {
@@ -1274,7 +1406,7 @@ function renderCiReliability(data) {
 function renderManualSection(selector, title, manual) {
   const host = document.querySelector(selector);
   if (!host) return;
-  const h2 = host.querySelector('h2');
+  const h2 = host.querySelector('h2, h3');
   clear(host);
   if (h2) host.append(h2);
   const entries = Object.entries(manual).filter(([, value]) => {
@@ -1291,7 +1423,7 @@ function renderManualSection(selector, title, manual) {
 function renderCaseStudies(items) {
   const host = document.querySelector('[data-section="caseStudies"]');
   if (!host) return;
-  const h2 = host.querySelector('h2');
+  const h2 = host.querySelector('h2, h3');
   clear(host);
   if (h2) host.append(h2);
   for (const item of items) {
@@ -1306,7 +1438,53 @@ function renderCaseStudies(items) {
   if (!items.length) host.style.display = 'none';
 }
 
-// --- Report rendering (preserving all existing logic) ---
+function renderProjectConfig(data) {
+  const host = document.querySelector('[data-project-config]');
+  if (!host) return;
+  clear(host);
+  const project = data.project || {};
+  const reporting = data.reporting_period || {};
+  const rows = [
+    ['Project ID', project.id],
+    ['Project name', project.name],
+    ['Repository', project.repository],
+    ['Environment', project.environment || 'production'],
+    ['Documentation URL', project.documentation_url],
+    ['Citation URL', project.citation_url],
+    ['Dataset generated', data.generated_at],
+    ['Default period', reporting.periods?.default],
+    ['Stale threshold (days)', number(reporting.stale_days)],
+    ['Freshness warning (hours)', number(reporting.freshness_warning_hours)]
+  ];
+  for (const [label, value] of rows) {
+    if (value === null || value === undefined || value === '') continue;
+    host.append(element('div', { className: 'status-row' }, [
+      element('b', { textContent: label }),
+      element('span', { textContent: String(value) })
+    ]));
+  }
+  const sources = Object.entries(data.source_status || {});
+  if (sources.length) {
+    host.append(element('h3', { textContent: 'Enabled sources', style: 'margin-top:1rem' }));
+    for (const [name, status] of sources) {
+      host.append(element('div', { className: 'status-row' }, [
+        element('b', { textContent: name.replaceAll('_', ' ') }),
+        element('span', { className: statusClass(status.status), textContent: status.status })
+      ]));
+    }
+  }
+}
+
+function hideEmptyPanel(selector, hasContent) {
+  const host = document.querySelector(selector);
+  if (host && !hasContent) host.style.display = 'none';
+}
+
+function initPrintReport() {
+  const button = document.querySelector('[data-print-report]');
+  if (button) button.addEventListener('click', () => window.print());
+}
+
 function compactTable(headers, rows) {
   const tableNode = element('table', { className: 'compact-table' });
   tableNode.append(element('thead', {}, [
@@ -1339,237 +1517,169 @@ function renderReportDownload(data, reportStatus = {}) {
     && reportStatus.project_id === data.project?.id
     && reportStatus.environment === data.project?.environment;
   const available = identityMatches;
-  const generated = reportStatus.generated_at || '';
-  const identity = [
-    reportStatus.project_id || data.project?.id,
-    reportStatus.environment || data.project?.environment
-  ].filter(Boolean).join(' / ');
-  const stale = available
-    && generated
-    && data.generated_at
-    && new Date(generated).valueOf() < new Date(data.generated_at).valueOf();
-  const children = [
-    element('p', {
-      className: available ? 'report-status available' : 'report-status unavailable',
-      textContent: available
-        ? `PDF available${generated ? `, generated ${generated}` : ''}${identity ? ` for ${identity}` : ''}.`
-        : reportStatus.available === true && !identityMatches
-          ? 'PDF report identity does not match the current dashboard project or environment.'
-          : 'PDF report has not been generated yet. It is created by the scheduled report workflow after dashboard data is available.'
-    })
-  ];
-  if (stale) {
-    children.push(element('p', {
-      className: 'report-status stale',
-      textContent: 'PDF report is older than the current dashboard dataset.'
-    }));
+  const link = document.querySelector('[data-pdf-download]');
+  if (link) {
+    if (available) {
+      link.href = `./${reportStatus.path || 'reports/latest.pdf'}`;
+      link.hidden = false;
+    } else {
+      link.hidden = true;
+    }
   }
-  if (available) {
-    children.unshift(localLink('Download latest PDF', `./${reportStatus.path || 'reports/latest.pdf'}`, 'button primary'));
-  }
-  return element('div', { className: 'report-download' }, children);
+  return null;
+}
+
+function reportFooter(data) {
+  const activeSources = Object.entries(data.source_status || {})
+    .filter(([, status]) => status.status === 'available' || status.status === 'partial')
+    .map(([name]) => name.replaceAll('_', ' '));
+  const limitations = Object.entries(data.source_status || {})
+    .flatMap(([, status]) => [status.limitation, status.message].filter(Boolean))
+    .slice(0, 4);
+  return element('footer', { className: 'report-footer' }, [
+    element('p', { textContent: `Generated ${data.generated_at}. Active sources: ${activeSources.join(', ') || 'none'}.` }),
+    limitations.length
+      ? element('p', { textContent: `Limitations: ${limitations.join(' ')}` })
+      : document.createTextNode('')
+  ]);
 }
 
 function renderReport(data, reportStatus = {}) {
   const host = document.querySelector('[data-report]');
   if (!host) return;
   clear(host);
+  renderReportDownload(data, reportStatus);
   const period = activePeriod(data);
-  const manual = data.impact?.manual?.project_data || {};
   const contributorPeriod = data.contributors?.period_summaries?.[period.id] || {};
   const releasePeriod = data.releases?.period_summaries?.[period.id] || {};
-  const capacity = manual.maintainer_capacity || {};
-  const targetRows = (manual.targets || []).map((item) => [
-    text(item.metric || item.name),
-    text(item.baseline),
-    text(item.target),
-    text(item.expected_outcome || item.outcome)
-  ]);
+  const periodSummary = data.operations?.period_summaries?.[period.id] || {};
+  const ciRate = data.github_actions?.success_rate;
+
   host.append(
-    element('section', { className: 'report-title' }, [
-      element('h1', { textContent: `${data.project.name} Impact Report` }),
-      element('p', { textContent: `${period.label}: ${period.start || 'project start'} through ${period.end}. Generated ${data.generated_at}.` }),
-      renderReportDownload(data, reportStatus)
+    element('header', { className: 'report-title' }, [
+      element('h1', { textContent: `${data.project.name} — Open Source Impact Report` }),
+      element('p', { className: 'report-meta', textContent: `${data.project.repository}` }),
+      element('p', {
+        className: 'report-meta',
+        textContent: `${period.label}: ${period.start || 'project start'} through ${period.end ? readableDate(period.end) : 'present'}. Generated ${readableDate(data.generated_at) || data.generated_at}.`
+      })
     ])
   );
+
   if (data.project?.environment !== 'production') {
     host.append(element('section', { className: 'report-section development-disclaimer' }, [
-      element('h2', { textContent: 'DEVELOPMENT SANDBOX' }),
-      element('p', { textContent: `Data source: ${data.project.repository}. Not official CSRC/MOLE impact data.` })
+      element('p', { textContent: `Development sandbox data from ${data.project.repository}. Not official production impact reporting.` })
     ]));
   }
+
   host.append(element('section', { className: 'report-kpis' }, [
-    element('article', {}, [element('strong', { textContent: number(data.summary.open_issues) }), element('span', { textContent: 'Open issues' })]),
-    element('article', {}, [element('strong', { textContent: number(data.summary.open_pull_requests) }), element('span', { textContent: 'Open PRs' })]),
-    element('article', {}, [element('strong', { textContent: number(data.summary.unique_contributors) }), element('span', { textContent: 'Contributors' })]),
-    element('article', {}, [element('strong', { textContent: number(data.summary.citation_count) }), element('span', { textContent: 'Citations' })])
+    element('article', {}, [element('strong', { textContent: number(data.impact?.openalex?.cited_by_count ?? data.summary?.citation_count) }), element('span', { textContent: 'Citations' })]),
+    element('article', {}, [element('strong', { textContent: number(data.releases?.release_asset_downloads) }), element('span', { textContent: 'Release downloads' })]),
+    element('article', {}, [element('strong', { textContent: documentationAvailable(data) ? number(data.documentation_analytics?.visitor_count) : '—' }), element('span', { textContent: 'Documentation visitors' })]),
+    element('article', {}, [element('strong', { textContent: number(data.contributors?.unique_contributors) }), element('span', { textContent: 'Contributors' })]),
+    element('article', {}, [element('strong', { textContent: number(releasePeriod.releases) }), element('span', { textContent: 'Releases in period' })])
   ]));
+
   host.append(element('section', { className: 'report-section' }, [
-    element('h2', { textContent: 'Project Overview' }),
-    element('p', { textContent: `${data.project.name} is tracked from ${data.project.repository}. The dashboard combines public repository activity, release delivery, contributor activity, citations, downloads, documentation analytics and manual impact evidence where configured.` })
-  ]));
-  host.append(element('section', { className: 'report-section' }, [
-    element('h2', { textContent: 'Executive KPI Summary' }),
+    element('h2', { textContent: 'Executive summary' }),
     compactTable(['Metric', 'Value'], [
-      ['Net backlog change', number(data.summary.net_backlog_change)],
-      ['Median issue close', days(data.summary.median_issue_close_days)],
-      ['Median PR merge', days(data.summary.median_pr_merge_days)],
-      ['Median first response', days(data.summary.median_first_response_days)],
-      ['Median first review', days(data.summary.median_first_review_days)]
-    ])
+      ['Net backlog change', number(periodSummary.net_backlog_change ?? data.summary?.net_backlog_change)],
+      ['Median issue close', days(periodSummary.median_issue_close_days ?? data.summary?.median_issue_close_days)],
+      ['Median PR merge', days(periodSummary.median_pr_merge_days ?? data.summary?.median_pr_merge_days)],
+      ['Median first response', days(data.summary?.median_first_response_days)],
+      ['PRs awaiting review', number(data.summary?.awaiting_review_count)],
+      ['CI success rate', ciRate === null || ciRate === undefined ? '—' : percent(ciRate)]
+    ].filter(([, value]) => value !== 'N/A' && value !== '—'))
   ]));
-  const accomplishments = reportList('Major Accomplishments', manual.accomplishments);
-  if (accomplishments) host.append(accomplishments);
+
   host.append(element('section', { className: 'report-section' }, [
-    element('h2', { textContent: 'Adoption and Downloads' }),
+    element('h2', { textContent: 'Reach and adoption' }),
     compactTable(['Metric', 'Value'], [
-      ['Zenodo downloads', number(data.summary.zenodo_downloads)],
-      ['Zenodo views', number(data.summary.zenodo_views)],
-      ['Release asset downloads', number(data.releases.release_asset_downloads)],
-      ['Documentation visitors', documentationValue(data, 'visitor_count')],
+      ['Zenodo downloads', number(data.impact?.zenodo?.downloads ?? data.summary?.zenodo_downloads)],
+      ['Zenodo views', number(data.impact?.zenodo?.views ?? data.summary?.zenodo_views)],
+      ['Release asset downloads', number(data.releases?.release_asset_downloads)],
+      ['Documentation visitors', documentationAvailable(data) ? number(data.documentation_analytics?.visitor_count) : '—'],
       ...(hasDistinctPageHitCount(data)
-        ? [['Documentation page hits', documentationValue(data, 'page_hit_count')]]
-        : [])
-    ])
-  ]));
-  host.append(element('section', { className: 'report-section' }, [
-    element('h2', { textContent: 'Documentation Reach' }),
-    compactTable(['Metric', 'Value'], [
-      ['Provider', providerLabel(data)],
-      ['Reporting period', reportingPeriodText(data.documentation_analytics?.reporting_period)],
-      ['Visitors', documentationValue(data, 'visitor_count')],
-      ...(hasDistinctPageHitCount(data)
-        ? [['Page hits', documentationValue(data, 'page_hit_count')]]
+        ? [['Documentation page hits', number(data.documentation_analytics?.page_hit_count)]]
         : []),
-      ['Search events', documentationValue(data, 'search_count')],
-      ['No-result searches', documentationValue(data, 'no_result_search_count')],
-      ['Documentation 404s', documentationValue(data, 'not_found_count')]
-    ])
+      ['Search events', documentationAvailable(data) ? number(data.documentation_analytics?.search_count) : '—'],
+      ['No-result searches', documentationAvailable(data) ? number(data.documentation_analytics?.no_result_search_count) : '—'],
+      ['Documentation 404s', documentationAvailable(data) ? number(data.documentation_analytics?.not_found_count) : '—']
+    ].filter(([, value]) => value !== 'N/A' && value !== '—'))
   ]));
+
   const docs = data.documentation_analytics || {};
   const docsRows = [
     ...((docs.popular_pages || []).slice(0, 5).map((item) => ['Popular page', `${item.path}: ${number(item.count)}`])),
-    ...((docs.not_found_pages || []).slice(0, 5).map((item) => ['Missing path', `${item.path}: ${number(item.count)}`])),
-    ...((docs.limitations || []).map((item) => ['Limitation', item]))
+    ...((docs.not_found_pages || []).slice(0, 5).map((item) => ['Missing path', `${item.path}: ${number(item.count)}`]))
   ];
   if (docsRows.length) {
     host.append(element('section', { className: 'report-section' }, [
-      element('h2', { textContent: 'Documentation Details' }),
+      element('h2', { textContent: 'Documentation highlights' }),
       compactTable(['Type', 'Value'], docsRows)
     ]));
   }
+
   host.append(element('section', { className: 'report-section' }, [
-    element('h2', { textContent: 'Development and Maintenance Activity' }),
+    element('h2', { textContent: 'Development and maintenance activity' }),
     compactTable(['Metric', 'Value'], [
-      ['Issues opened in period', number(data.operations?.period_summaries?.[period.id]?.issues_opened)],
-      ['Issues closed in period', number(data.operations?.period_summaries?.[period.id]?.issues_closed)],
-      ['PRs opened in period', number(data.operations?.period_summaries?.[period.id]?.prs_opened)],
-      ['PRs merged in period', number(data.operations?.period_summaries?.[period.id]?.prs_merged)],
-      ['PRs awaiting review', number(data.summary.awaiting_review_count)]
-    ])
+      ['Issues opened in period', number(periodSummary.issues_opened)],
+      ['Issues closed in period', number(periodSummary.issues_closed)],
+      ['PRs opened in period', number(periodSummary.prs_opened)],
+      ['PRs merged in period', number(periodSummary.prs_merged)],
+      ['Open issues', number(data.summary?.open_issues)],
+      ['Open pull requests', number(data.summary?.open_pull_requests)]
+    ].filter(([, value]) => value !== 'N/A'))
   ]));
+
   host.append(element('section', { className: 'report-section' }, [
-    element('h2', { textContent: 'Release Delivery' }),
+    element('h2', { textContent: 'Release delivery' }),
     compactTable(['Metric', 'Value'], [
-      ['Total releases', number(data.releases.total_releases)],
+      ['Total releases', number(data.releases?.total_releases)],
       ['Releases in period', number(releasePeriod.releases)],
-      ['Latest release age', days(data.releases.latest_release_age_days)],
-      ['Median release interval', days(data.releases.median_release_interval_days)]
-    ])
+      ['Latest release age', days(data.releases?.latest_release_age_days)],
+      ['Median release interval', days(data.releases?.median_release_interval_days)]
+    ].filter(([, value]) => value !== 'N/A'))
   ]));
+
   host.append(element('section', { className: 'report-section' }, [
-    element('h2', { textContent: 'Contributors and Community' }),
+    element('h2', { textContent: 'Contributors and community' }),
     compactTable(['Metric', 'Value'], [
       ['Unique contributors', number(data.contributors?.unique_contributors)],
-      ['Commit contributors', number(data.contributors?.commit_contributors)],
       ['New contributors in period', number(contributorPeriod.new_contributors)],
       ['Repeat contributors in period', number(contributorPeriod.repeat_contributors)],
-      ['Top 3 contribution concentration', percent(data.contributors?.contribution_concentration?.top_3_share)]
-    ])
+      ['Top 3 contribution concentration', percent(data.contributors?.contribution_concentration?.top_3_share)],
+      ['Newcomer first PR authors', number(data.operations?.newcomer_funnel?.first_pr_authors)],
+      ['Newcomer conversion rate', percent(data.operations?.newcomer_funnel?.conversion_rate)]
+    ].filter(([, value]) => value !== 'N/A' && value !== '—'))
   ]));
-  host.append(element('section', { className: 'report-section' }, [
-    element('h2', { textContent: 'CI and Reliability' }),
-    compactTable(['Metric', 'Value'], [
-      ['Workflow runs', number(data.github_actions?.total_runs)],
-      ['Success rate', percent(data.github_actions?.success_rate)],
-      ['Median duration', duration(data.github_actions?.median_duration_seconds)],
-      ['Recent failed runs', number((data.github_actions?.recent_failed_runs || []).length)]
-    ])
-  ]));
-  if (Object.keys(capacity).length) {
+
+  if (data.github_actions?.total_runs) {
     host.append(element('section', { className: 'report-section' }, [
-      element('h2', { textContent: 'Maintainer Capacity' }),
-      compactTable(['Capacity field', 'Value'], Object.entries(capacity).map(([key, value]) => [key.replaceAll('_', ' '), text(value)]))
-    ]));
-  }
-  const risks = reportList('Technical Debt and Sustainability Risks', manual.risks);
-  if (risks) host.append(risks);
-  const work = reportList('Requested Work Packages', manual.requested_work);
-  if (work) host.append(work);
-  if (targetRows.length) {
-    host.append(element('section', { className: 'report-section' }, [
-      element('h2', { textContent: 'Baseline to Target Outcomes' }),
-      compactTable(['Metric', 'Baseline', 'Target', 'Expected outcome'], targetRows)
-    ]));
-  }
-  const studies = reportList('Case Studies', data.impact?.manual?.case_studies || [], (item) => `${item.title}: ${item.outcome || ''}`);
-  if (studies) host.append(studies);
-  if (data.security?.available) {
-    host.append(element('section', { className: 'report-section' }, [
-      element('h2', { textContent: 'Security Health' }),
-      compactTable(['Check', 'Score', 'Reason'], (data.security.checks || []).map((check) => [
-        text(check.name), number(check.score), text(check.reason || '')
-      ]))
-    ]));
-  }
-  if (data.governance?.available) {
-    host.append(element('section', { className: 'report-section' }, [
-      element('h2', { textContent: 'Governance Health' }),
-      compactTable(['Category', 'Score', 'Details'], (data.governance.checks || []).map((check) => [
-        text(check.category), text(check.score),
-        (check.items || []).map((item) => `${item.name}: ${item.present ? 'Yes' : 'No'}`).join('; ')
-      ]))
-    ]));
-  }
-  if (data.adoption?.available) {
-    host.append(element('section', { className: 'report-section' }, [
-      element('h2', { textContent: 'Package Adoption' }),
-      compactTable(['Registry', 'Status', 'Details'], (data.adoption.registries || []).map((reg) => [
-        text(reg.name), reg.found ? 'Registered' : 'Not found', text(reg.details || '')
-      ]))
-    ]));
-  }
-  if (data.targets_progress?.available && data.targets_progress.targets?.length) {
-    host.append(element('section', { className: 'report-section' }, [
-      element('h2', { textContent: 'Annual Targets Progress' }),
-      compactTable(['Metric', 'Baseline'], data.targets_progress.targets.map((t) => [
-        text(t.metric), text(t.baseline)
-      ]))
-    ]));
-  }
-  if (data.contributors?.bus_factor !== undefined) {
-    host.append(element('section', { className: 'report-section' }, [
-      element('h2', { textContent: 'Contributor Diversity and Key-Person Risk' }),
+      element('h2', { textContent: 'CI and reliability' }),
       compactTable(['Metric', 'Value'], [
-        ['Bus factor', number(data.contributors?.bus_factor)],
-        ['Top 1 concentration', percent(data.contributors?.contribution_concentration?.top_1_share)],
-        ['Top 3 concentration', percent(data.contributors?.contribution_concentration?.top_3_share)],
-        ['External contributor share', percent(data.contributors?.external_contributor_share)],
-        ['Core contributors configured', data.contributors?.core_contributors_configured ? 'Yes' : 'No'],
-        ['Newcomer first PR authors', number(data.operations?.newcomer_funnel?.first_pr_authors)],
-        ['Newcomer first PR merged', number(data.operations?.newcomer_funnel?.first_pr_merged)],
-        ['Newcomer conversion rate', percent(data.operations?.newcomer_funnel?.conversion_rate)]
+        ['Workflow runs', number(data.github_actions.total_runs)],
+        ['Success rate', percent(data.github_actions.success_rate)],
+        ['Median duration', duration(data.github_actions.median_duration_seconds)],
+        ['Recent failed runs', number((data.github_actions.recent_failed_runs || []).length)]
       ])
     ]));
   }
-  host.append(element('section', { className: 'report-section' }, [
-    element('h2', { textContent: 'Methodology, Data Sources and Limitations' }),
-    compactTable(['Source', 'Status', 'Limitation'], Object.entries(data.source_status || {}).map(([name, status]) => [
-      name.replaceAll('_', ' '),
-      status.status,
-      status.limitation || status.message || ''
-    ]))
-  ]));
+
+  if (data.security?.available) {
+    const failedChecks = (data.security.checks || []).filter((check) => check.score === 0 || check.score === '0');
+    host.append(element('section', { className: 'report-section' }, [
+      element('h2', { textContent: 'Security health' }),
+      compactTable(['Metric', 'Value'], [
+        ['OpenSSF score', number(data.security.score)],
+        ...(failedChecks.length
+          ? [['Failed or high-risk checks', failedChecks.map((c) => c.name).join(', ')]]
+          : [])
+      ])
+    ]));
+  }
+
+  host.append(reportFooter(data));
   document.body.dataset.reportReady = 'true';
 }
 
@@ -1598,38 +1708,54 @@ function renderDataFreshness(data) {
 // --- Init ---
 initTheme();
 initThemeToggle();
+initPrintReport();
 loadData()
   .then(async (data) => {
     dashboardData = data;
+    if (projectManifest) {
+      initProjectPicker(projectManifest, activeProjectId);
+      syncProjectNavigation(activeProjectId);
+    }
     const reportStatus = page === 'report' ? await loadReportStatus() : {};
     renderHeader(dashboardData);
     renderDataFreshness(dashboardData);
-    renderSummary(dashboardData);
-    renderActionSummary(dashboardData);
-    renderSources(dashboardData);
-    renderDefinitions(dashboardData);
-    renderSecurityHealth(dashboardData);
-    renderAdoptionMatrix(dashboardData);
-    renderCommunityStandards(dashboardData);
-    renderGovernanceHealth(dashboardData);
-    renderContributorDiversity(dashboardData);
-    renderTargetsProgress(dashboardData);
-    populateChartPeriods(dashboardData);
-    initChartPeriodSelectors(dashboardData);
-    const activityPeriod = document.querySelector('.chart-period-select[data-chart-period="activityChart"]')?.value || activePeriodId(dashboardData);
-    renderActivityChart(dashboardData, activityPeriod, activityPeriod === 'custom' ? getCustomRange('activityChart') : null);
-    if (page === 'operations') {
+
+    if (page === 'dashboard') {
+      renderSummary(dashboardData);
+      renderActionSummary(dashboardData);
+      populateChartPeriods(dashboardData);
+      initChartPeriodSelectors(dashboardData);
+      const activityPeriod = document.querySelector('.chart-period-select[data-chart-period="activityChart"]')?.value || activePeriodId(dashboardData);
+      renderActivityChart(dashboardData, activityPeriod, activityPeriod === 'custom' ? getCustomRange('activityChart') : null);
       const backlogPeriod = document.querySelector('.chart-period-select[data-chart-period="backlogChart"]')?.value || activePeriodId(dashboardData);
       renderBacklogChart(dashboardData, backlogPeriod, backlogPeriod === 'custom' ? getCustomRange('backlogChart') : null);
       renderAgeBucketChart(dashboardData);
       renderLabelChart(dashboardData);
-      renderCompositionChart(dashboardData);
       renderCompletionDistribution(dashboardData);
       renderQueues(dashboardData);
       renderTable(dashboardData);
       renderCiReliability(dashboardData);
+      renderImpact(dashboardData);
+      initSectionNav();
     }
-    if (page === 'impact') renderImpact(dashboardData);
+
+    if (page === 'settings') {
+      renderProjectConfig(dashboardData);
+      renderSources(dashboardData);
+      renderDefinitions(dashboardData);
+      renderSecurityHealth(dashboardData);
+      renderAdoptionMatrix(dashboardData);
+      renderCommunityStandards(dashboardData);
+      renderGovernanceHealth(dashboardData);
+      renderContributorDiversity(dashboardData);
+      renderTargetsProgress(dashboardData);
+      hideEmptyPanel('[data-section="securityHealth"]', dashboardData.security?.available);
+      hideEmptyPanel('[data-section="adoptionMatrix"]', dashboardData.adoption?.available);
+      hideEmptyPanel('[data-section="governanceHealth"]', dashboardData.governance?.available);
+      hideEmptyPanel('[data-section="communityStandards"]', dashboardData.community_standards?.available);
+      hideEmptyPanel('[data-section="targetsProgress"]', dashboardData.targets_progress?.available);
+    }
+
     if (page === 'report') renderReport(dashboardData, reportStatus);
     renderEnvironmentBanner(dashboardData);
   })
