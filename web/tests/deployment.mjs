@@ -86,8 +86,16 @@ const cleanExcludeBlock = refreshWorkflow.split('clean-exclude:')[1] || '';
 assert(!cleanExcludeBlock.includes('metrics-history.json'), 'production history must not be clean-excluded');
 assert(refreshWorkflow.includes('".github/workflows/**"'), 'production deploy must watch workflows');
 assert(refreshWorkflow.includes('"scripts/**"'), 'production deploy must watch scripts');
-assert(refreshWorkflow.includes('GOATCOUNTER_API_KEY: ${{ secrets.GOATCOUNTER_API_KEY }}'), 'production data collection needs GoatCounter API secret');
-assert(refreshWorkflow.includes('GOATCOUNTER_SITE_URL: ${{ vars.GOATCOUNTER_SITE_URL }}'), 'production build needs public GoatCounter site URL');
+assert(
+  refreshWorkflow.includes('GOATCOUNTER_API_KEY_MOLE: ${{ secrets.GOATCOUNTER_API_KEY_MOLE }}'),
+  'production data collection needs project-specific GoatCounter API secret'
+);
+assert(
+  refreshWorkflow.includes('OSS_DASHBOARD_GITHUB_TOKEN_MOLE: ${{ secrets.OSS_DASHBOARD_GITHUB_TOKEN_MOLE }}'),
+  'production data collection needs project-specific GitHub token secret'
+);
+assert(refreshWorkflow.includes('build-index --projects'), 'production deploy must build project datasets via build-index');
+assert(refreshWorkflow.includes('documentation_analytics') || refreshWorkflow.includes('projects/mole.yml'), 'production GoatCounter config must live in project YAML');
 
 const previewWorkflow = readFileSync('.github/workflows/pr-preview.yml', 'utf8');
 assert(previewWorkflow.includes('run: npm run ci'), 'PR preview must use the canonical CI script');
@@ -112,8 +120,14 @@ assert(previewWorkflow.includes('git rm -r --ignore-unmatch "$preview_dir"'), 'P
 assert(!previewWorkflow.split('cleanup:')[1].includes('actions/setup-node'), 'PR preview cleanup must not install Node');
 assert(!previewWorkflow.split('cleanup:')[1].includes('actions/setup-python'), 'PR preview cleanup must not install Python');
 assert(previewWorkflow.includes('qr-code: false'), 'PR preview QR code must be disabled');
-assert(!previewWorkflow.includes('secrets.OSS_DASHBOARD_GITHUB_TOKEN'), 'PR preview must not expose GitHub dashboard secret');
-assert(!previewWorkflow.includes('secrets.GOATCOUNTER_API_KEY'), 'PR preview must not expose GoatCounter API key');
+assert(
+  !previewWorkflow.includes('secrets.OSS_DASHBOARD_GITHUB_TOKEN }}'),
+  'PR preview must not expose shared GitHub dashboard secret'
+);
+assert(
+  !previewWorkflow.includes('secrets.GOATCOUNTER_API_KEY }}'),
+  'PR preview must not expose shared GoatCounter API key'
+);
 
 const reportWorkflow = readFileSync('.github/workflows/generate-report.yml', 'utf8');
 assert(reportWorkflow.includes('run: npm run ci'), 'report workflow must use the canonical CI script');
@@ -134,7 +148,7 @@ const diagnosticsWorkflow = readFileSync('.github/workflows/integration-diagnost
 assert(diagnosticsWorkflow.includes('workflow_dispatch:'), 'diagnostics must be manual only');
 assert(diagnosticsWorkflow.includes('doctor --project "$PROJECT_CONFIG"'), 'diagnostics must run doctor command');
 assert(diagnosticsWorkflow.includes('Build dataset (full secrets)'), 'diagnostics must build dataset with full secrets');
-assert(diagnosticsWorkflow.includes('secrets.OSS_DASHBOARD_GITHUB_TOKEN'), 'diagnostics must use GitHub dashboard secret');
-assert(diagnosticsWorkflow.includes('secrets.GOATCOUNTER_API_KEY'), 'diagnostics must use GoatCounter API key');
+assert(diagnosticsWorkflow.includes('secrets.OSS_DASHBOARD_GITHUB_TOKEN_MOLE'), 'diagnostics must use project-specific GitHub dashboard secret');
+assert(diagnosticsWorkflow.includes('secrets.GOATCOUNTER_API_KEY_MOLE'), 'diagnostics must use project-specific GoatCounter API key');
 
 console.log('deployment tests ok');

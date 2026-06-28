@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import Counter
 from typing import Any
 
-from oss_impact_dashboard.collectors.github import GitHubClient, github_token, repo_path
+from oss_impact_dashboard.collectors.github import GitHubClient, repo_path
 from oss_impact_dashboard.schema import seconds_between
 
 
@@ -78,9 +78,12 @@ def summarize_workflow_runs(runs: list[dict[str, Any]]) -> dict[str, Any]:
 def fetch_github_actions(
     owner: str, repo: str, token: str | None = None, per_page: int = 100
 ) -> dict[str, Any]:
-    effective_token = token or github_token()
+    effective_token = token
     if not effective_token:
-        raise RuntimeError("GitHub Actions metrics require an authenticated token")
+        raise RuntimeError(
+            "Missing project GitHub token. Set the project-specific "
+            "OSS_DASHBOARD_GITHUB_TOKEN_<PROJECT_ID> variable."
+        )
 
     client = GitHubClient(token=effective_token, request_budget=20)
     payload = client.one(repo_path(owner, repo, "actions/runs", per_page=str(per_page)))

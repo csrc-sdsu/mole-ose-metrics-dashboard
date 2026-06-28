@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from oss_impact_dashboard.collectors.github import GitHubClient, github_token, repo_path
+from oss_impact_dashboard.collectors.github import GitHubClient, repo_path
 
 
 def summarize_traffic(raw: dict[str, Any]) -> dict[str, Any]:
@@ -24,9 +24,12 @@ def _get_payload(client: GitHubClient, owner: str, repo: str, endpoint: str) -> 
 
 
 def fetch_github_traffic(owner: str, repo: str, token: str | None = None) -> dict[str, Any]:
-    effective_token = token or github_token()
+    effective_token = token
     if not effective_token:
-        raise RuntimeError("GitHub traffic requires an authenticated token")
+        raise RuntimeError(
+            "Missing project GitHub token. Set the project-specific "
+            "OSS_DASHBOARD_GITHUB_TOKEN_<PROJECT_ID> variable."
+        )
 
     client = GitHubClient(token=effective_token, request_budget=20)
     raw = {

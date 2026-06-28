@@ -56,6 +56,7 @@ project:
   id: demo
   name: Demo
   repository: owner/repo
+  documentation_url: https://docs.example.org
 sources:
   github:
     enabled: false
@@ -83,6 +84,7 @@ project:
   id: demo
   name: Demo
   repository: owner/repo
+  documentation_url: https://docs.example.org
 sources:
   github:
     enabled: false
@@ -106,7 +108,7 @@ label_aliases:
     assert "zenodo" in data["impact"]
 
 
-def test_dataset_uses_readthedocs_as_explicit_documentation_fallback(tmp_path: Path):
+def test_dataset_reports_missing_goatcounter_key_without_readthedocs_fallback(tmp_path: Path):
     csv_path = tmp_path / "rtd.csv"
     csv_path.write_text(
         "type,page,query,views,result_count,status\n"
@@ -122,12 +124,14 @@ project:
   id: demo
   name: Demo
   repository: owner/repo
+  documentation_url: https://docs.example.org
 sources:
   github:
     enabled: false
   documentation_analytics:
     provider: goatcounter
     enabled: true
+    site_url: https://example.goatcounter.com
   readthedocs:
     enabled: true
     analytics_csv: {csv_path}
@@ -137,10 +141,10 @@ sources:
     manual = tmp_path / "manual"
     manual.mkdir()
     data = build_dataset(load_project_config(project), manual_root=manual)
-    assert data["documentation_analytics"]["provider"] == "readthedocs_csv"
-    assert data["documentation_analytics"]["status"] == "partial"
-    assert data["source_status"]["documentation_analytics"]["status"] == "partial"
-    assert data["summary"]["documentation_search_count"] == 2
+    assert data["documentation_analytics"]["provider"] == "goatcounter"
+    assert data["documentation_analytics"]["status"] == "error"
+    assert "GOATCOUNTER_API_KEY_DEMO is missing" in data["documentation_analytics"]["message"]
+    assert data["source_status"]["documentation_analytics"]["status"] == "error"
 
 
 def test_dataset_preserves_goatcounter_error_request_metadata(
@@ -161,14 +165,13 @@ sources:
   documentation_analytics:
     provider: goatcounter
     enabled: true
+    site_url: https://example.goatcounter.com
 """,
         encoding="utf-8",
     )
     manual = tmp_path / "manual"
     manual.mkdir()
-    monkeypatch.setenv("GOATCOUNTER_API_KEY", "secret-token")
-    monkeypatch.setenv("GOATCOUNTER_SITE_URL", "https://example.goatcounter.com")
-    monkeypatch.setenv("GOATCOUNTER_TRACKED_DOMAIN", "docs.example.org")
+    monkeypatch.setenv("GOATCOUNTER_API_KEY_DEMO", "secret-token")
 
     def fail_fetch(**kwargs):
         raise GoatCounterAPIError(

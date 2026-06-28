@@ -16,12 +16,26 @@ from oss_impact_dashboard.collectors.goatcounter import (
     parse_total,
     reporting_window,
     settings_from_env,
+    settings_from_project,
     validate_documentation_hostname,
 )
 
 
+def test_settings_from_project_uses_yaml_and_documentation_url(monkeypatch):
+    monkeypatch.setenv("GOATCOUNTER_API_KEY_DEMO", "secret-token")
+    docs_cfg = {
+        "provider": "goatcounter",
+        "enabled": True,
+        "site_url": "https://example.goatcounter.com/",
+    }
+    settings = settings_from_project("demo", "https://docs.example.org/en/latest/", docs_cfg)
+    assert settings.site_url == "https://example.goatcounter.com"
+    assert settings.tracked_domain == "docs.example.org"
+    assert settings.api_base == "https://example.goatcounter.com/api/v0"
+
+
 def test_goatcounter_configuration_validation(monkeypatch):
-    monkeypatch.setenv("GOATCOUNTER_API_KEY", "secret-token")
+    monkeypatch.setenv("GOATCOUNTER_API_KEY_DEMO", "secret-token")
     monkeypatch.setenv("GOATCOUNTER_SITE_URL", "https://example.goatcounter.com/")
     monkeypatch.setenv("GOATCOUNTER_TRACKED_DOMAIN", "docs.example.org")
     settings = settings_from_env()
@@ -391,13 +405,12 @@ sources:
   documentation_analytics:
     provider: goatcounter
     enabled: true
+    site_url: https://example.goatcounter.com
 """,
         encoding="utf-8",
     )
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setenv("GOATCOUNTER_API_KEY", "secret-token")
-    monkeypatch.setenv("GOATCOUNTER_SITE_URL", "https://example.goatcounter.com")
-    monkeypatch.setenv("GOATCOUNTER_TRACKED_DOMAIN", "docs.example.org")
+    monkeypatch.setenv("GOATCOUNTER_API_KEY_DEMO", "secret-token")
     monkeypatch.setattr(
         GoatCounterClient,
         "get_json",
@@ -443,13 +456,12 @@ sources:
   documentation_analytics:
     provider: goatcounter
     enabled: true
+    site_url: https://example.goatcounter.com
 """,
         encoding="utf-8",
     )
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setenv("GOATCOUNTER_API_KEY", "secret-token")
-    monkeypatch.setenv("GOATCOUNTER_SITE_URL", "https://example.goatcounter.com")
-    monkeypatch.setenv("GOATCOUNTER_TRACKED_DOMAIN", "docs.example.org")
+    monkeypatch.setenv("GOATCOUNTER_API_KEY_DEMO", "secret-token")
     monkeypatch.setattr(GoatCounterClient, "get_json", lambda self, endpoint, params: {"count": 1})
     assert main(["doctor", "--project", "projects/test.yml"]) == 1
     output = capsys.readouterr().out

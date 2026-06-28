@@ -192,7 +192,7 @@ def fetch_community_standards(client: GitHubClient, owner: str, repo: str) -> di
 
 
 def fetch_github(owner: str, repo: str, token: str | None = None) -> dict[str, Any]:
-    client = GitHubClient(token=token or github_token())
+    client = GitHubClient(token=token)
     repository = client.one(repo_path(owner, repo, ""))
     labels = client.paginate(repo_path(owner, repo, "labels", per_page="100"))
     issue_path = repo_path(
