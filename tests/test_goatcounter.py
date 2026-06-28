@@ -15,7 +15,6 @@ from oss_impact_dashboard.collectors.goatcounter import (
     parse_toprefs,
     parse_total,
     reporting_window,
-    settings_from_env,
     settings_from_project,
     validate_documentation_hostname,
 )
@@ -36,27 +35,39 @@ def test_settings_from_project_uses_yaml_and_documentation_url(monkeypatch):
 
 def test_goatcounter_configuration_validation(monkeypatch):
     monkeypatch.setenv("GOATCOUNTER_API_KEY_DEMO", "secret-token")
-    monkeypatch.setenv("GOATCOUNTER_SITE_URL", "https://example.goatcounter.com/")
-    monkeypatch.setenv("GOATCOUNTER_TRACKED_DOMAIN", "docs.example.org")
-    settings = settings_from_env()
+    docs_cfg = {
+        "provider": "goatcounter",
+        "enabled": True,
+        "site_url": "https://example.goatcounter.com/",
+    }
+    settings = settings_from_project("demo", "https://docs.example.org/en/latest/", docs_cfg)
     assert settings.site_url == "https://example.goatcounter.com"
     assert settings.api_base == "https://example.goatcounter.com/api/v0"
     assert settings.count_endpoint == "https://example.goatcounter.com/count"
-    monkeypatch.setenv("GOATCOUNTER_SITE_URL", "http://example.goatcounter.com")
+    assert settings.tracked_domain == "docs.example.org"
+
+    insecure_cfg = {**docs_cfg, "site_url": "http://example.goatcounter.com"}
     try:
-        settings_from_env()
+        settings_from_project("demo", "https://docs.example.org/", insecure_cfg)
     except GoatCounterConfigError as exc:
         assert "HTTPS" in str(exc)
     else:
         raise AssertionError("insecure site URL should fail")
-    monkeypatch.setenv("GOATCOUNTER_SITE_URL", "https://example.goatcounter.com")
-    monkeypatch.setenv("GOATCOUNTER_TRACKED_DOMAIN", "https://docs.example.org")
+
     try:
-        settings_from_env()
+        settings_from_project("demo", None, docs_cfg)
     except GoatCounterConfigError as exc:
-        assert "hostname" in str(exc)
+        assert "documentation_url" in str(exc)
     else:
-        raise AssertionError("full tracked URL should fail")
+        raise AssertionError("missing documentation URL should fail")
+
+    monkeypatch.delenv("GOATCOUNTER_API_KEY_DEMO", raising=False)
+    try:
+        settings_from_project("demo", "https://docs.example.org/", docs_cfg)
+    except GoatCounterConfigError as exc:
+        assert "GOATCOUNTER_API_KEY_DEMO is missing" in str(exc)
+    else:
+        raise AssertionError("missing project API key should fail")
 
 
 def test_reporting_window_is_rounded_to_hour():

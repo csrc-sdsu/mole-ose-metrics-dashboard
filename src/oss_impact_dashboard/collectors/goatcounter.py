@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import os
 import time
 import urllib.error
 import urllib.parse
@@ -130,26 +129,6 @@ def settings_from_project(
         api_key=api_key or "",
         site_url=_normalize_site_url(str(site_url)),
         tracked_domain=_hostname_from_url(documentation_url),
-    )
-
-
-def settings_from_env(require_api_key: bool = True) -> GoatCounterSettings | None:
-    """Deprecated: use settings_from_project with project YAML instead."""
-    site_url = os.environ.get("GOATCOUNTER_SITE_URL")
-    tracked_domain = os.environ.get("GOATCOUNTER_TRACKED_DOMAIN")
-    api_key = os.environ.get("GOATCOUNTER_API_KEY")
-    if not site_url and not tracked_domain and not api_key:
-        return None
-    if require_api_key and not api_key:
-        raise GoatCounterConfigError("GOATCOUNTER_API_KEY is missing")
-    if not site_url or not tracked_domain:
-        raise GoatCounterConfigError(
-            "GoatCounter site URL and tracked domain must be configured in project YAML"
-        )
-    return GoatCounterSettings(
-        api_key=api_key or "",
-        site_url=_normalize_site_url(site_url),
-        tracked_domain=_normalize_hostname(tracked_domain),
     )
 
 
@@ -514,11 +493,10 @@ def fetch_goatcounter_analytics(
     now: datetime | None = None,
     settings: GoatCounterSettings | None = None,
 ) -> dict[str, Any] | None:
-    resolved = settings or settings_from_env(require_api_key=True)
-    if resolved is None:
+    if settings is None:
         return None
     period = reporting_window(period_months, now)
-    client = GoatCounterClient(resolved)
+    client = GoatCounterClient(settings)
     total = parse_total(client.get_json("/stats/total", period))
     hits = fetch_paginated_hits(client, period)
     refs = parse_toprefs(client.get_json("/stats/toprefs", {**period, "limit": "20"}))
@@ -537,10 +515,10 @@ def fetch_goatcounter_analytics(
         "rate_limit_remaining": client.rate_limit_remaining,
         "rate_limit_reset": client.rate_limit_reset,
         "limitations": LIMITATIONS,
-        "tracker": tracker_metadata(resolved),
+        "tracker": tracker_metadata(settings),
         "provenance": {
-            "site_url": resolved.site_url,
-            "tracked_domain": resolved.tracked_domain,
+            "site_url": settings.site_url,
+            "tracked_domain": settings.tracked_domain,
             "endpoints": ["/api/v0/stats/total", "/api/v0/stats/hits", "/api/v0/stats/toprefs"],
         },
     }
