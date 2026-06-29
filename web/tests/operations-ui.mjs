@@ -18,7 +18,6 @@ for (const id of [
   'stateFilter',
   'labelFilter',
   'authorFilter',
-  'periodFilter',
   'createdFromFilter',
   'createdToFilter',
   'closedFromFilter',
@@ -49,5 +48,6 @@ assert(source.includes("downloadRows(tableRows(), 'json')"), 'JSON export must u
 assert(source.includes('displayState(record)'), 'Merged display state must be derived');
 assert(source.includes('labelPills'), 'Safe label pills must be rendered');
 assert(source.includes('opsLink'), 'Dashboard KPI links must use in-page operations anchors');
+assert(!source.includes('renderOperationsSummary(data, filters.period'), 'Operations KPIs must not re-render on table filters');
 
 console.log('operations UI tests ok');

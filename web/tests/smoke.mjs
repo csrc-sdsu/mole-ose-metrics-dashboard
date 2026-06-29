@@ -16,10 +16,30 @@ if (!dom.window.document.querySelector('#operations')) {
   throw new Error('Dashboard page is missing the operations section');
 }
 
-for (const sectionId of ['reliability', 'releases', 'community', 'impact', 'documentation']) {
+for (const sectionId of ['reliability', 'community', 'impact', 'documentation']) {
   if (!dom.window.document.querySelector(`#${sectionId}`)) {
     throw new Error(`Dashboard page is missing the ${sectionId} section`);
   }
+}
+
+if (!dom.window.document.querySelector('#impact [data-section="releases"]')) {
+  throw new Error('Impact section is missing the releases panel');
+}
+
+if (dom.window.document.querySelector('#releases')) {
+  throw new Error('Standalone releases section should be folded into Impact');
+}
+
+if (dom.window.document.querySelector('[data-queues]')) {
+  throw new Error('Operations queue panels should be removed');
+}
+
+if (!dom.window.document.querySelector('[data-section="docsUnified"]')) {
+  throw new Error('Documentation section is missing the unified docs panel');
+}
+
+if (!dom.window.document.querySelector('[data-section="governancePanel"]')) {
+  throw new Error('Reliability section is missing the governance panel');
 }
 
 if (!dom.window.document.querySelector('[data-failed-runs]')) {
@@ -27,7 +47,7 @@ if (!dom.window.document.querySelector('[data-failed-runs]')) {
 }
 
 if (!dom.window.document.querySelector('[data-section="securityAlerts"]')) {
-  throw new Error('Operations page is missing the security alerts panel');
+  throw new Error('Dashboard page is missing the security alerts panel');
 }
 
 if (!dom.window.document.querySelector('[data-project-picker]')) {
@@ -59,6 +79,12 @@ for (const expected of [
   'resolveProjectId',
   'renderDashboard',
   'renderSecurityAlerts',
+  'renderGovernancePanel',
+  'renderOpenssfReliability',
+  'renderAdoptionPanel',
+  'primaryDocMetric',
+  'sectionLink',
+  'comparisonDetail',
   'Impact Report'
 ]) {
   if (!appSource.includes(expected)) {
@@ -75,7 +101,10 @@ for (const removed of [
   'renderImpact(',
   'data-impact-summary',
   'githubGovernance',
-  'Enabled sources'
+  'Enabled sources',
+  'renderCompositionChart',
+  'renderQueues',
+  'periodFilter'
 ]) {
   if (appSource.includes(removed)) {
     throw new Error(`App source still contains removed UI surface: ${removed}`);

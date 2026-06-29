@@ -42,7 +42,7 @@ Three HTML entry points share one JavaScript bundle, selected by `body[data-page
 
 | Page | File | Purpose |
 | --- | --- | --- |
-| Dashboard | `web/index.html` | Overview, Operations, Growth sections |
+| Dashboard | `web/index.html` | Overview, Operations, Reliability, Community, Impact, and Docs sections |
 | Settings | `web/settings.html` | Source status, metric definitions, security scorecard |
 | Report | `web/report.html` | Printable growth report |
 

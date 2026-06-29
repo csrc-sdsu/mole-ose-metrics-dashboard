@@ -50,7 +50,6 @@
         <a href="#overview" data-section-link="overview">Overview</a>
         <a href="#operations" data-section-link="operations">Operations</a>
         <a href="#reliability" data-section-link="reliability">Reliability</a>
-        <a href="#releases" data-section-link="releases">Releases</a>
         <a href="#community" data-section-link="community">Community</a>
         <a href="#impact" data-section-link="impact">Impact</a>
         <a href="#documentation" data-section-link="documentation">Docs</a>
@@ -127,7 +126,6 @@
             <label class="filter-label" for="authorFilter">Author</label>
             <select id="authorFilter"><option value="">All</option></select>
           </div>
-          <select id="periodFilter" hidden aria-hidden="true"></select>
           <div class="filter-group filter-group-date">
             <label class="filter-label">Created date</label>
             <div class="date-pair">
@@ -202,7 +200,6 @@
             </div>
           </article>
         </div>
-        <div class="dashboard-grid" data-queues></div>
         <section class="panel">
           <div class="panel-title-row">
             <h3>All issues and pull requests</h3>
@@ -217,7 +214,7 @@
 
       <section id="reliability" class="dashboard-section">
         <h2 class="section-heading">Reliability</h2>
-        <p class="section-lead">Continuous integration health, recent failures, and open security signals.</p>
+        <p class="section-lead">Continuous integration health, security signals, and repository governance.</p>
         <div class="dashboard-grid dashboard-grid-compact">
           <article class="panel panel-compact col-12">
             <h3>CI reliability</h3>
@@ -230,28 +227,15 @@
           <article class="panel panel-compact col-6" data-section="securityAlerts">
             <h3>Open security alerts</h3>
           </article>
-          <article class="panel panel-compact col-6" data-section="reviewLoad">
-            <h3>Review load</h3>
+          <article class="panel panel-compact col-6" data-section="openssfPanel">
+            <h3>OpenSSF security</h3>
           </article>
-        </div>
-      </section>
-
-      <section id="releases" class="dashboard-section">
-        <h2 class="section-heading">Releases</h2>
-        <p class="section-lead">Release cadence and asset download reach.</p>
-        <div class="domain-section" id="releases-block" data-lazy-block="releases">
-          <div class="dashboard-grid">
-            <article class="panel panel-compact col-4" data-section="releases">
-              <h3>Release delivery</h3>
-            </article>
-            <article class="panel col-8">
-              <h3>Release asset downloads</h3>
-              <div class="chart-container chart-container-sm">
-                <canvas id="releaseChart"></canvas>
-              </div>
-              <p class="chart-empty" data-chart-empty="releaseChart" hidden></p>
-            </article>
-          </div>
+          <article class="panel panel-compact col-6" data-section="governancePanel">
+            <h3>Repository governance</h3>
+          </article>
+          <article class="panel panel-compact col-6" data-section="reviewLoad">
+            <h3>Engagement coverage</h3>
+          </article>
         </div>
       </section>
 
@@ -282,7 +266,7 @@
 
       <section id="impact" class="dashboard-section">
         <h2 class="section-heading">Impact &amp; adoption</h2>
-        <p class="section-lead">Citations, downloads, and repository reach.</p>
+        <p class="section-lead">Citations, downloads, releases, and repository reach.</p>
         <section class="kpi-strip" data-growth-summary data-skeleton></section>
         <div class="domain-section" id="impact-citations" data-lazy-block="impact-citations">
           <h3 class="domain-heading">Citations &amp; impact history</h3>
@@ -301,6 +285,25 @@
               </div>
             </article>
           </div>
+          <h3 class="domain-heading">Release delivery</h3>
+          <div class="dashboard-grid" data-releases-subsection>
+            <article class="panel panel-compact col-4" data-section="releases">
+              <h3>Recent releases</h3>
+            </article>
+            <article class="panel col-8">
+              <h3>Release asset downloads</h3>
+              <div class="chart-container chart-container-sm">
+                <canvas id="releaseChart"></canvas>
+              </div>
+              <p class="chart-empty" data-chart-empty="releaseChart" hidden></p>
+            </article>
+          </div>
+        </div>
+        <div class="domain-section" id="impact-adoption" hidden>
+          <h3 class="domain-heading">Package adoption</h3>
+          <article class="panel" data-section="adoptionPanel">
+            <h3>Registry presence</h3>
+          </article>
         </div>
         <div class="domain-section" id="impact-github" data-lazy-block="impact-github">
           <h3 class="domain-heading">GitHub reach</h3>
@@ -314,11 +317,8 @@
         <h2 class="section-heading">Documentation</h2>
         <p class="section-lead">Documentation analytics and discovery.</p>
         <div class="domain-section" id="documentation-block" data-lazy-block="documentation">
-          <article class="panel" data-section="docsAnalytics">
+          <article class="panel" data-section="docsUnified">
             <h3>Documentation analytics</h3>
-          </article>
-          <article class="panel" data-section="readthedocsAnalytics">
-            <h3>Read the Docs analytics</h3>
           </article>
         </div>
       </section>
