@@ -43,3 +43,28 @@ reporting:
   default_period_months: 12
   stale_days: 90
   freshness_warning_hours: 48
+  label_aliases:
+    bug: Bug
+    enhancement: Enhancement
+    documentation: Documentation
+    refactoring: Refactoring
+    discussion: Discussion
+    "good first issue": Good first issue
+    "MATLAB/Octave": Octave/MATLAB
+  label_groups:
+    - id: languages
+      name: Language / API
+      labels: [C++, "Octave/MATLAB", MOLE.jl, Fortran, python]
+    - id: work_type
+      name: Work type
+      labels: [Bug, Enhancement, Documentation, Examples, Refactoring, Tests, "Unit Testing", format]
+    - id: roadmap
+      name: Roadmap & infra
+      labels: [MOLE-2.0, "GitHub Actions", dependencies, "Software Vulnerability"]
+    - id: community
+      name: Community & triage
+      labels: ["Good first issue", "Help wanted", Discussion, Question, "student project"]
+    - id: workflow
+      name: Workflow meta
+      labels: [stale, In-progress, keep-open, Duplicate, Invalid, Wontfix]
+      exclude_from_totals: true

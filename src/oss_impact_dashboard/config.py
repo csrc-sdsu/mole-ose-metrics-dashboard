@@ -40,6 +40,16 @@ class ProjectConfig:
     def freshness_warning_hours(self) -> int:
         return int(self.reporting.get("freshness_warning_hours", 48))
 
+    @property
+    def label_aliases(self) -> dict[str, str]:
+        raw = self.reporting.get("label_aliases") or {}
+        return {str(key): str(value) for key, value in raw.items()}
+
+    @property
+    def label_groups(self) -> list[dict[str, Any]]:
+        groups = self.reporting.get("label_groups") or []
+        return groups if isinstance(groups, list) else []
+
 
 def load_yaml(path: Path) -> dict[str, Any]:
     if not path.exists():

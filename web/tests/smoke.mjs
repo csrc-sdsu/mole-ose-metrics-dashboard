@@ -12,6 +12,26 @@ if (!dom.window.document.querySelector('[data-overview-summary]')) {
   throw new Error('Dashboard page is missing the overview summary host');
 }
 
+if (!dom.window.document.querySelector('[data-period-progress]')) {
+  throw new Error('Dashboard page is missing the period progress host');
+}
+
+if (!dom.window.document.querySelector('[data-label-backlog-kpis]')) {
+  throw new Error('Operations section is missing the label backlog KPI host');
+}
+
+if (!dom.window.document.querySelector('[data-section="labelSlaTable"]')) {
+  throw new Error('Operations section is missing the label SLA table');
+}
+
+if (!dom.window.document.getElementById('labelGroupFilter')) {
+  throw new Error('Operations section is missing the label group filter');
+}
+
+if (!dom.window.document.querySelector('.kpi-strip-dense')) {
+  throw new Error('Dashboard page is missing dense KPI strip layout');
+}
+
 if (!dom.window.document.querySelector('#operations')) {
   throw new Error('Dashboard page is missing the operations section');
 }
@@ -83,6 +103,21 @@ for (const expected of [
   'renderOpenssfReliability',
   'renderAdoptionPanel',
   'primaryDocMetric',
+  'primaryDocHealthMetric',
+  'renderPeriodProgress',
+  'renderLabelIntelligence',
+  'label_metrics_by_period',
+  'label_group_metrics',
+  'labelGroupFilter',
+  'formatSeverityBreakdown',
+  'kpi-label-text',
+  'kpi-meta',
+  'high_priority',
+  'PRs awaiting review',
+  'Doc 404s',
+  'Repo clones (14d)',
+  'Releases in period',
+  'Top contributors',
   'sectionLink',
   'comparisonDetail',
   'Impact Report'

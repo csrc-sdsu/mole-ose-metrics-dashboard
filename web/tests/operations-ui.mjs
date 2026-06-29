@@ -17,6 +17,7 @@ for (const id of [
   'typeFilter',
   'stateFilter',
   'labelFilter',
+  'labelGroupFilter',
   'authorFilter',
   'createdFromFilter',
   'createdToFilter',
@@ -35,7 +36,7 @@ assert(document.querySelector('[data-filter-summary]'), 'Missing active filter s
 assert(document.querySelector('#operations'), 'Missing operations section anchor');
 assert(source.includes('function filterMatches'), 'Missing combined filter function');
 assert(source.includes('filters.search'), 'Search filter not wired');
-assert(source.includes('filters.label'), 'Label filter not wired');
+assert(source.includes('filters.labelGroup'), 'Label group filter not wired');
 assert(source.includes('filters.type'), 'Type filter not wired');
 assert(source.includes('filters.state'), 'State filter not wired');
 assert(source.includes('filters.createdFrom'), 'Created date filter not wired');

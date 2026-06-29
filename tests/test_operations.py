@@ -282,12 +282,12 @@ def test_bug_labels_detected_case_insensitively():
         "csrc-sdsu/mole",
         90,
         "2026-01-31T00:00:00Z",
+        label_aliases={"bug": "Bug"},
     )
     assert data["summary"]["median_bug_close_days"] == 4.0
-    bug_metrics = [
-        metric for metric in data["label_metrics"] if metric["label"].casefold() == "bug"
-    ]
-    assert len(bug_metrics) == 2
+    bug_metrics = [metric for metric in data["label_metrics"] if metric["label"] == "Bug"]
+    assert len(bug_metrics) == 1
+    assert bug_metrics[0]["total"] == 2
 
 
 def test_reporting_period_options_and_previous_period_comparisons():

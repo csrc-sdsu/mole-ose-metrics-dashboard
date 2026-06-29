@@ -571,8 +571,13 @@ def build_operations(
     generated_at: str,
     *,
     default_period_months: int = 12,
+    label_aliases: dict[str, str] | None = None,
+    label_groups: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    aliases: dict[str, str] = {}
+    from oss_impact_dashboard.metrics import label_analytics
+
+    aliases = label_analytics.normalize_label_aliases(label_aliases)
+    groups = label_analytics.normalize_label_groups(label_groups)
     repository_url = f"https://github.com/{repository_name}"
     pulls_by_number = {pull.get("number"): pull for pull in raw.get("pulls", [])}
     events_by_number: dict[int, list[dict[str, Any]]] = defaultdict(list)
@@ -613,26 +618,6 @@ def build_operations(
         | {label for record in records for label in record.get("metric_labels", [])},
         key=str.casefold,
     )
-    label_metrics = []
-    for name in label_names:
-        scoped = [record for record in records if name in record.get("metric_labels", [])]
-        scoped_open = [record for record in scoped if not record.get("closed_at")]
-        scoped_open_ages = [record.get("age_days") or 0 for record in scoped_open]
-        label_metrics.append(
-            {
-                "label": name,
-                "color": (label_info.get(name) or {}).get("color", "ededed"),
-                "description": (label_info.get(name) or {}).get("description", ""),
-                "total": len(scoped),
-                "open": len(scoped_open),
-                "closed": sum(1 for record in scoped if record.get("closed_at")),
-                "issues": sum(1 for record in scoped if record["type"] == "issue"),
-                "pull_requests": sum(1 for record in scoped if record["type"] == "pull_request"),
-                "median_age_days": percentile_stats(scoped_open_ages)["median"],
-                "max_age_days": max(scoped_open_ages) if scoped_open_ages else None,
-            }
-        )
-    label_metrics.sort(key=lambda item: (-item["total"], item["label"].casefold()))
 
     priority_patterns = [pattern.casefold() for pattern in DEFAULT_PRIORITY_LABEL_PATTERNS]
     high_priority = [
@@ -738,6 +723,67 @@ def build_operations(
     ]
     median_bug_close_days = percentile_stats(bug_close_days)["median"]
 
+    label_metrics = label_analytics.build_label_metrics(records, label_names, label_info)
+    label_metrics_by_period = {
+        period["id"]: label_analytics.build_label_metrics(
+            records, label_names, label_info, period=period
+        )
+        for period in periods["options"]
+    }
+    label_group_metrics: dict[str, list[dict[str, Any]]] = {}
+    label_group_comparisons: dict[str, dict[str, dict[str, Any]]] = {}
+    if groups:
+        label_group_metrics = {
+            period["id"]: label_analytics.build_label_group_metrics(
+                records,
+                groups,
+                period=period,
+                first_pr_by_author=first_pr_by_author,
+            )
+            for period in periods["options"]
+        }
+        for period in periods["options"]:
+            previous = previous_period(period)
+            if not previous:
+                continue
+            label_group_comparisons[period["id"]] = label_analytics.group_period_comparisons(
+                label_group_metrics[period["id"]],
+                label_analytics.build_label_group_metrics(
+                    records,
+                    groups,
+                    period=previous,
+                    first_pr_by_author=first_pr_by_author,
+                ),
+            )
+    label_metric_comparisons: dict[str, dict[str, dict[str, Any]]] = {}
+    for period in periods["options"]:
+        previous = previous_period(period)
+        if not previous:
+            continue
+        label_metric_comparisons[period["id"]] = label_analytics.label_period_comparisons(
+            label_metrics_by_period[period["id"]],
+            label_analytics.build_label_metrics(
+                records, label_names, label_info, period=previous
+            ),
+        )
+    domain_labels = [
+        item["label"] for item in label_metrics if item.get("open", 0) > 0
+    ][:12]
+    if groups:
+        for group in groups:
+            if group["id"] == "languages":
+                domain_labels = group["labels"]
+                break
+    label_trends = label_analytics.build_label_trends(records, generated_at, label_names)
+    stale_burden = label_analytics.build_stale_burden(records, domain_labels)
+    label_cooccurrence = label_analytics.build_label_cooccurrence(records)
+    default_group_metrics = label_group_metrics.get(periods["default"], [])
+    hottest_group = (
+        label_analytics.hottest_backlog_group(default_group_metrics)
+        if default_group_metrics
+        else None
+    )
+
     return {
         "summary": {
             "total_items": len(records),
@@ -762,6 +808,8 @@ def build_operations(
             ),
             "change_request_closure_ratio": change_request_closure_ratio,
             "median_bug_close_days": median_bug_close_days,
+            "hottest_backlog_section": hottest_group["name"] if hottest_group else None,
+            "hottest_backlog_section_open": hottest_group["open"] if hottest_group else None,
         },
         "age_distribution": percentile_stats(
             [r["age_days"] for r in open_records if r.get("age_days")]
@@ -769,6 +817,14 @@ def build_operations(
         "age_buckets": age_buckets(open_records),
         "labels": list(label_info.values()),
         "label_metrics": label_metrics,
+        "label_metrics_by_period": label_metrics_by_period,
+        "label_metric_comparisons": label_metric_comparisons,
+        "label_groups": groups,
+        "label_group_metrics": label_group_metrics,
+        "label_group_comparisons": label_group_comparisons,
+        "label_trends": label_trends,
+        "stale_burden": stale_burden,
+        "label_cooccurrence": label_cooccurrence,
         "queues": queues,
         "items": sorted(records, key=lambda item: item.get("number") or 0, reverse=True),
         "trends": trends,

@@ -411,6 +411,8 @@ def build_dataset(
             config.stale_days,
             generated_at,
             default_period_months=config.period_months,
+            label_aliases=config.label_aliases,
+            label_groups=config.label_groups,
         )
         releases = build_releases(
             github_raw.get("releases", []),
@@ -644,6 +646,15 @@ def build_dataset(
             ),
             "github_governance_health_percentage": (
                 "GitHub community profile health percentage when available."
+            ),
+            "label_median_close_days": (
+                "Median days to close or merge for items carrying this label."
+            ),
+            "label_throughput": (
+                "Issues and pull requests opened or closed in the reporting period by label."
+            ),
+            "label_group_backlog": (
+                "Open backlog deduplicated within each configured label section."
             ),
         },
     }

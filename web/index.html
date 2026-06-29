@@ -58,7 +58,7 @@
       <section id="overview" class="dashboard-section">
         <h2 class="section-heading">Overview</h2>
         <p class="section-lead">Current health and items needing maintainer action.</p>
-        <section class="kpi-strip" data-overview-summary data-skeleton></section>
+        <section class="kpi-strip kpi-strip-dense" data-overview-summary data-skeleton></section>
         <div class="dashboard-grid" data-lazy-block="overview-charts">
           <article class="panel col-8">
             <div class="panel-title-row">
@@ -123,6 +123,10 @@
             <select id="labelFilter"><option value="">All</option></select>
           </div>
           <div class="filter-group">
+            <label class="filter-label" for="labelGroupFilter">Section</label>
+            <select id="labelGroupFilter"><option value="">All</option></select>
+          </div>
+          <div class="filter-group">
             <label class="filter-label" for="authorFilter">Author</label>
             <select id="authorFilter"><option value="">All</option></select>
           </div>
@@ -154,7 +158,9 @@
         <div class="filter-chips" data-filter-chips>
           <span class="filter-summary" data-filter-summary></span>
         </div>
-        <section class="kpi-strip" data-operations-summary data-skeleton></section>
+        <section class="kpi-strip kpi-strip-dense" data-operations-summary data-skeleton></section>
+        <section class="kpi-strip period-progress-strip" data-period-progress aria-label="Period progress"></section>
+        <section class="kpi-strip kpi-strip-dense" data-label-backlog-kpis aria-label="Top label backlog" hidden></section>
         <div class="dashboard-grid" data-lazy-block="operations-charts">
           <article class="panel col-7">
             <div class="panel-title-row">
@@ -186,7 +192,14 @@
             <p class="chart-summary" data-chart-summary="ageBucketChart"></p>
           </article>
           <article class="panel col-6">
-            <h3>Label workload</h3>
+            <div class="panel-title-row">
+              <h3>Label workload</h3>
+              <select class="label-metric-toggle" data-label-chart-metric aria-label="Label chart metric">
+                <option value="open">Open backlog</option>
+                <option value="closed">Closed in period</option>
+                <option value="median_close">Median close (period)</option>
+              </select>
+            </div>
             <div class="chart-container chart-container-sm">
               <canvas id="labelChart"></canvas>
             </div>
@@ -199,6 +212,29 @@
               <canvas id="completionDistributionChart"></canvas>
             </div>
           </article>
+        </div>
+        <div class="domain-section" id="operations-labels" data-lazy-block="operations-labels">
+          <h3 class="domain-heading">Label intelligence</h3>
+          <section class="kpi-strip kpi-strip-dense" data-label-group-kpis aria-label="Work by section" hidden></section>
+          <div class="dashboard-grid">
+            <article class="panel col-8" data-section="labelSlaTable">
+              <h3>Label SLA</h3>
+            </article>
+            <article class="panel col-4" data-section="labelCooccurrence">
+              <h3>Common label pairs</h3>
+            </article>
+            <article class="panel col-6">
+              <h3>Label activity trend</h3>
+              <div class="chart-container chart-container-sm">
+                <canvas id="labelTrendChart"></canvas>
+              </div>
+              <p class="chart-empty" data-chart-empty="labelTrendChart" hidden></p>
+              <p class="chart-summary" data-chart-summary="labelTrendChart"></p>
+            </article>
+            <article class="panel col-6" data-section="staleBurden">
+              <h3>Stale burden by area</h3>
+            </article>
+          </div>
         </div>
         <section class="panel">
           <div class="panel-title-row">
@@ -267,7 +303,7 @@
       <section id="impact" class="dashboard-section">
         <h2 class="section-heading">Impact &amp; adoption</h2>
         <p class="section-lead">Citations, downloads, releases, and repository reach.</p>
-        <section class="kpi-strip" data-growth-summary data-skeleton></section>
+        <section class="kpi-strip kpi-strip-dense" data-growth-summary data-skeleton></section>
         <div class="domain-section" id="impact-citations" data-lazy-block="impact-citations">
           <h3 class="domain-heading">Citations &amp; impact history</h3>
           <div class="dashboard-grid">
