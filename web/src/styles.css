@@ -1081,6 +1081,15 @@ select option { background: #16171c; color: var(--fg-default); }
 
 .domain-section { margin-bottom: var(--space-5); scroll-margin-top: 120px; }
 .domain-section:last-child { margin-bottom: 0; }
+
+/* Stacked blocks inside a domain group only had bottom spacing on some
+   children (.domain-heading margin-bottom, .kpi-strip margin-bottom).
+   A mid-section .domain-heading or .dashboard-grid after a grid had no
+   top gap — e.g. "Release delivery" touching the citations panel above. */
+.domain-section > * + * {
+  margin-top: var(--space-5);
+}
+
 .domain-heading {
   font-weight: 600;
   color: var(--fg-subtle);
