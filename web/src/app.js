@@ -1975,6 +1975,42 @@ function renderDocumentationAnalytics(data) {
   }
 }
 
+function aggregateRtdPages(rows) {
+  const totals = new Map();
+  for (const item of rows || []) {
+    const path = item.path || item.page || '';
+    if (!path) continue;
+    const version = item.version || '';
+    const key = `${version}\u0000${path}`;
+    const views = Number(item.views ?? item.count ?? 0) || 0;
+    const existing = totals.get(key);
+    if (existing) existing.views += views;
+    else totals.set(key, { path, version, views });
+  }
+  return [...totals.values()].sort((a, b) => b.views - a.views || a.path.localeCompare(b.path));
+}
+
+function renderRtdRankList(host, items, { emptyText, unit = 'views' } = {}) {
+  if (!items.length) {
+    host.append(element('p', { className: 'muted-text', textContent: emptyText }));
+    return;
+  }
+  const max = Math.max(...items.map((item) => item.views), 1);
+  const list = element('ol', { className: 'rank-list' });
+  for (const item of items) {
+    const width = Math.max(3, Math.round((item.views / max) * 100));
+    const meta = element('div', { className: 'rank-meta' }, [
+      element('span', { className: 'rank-path', title: item.path, textContent: item.path }),
+      item.version ? element('span', { className: 'rank-version', textContent: item.version }) : null,
+      element('span', { className: 'rank-value', textContent: `${number(item.views)} ${unit}` })
+    ].filter(Boolean));
+    const bar = element('span', { className: 'rank-bar' });
+    bar.style.setProperty('--rank-width', `${width}%`);
+    list.append(element('li', { className: 'rank-item' }, [meta, bar]));
+  }
+  host.append(list);
+}
+
 function renderReadthedocsAnalytics(data) {
   const host = document.querySelector('[data-section="readthedocsAnalytics"]');
   if (!host) return;
@@ -1995,6 +2031,7 @@ function renderReadthedocsAnalytics(data) {
       textContent: status.message || rtd.message || 'Read the Docs data is stale.'
     }));
   }
+  const collection = rtd.collection || {};
   const rows = [
     ['Page views', number(rtd.views_total)],
     ['Unique pages', number(rtd.unique_pages)],
@@ -2002,28 +2039,58 @@ function renderReadthedocsAnalytics(data) {
     ['No-result searches', number(rtd.no_result_search_count)],
     ['404 views', number(rtd.not_found_count)]
   ];
+  if (collection.project_slug) rows.push(['Project', collection.project_slug]);
   fillStatGrid(host, rows);
+
+  const daily = rtd.daily_views || [];
+  if (daily.length) {
+    const canvas = element('canvas', { id: 'readthedocsTrendChart' });
+    host.append(element('div', { className: 'chart-container chart-container-sm' }, [canvas]));
+    host.append(element('p', { className: 'chart-summary', dataset: { chartSummary: 'readthedocsTrendChart' } }));
+    const totalViews = daily.reduce((sum, item) => sum + (item.views || 0), 0);
+    setChartSummary('readthedocsTrendChart', `${number(totalViews)} page views across ${number(daily.length)} days.`);
+    chart('readthedocsTrendChart', {
+      type: 'line',
+      data: {
+        labels: daily.map((item) => item.date),
+        datasets: [{
+          label: 'Page views',
+          data: daily.map((item) => item.views),
+          borderColor: chartColor('orange'),
+          backgroundColor: 'rgba(188, 76, 0, 0.12)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { ...chartPlugins(data, 'Daily Read the Docs page views'), legend: { display: false } },
+        scales: chartScales()
+      }
+    });
+  }
+
   host.append(element('h3', { textContent: 'Top documentation pages' }));
-  for (const item of (rtd.top_pages || []).slice(0, 5)) {
-    const label = item.version ? `${item.path} (${item.version})` : item.path;
-    host.append(element('p', { textContent: `${label}: ${number(item.views ?? item.count)} views` }));
-  }
+  renderRtdRankList(host, aggregateRtdPages(rtd.top_pages).slice(0, 8), {
+    emptyText: 'No page views reported by Read the Docs.'
+  });
+
   host.append(element('h3', { textContent: 'Top missing documentation paths' }));
-  const missing = (rtd.not_found_pages || []).slice(0, 8);
-  if (!missing.length) {
-    host.append(element('p', { textContent: 'No 404 paths reported by Read the Docs.' }));
-  }
-  for (const item of missing) {
-    const label = item.version ? `${item.path} (${item.version})` : item.path;
-    host.append(element('p', { textContent: `${label}: ${number(item.views ?? item.count)} views` }));
-  }
+  renderRtdRankList(host, aggregateRtdPages(rtd.not_found_pages).slice(0, 8), {
+    emptyText: 'No 404 paths reported by Read the Docs.'
+  });
+
+  const footer = [];
+  const collectedAt = formatDateTime(collection.collected_at);
+  if (collectedAt) footer.push(`Collected ${collectedAt}.`);
   const historyEntries = rtd.history?.entries || [];
   if (historyEntries.length) {
-    host.append(element('h3', { textContent: 'Collected history' }));
-    host.append(element('p', {
-      className: 'muted-text',
-      textContent: `${historyEntries.length} weekly collection points retained beyond RTD rolling retention.`
-    }));
+    footer.push(`${number(historyEntries.length)} historical collection points retained (rolling ${number(collection.retention_days || 90)}-day window).`);
+  }
+  if (footer.length) {
+    host.append(element('p', { className: 'muted-text', textContent: footer.join(' ') }));
   }
 }
 

@@ -790,6 +790,65 @@ input::placeholder { color: var(--fg-subtle); }
 .compact-row b { font-weight: 600; }
 .compact-row span { color: var(--fg-muted); }
 
+/* --- Ranked usage list (e.g. Read the Docs pages) --- */
+.rank-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: var(--space-2) 0 var(--space-3);
+}
+.rank-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.rank-meta {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+}
+.rank-path {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--fg-default);
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+}
+.rank-version {
+  flex: 0 0 auto;
+  font-size: var(--text-xs);
+  color: var(--fg-subtle);
+  background: var(--bg-subtle);
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-sm);
+}
+.rank-value {
+  flex: 0 0 auto;
+  font-weight: 600;
+  color: var(--fg-muted);
+  font-variant-numeric: tabular-nums;
+}
+.rank-bar {
+  display: block;
+  height: 4px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-muted);
+  position: relative;
+  overflow: hidden;
+}
+.rank-bar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: var(--rank-width, 0%);
+  background: var(--accent);
+  border-radius: inherit;
+}
+
 /* --- Queue panels --- */
 .queue-list {
   list-style: none;
