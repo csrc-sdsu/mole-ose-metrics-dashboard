@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
-# Local dev: install deps, build dataset, start Vite (root base path).
+# Local dev: install deps, build dashboard, start Vite (root base path).
 #
 # Usage:
-#   bash scripts/dev-local.sh [project_config]
+#   bash scripts/dev-local.sh [--fetch] [-- --projects projects/mole.yml ...]
 #
-# Or after setup:
-#   PROJECT_CONFIG=projects/my-project.yml VITE_BASE_PATH=/ npm run build:site
-#   npm run dev
+# Default: build UI from cached JSON (no API calls), then npm run dev.
+# --fetch: refresh datasets first (same args as build:data).
 
 set -euo pipefail
 
@@ -14,7 +13,33 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$ROOT_DIR"
 
-PROJECT_CONFIG="${1:-projects/example.yml}"
+FETCH=false
+BUILD_ARGS=()
+
+if [ -f "$ROOT_DIR/.env" ]; then
+  set -a
+  # shellcheck disable=SC1091
+  source "$ROOT_DIR/.env"
+  set +a
+fi
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --fetch)
+      FETCH=true
+      shift
+      ;;
+    --)
+      shift
+      BUILD_ARGS+=("$@")
+      break
+      ;;
+    *)
+      BUILD_ARGS+=("$1")
+      shift
+      ;;
+  esac
+done
 
 echo "=== OSS Impact Dashboard — local dev ==="
 
@@ -32,27 +57,24 @@ else
   echo "✓ npm dependencies present"
 fi
 
-if [ ! -f "$ROOT_DIR/.env" ]; then
+if [ -f "$ROOT_DIR/.env" ]; then
+  echo "✓ .env exists"
+else
   cp "$ROOT_DIR/.env.example" "$ROOT_DIR/.env"
   echo "✓ Created .env from .env.example — add tokens for live data sources"
-else
-  echo "✓ .env exists"
 fi
 
-if [ -f "$ROOT_DIR/.env" ]; then
-  set -a
-  # shellcheck disable=SC1091
-  source "$ROOT_DIR/.env"
-  set +a
-fi
-
-export PROJECT_CONFIG
 export VITE_BASE_PATH="${VITE_BASE_PATH:-/}"
 export GITHUB_ACTIONS=false
 
 echo ""
-echo "→ Building dataset from $PROJECT_CONFIG..."
-CI_MODE=build bash scripts/ci-check.sh
+if [ "$FETCH" = true ]; then
+  echo "→ Fetching datasets..."
+  npm run build:data -- "${BUILD_ARGS[@]}"
+else
+  echo "→ Building UI from cached datasets..."
+  npm run build:ui -- "${BUILD_ARGS[@]}"
+fi
 
 echo ""
 echo "=== Ready ==="

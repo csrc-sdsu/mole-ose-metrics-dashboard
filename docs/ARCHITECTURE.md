@@ -18,9 +18,9 @@ Vite build         -->  dist/
 GitHub Pages       -->  site + reports/latest.pdf
 ```
 
-1. `oss_impact_dashboard.cli build-index` reads project configs and writes JSON datasets.
-2. `npm run build:site` runs build-index, Vite build, and post-build verification.
-3. GitHub Actions deploy workflows run `npm run build:site` then publish `dist/` to `gh-pages`.
+1. `oss_impact_dashboard.cli build-index` reads project configs (default: all `projects/*.yml`) and writes JSON datasets.
+2. `npm run build:data` fetches data; `npm run build:ui` rebuilds from cached JSON; `npm run build:site` runs the full pipeline.
+3. GitHub Actions deploy workflows run `npm run build:site -- --projects …` then publish `dist/` to `gh-pages`.
 4. The report workflow renders `report.html` to PDF after building the site.
 
 ## Directory map
@@ -134,24 +134,27 @@ Three npm commands cover all automation:
 | Command | Steps | Used by |
 | --- | --- | --- |
 | `npm run test` | Shell lint, workflow validation, YAML validation, ruff, pytest, frontend tests | Fast feedback (`CI_MODE=test`) |
-| `npm run build:site` | build-index → vite build → test:build | Deploy, PR preview, report, local Pages preview |
-| `npm run ci` | test + build:site | `test.yml`, pre-push hook |
+| `npm run build:data` | `build-index` (fetch) | Local dev, deploy data step |
+| `npm run build:ui` | `build-index --from-cache` + vite build | Fast UI iteration |
+| `npm run build:site` | `build:data` + vite build + test:build | Deploy, PR preview, local Pages preview |
+| `npm run ci` | test + build example project | `test.yml`, pre-push hook |
 
 ```text
 PR / push ──► test.yml ──► npm run ci
                               │
-main / cron ──► refresh-deploy.yml ──► npm run build:site ──► gh-pages
-PR open     ──► pr-preview.yml     ──► npm run build:site ──► pr-preview/
-report cron ──► generate-report.yml ──► npm run build:site ──► PDF
+main / cron ──► refresh-deploy.yml ──► npm run build:site -- --projects projects/mole.yml ──► gh-pages
+PR open     ──► pr-preview.yml     ──► npm run build:site -- --projects projects/example.yml ──► pr-preview/
+report cron ──► generate-report.yml ──► npm run build:site -- --projects projects/mole.yml ──► PDF
 ```
 
 Deploy and preview workflows do **not** re-run pytest or lint. Branch protection on `test.yml` is the quality gate.
 
-- **Contributor / CI build:** `PROJECT_CONFIG=projects/example.yml`, no secrets
-- **Production deploy:** `vars.PROJECT_CONFIG` (typically `projects/mole.yml`) + explicit secrets in workflow YAML
-- **PR preview:** hardcoded `projects/example.yml`, no project secrets
+- **Contributor / CI build:** `projects/example.yml` only via `ci-check.sh`, no secrets
+- **Production deploy:** `npm run build:site -- --projects projects/mole.yml` + explicit secrets in workflow YAML
+- **PR preview:** `projects/example.yml`, no project secrets
+- **Local dev default:** all `projects/*.yml`; pass `--projects` to limit
 
-Implementation: `scripts/ci-check.sh` with `CI_MODE=test|build|all`.
+Implementation: `scripts/ci-check.sh` with `CI_MODE=test|build|all`; project discovery in `config.discover_project_paths()`.
 
 ## Base path (`VITE_BASE_PATH`)
 
@@ -163,18 +166,18 @@ GitHub Pages serves at `https://<user>.github.io/<repo-name>/`. Vite `base` is s
 
 Advanced override for custom domains or PR preview paths: set `VITE_BASE_PATH` before build. Not needed for normal local dev.
 
-## `PROJECT_CONFIG`
+## Build project selection
 
-Selects which project YAML `npm run build:site` builds. Defaults to `projects/example.yml` in `ci-check.sh`.
+`build-index` defaults to every `projects/*.yml`. Pass `--projects` to limit:
 
-| Context | Value |
-| --- | --- |
-| CI / contributors | `projects/example.yml` (default) |
-| Production deploy | GitHub repo variable `PROJECT_CONFIG` |
-| PR preview | `projects/example.yml` (fixed in workflow) |
-| RTD tracker | `PROJECT_CONFIG` env or `projects/mole.yml` in `generate-rtd-goatcounter.mjs` |
+```bash
+npm run build:data -- --projects projects/mole.yml projects/mole-local.yml --default-project mole-local
+npm run build:ui -- --projects projects/mole.yml projects/mole-local.yml
+```
 
-Local convenience scripts accept a project path as a CLI argument and export `PROJECT_CONFIG`.
+`--from-cache` (used by `npm run build:ui`) rebuilds `projects.json` and `dashboard.json` from existing per-project JSON without calling collectors.
+
+The RTD tracker script reads `default_project` from `web/public/data/projects.json` after a build.
 
 ## Dataset semantics
 
@@ -204,18 +207,24 @@ To add a new data source:
 | Entry point | Purpose |
 | --- | --- |
 | `npm run test` | Quality gate (lint + tests) |
-| `npm run build:site` | Production artifact build |
-| `npm run ci` | Full check (test + build) |
+| `npm run build:data` | Fetch datasets (all projects by default) |
+| `npm run build:ui` | Vite build from cached JSON |
+| `npm run build:site` | Full production artifact build |
+| `npm run ci` | Full check (test + build example) |
+| `scripts/build.sh` | `data` / `ui` / `site` modes; forwards `--projects` to build-index |
 | `scripts/ci-check.sh` | Implements `CI_MODE=test\|build\|all` |
-| `scripts/dev-local.sh` | Bootstrap + `build:site` + `npm run dev` |
+| `scripts/dev-local.sh` | Bootstrap + `build:ui` or `--fetch` + `npm run dev` |
 | `scripts/local-preview.sh` | `build:site` + `preview:pages` |
+| `scripts/completion.bash` | Optional tab completion for `--projects` |
 | `scripts/generate-rtd-goatcounter.mjs` | RTD tracker for GoatCounter events |
 
 ## Python CLI
 
 ```bash
-python -m oss_impact_dashboard.cli build --project projects/example.yml --output ...
-python -m oss_impact_dashboard.cli build-index --projects projects/example.yml --output-dir ...
+python -m oss_impact_dashboard.cli build-index --safe-project
+python -m oss_impact_dashboard.cli build-index --projects projects/example.yml --safe-project
+python -m oss_impact_dashboard.cli build-index --from-cache --safe-project
+python -m oss_impact_dashboard.cli list-projects
 python -m oss_impact_dashboard.cli validate-project --project projects/example.yml
 python -m oss_impact_dashboard.cli doctor --project projects/example.yml
 python -m oss_impact_dashboard.cli project-info --project projects/mole.yml --field snapshot_history

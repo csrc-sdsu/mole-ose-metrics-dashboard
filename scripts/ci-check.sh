@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Canonical CI entry point. Modes: test | build | all (default).
 #   CI_MODE=test  — lint and unit tests only
-#   CI_MODE=build — build dataset + Vite + post-build checks (uses PROJECT_CONFIG)
+#   CI_MODE=build — build example dataset + Vite + post-build checks
 #   CI_MODE=all   — test then build (pre-push and test.yml)
 set -euo pipefail
 
@@ -103,12 +103,10 @@ ci_test() {
 }
 
 ci_build_site() {
-  PROJECT_CONFIG="${PROJECT_CONFIG:-projects/example.yml}"
-
   echo
-  echo "[build 1/3] Build project datasets ($PROJECT_CONFIG)"
+  echo "[build 1/3] Build project datasets (projects/example.yml)"
   python -m oss_impact_dashboard.cli build-index \
-    --projects "$PROJECT_CONFIG" \
+    --projects projects/example.yml \
     --safe-project \
     --output-dir web/public/data
 

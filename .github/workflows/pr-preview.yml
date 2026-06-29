@@ -18,7 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VITE_BASE_PATH: /${{ github.event.repository.name }}/pr-preview/pr-${{ github.event.number }}/
-      PROJECT_CONFIG: projects/example.yml
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -31,7 +30,7 @@ jobs:
       - run: python -m pip install -e ".[dev]"
       - run: npm ci
       - name: Build preview site
-        run: npm run build:site
+        run: npm run build:site -- --projects projects/example.yml
         env:
           GITHUB_ACTIONS: "true"
           GITHUB_REPOSITORY: ${{ github.repository }}

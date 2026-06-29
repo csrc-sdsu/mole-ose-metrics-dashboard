@@ -20,6 +20,7 @@ from oss_impact_dashboard.collectors.goatcounter import (
     validate_official_total_response,
 )
 from oss_impact_dashboard.config import (
+    discover_project_paths,
     documentation_analytics_config,
     load_project_config,
     source_enabled,
@@ -49,40 +50,76 @@ def build_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def _resolve_build_projects(args: argparse.Namespace) -> list[Path]:
+    if args.projects:
+        if args.safe_project:
+            return [validate_project_path(path) for path in args.projects]
+        return [Path(path) for path in args.projects]
+    return discover_project_paths()
+
+
+def _manifest_entry_from_dataset(data: dict) -> dict[str, str]:
+    project = data.get("project") or {}
+    return {
+        "id": str(project["id"]),
+        "name": str(project["name"]),
+        "repository": str(project["repository"]),
+        "environment": str(project.get("environment") or "production"),
+    }
+
+
 def build_index_command(args: argparse.Namespace) -> int:
     output_dir = Path(args.output_dir)
     projects_dir = output_dir / "projects"
     projects_dir.mkdir(parents=True, exist_ok=True)
+    project_paths = _resolve_build_projects(args)
+    if not project_paths:
+        raise SystemExit("error: no project configs found under projects/")
+
     manifest_projects: list[dict[str, str]] = []
     default_project: str | None = None
+    default_dataset: dict | None = None
 
-    for project_arg in args.projects:
-        project_path = (
-            validate_project_path(project_arg) if args.safe_project else Path(project_arg)
-        )
+    for project_path in project_paths:
         config = load_project_config(project_path)
-        data = build_dataset(
-            config,
-            manual_root=Path(args.manual_root),
-            project_count=len(args.projects),
-        )
         project_output = projects_dir / f"{config.id}.json"
-        write_json(project_output, data)
-        print(f"Wrote {project_output} with {len(data.get('items', []))} items")
-        manifest_projects.append(
-            {
-                "id": config.id,
-                "name": config.name,
-                "repository": config.repository,
-                "environment": config.environment,
-            }
-        )
+
+        if args.from_cache:
+            if not project_output.exists():
+                raise SystemExit(
+                    f"error: cached dataset missing for {config.id}: {project_output}"
+                )
+            data = json.loads(project_output.read_text(encoding="utf-8"))
+            print(f"Using cached {project_output} with {len(data.get('items', []))} items")
+        else:
+            data = build_dataset(
+                config,
+                manual_root=Path(args.manual_root),
+                project_count=len(project_paths),
+            )
+            write_json(project_output, data)
+            print(f"Wrote {project_output} with {len(data.get('items', []))} items")
+
+        manifest_projects.append(_manifest_entry_from_dataset(data))
         if default_project is None:
             default_project = config.id
-            write_json(output_dir / "dashboard.json", data)
+            default_dataset = data
+
+    resolved_default = args.default_project or default_project
+    if resolved_default:
+        default_output = projects_dir / f"{resolved_default}.json"
+        if default_output.exists():
+            default_dataset = json.loads(default_output.read_text(encoding="utf-8"))
+        elif args.default_project:
+            raise SystemExit(
+                f"error: default project {resolved_default!r} was not included in this build"
+            )
+
+    if default_dataset is not None:
+        write_json(output_dir / "dashboard.json", default_dataset)
 
     manifest = {
-        "default_project": args.default_project or default_project,
+        "default_project": resolved_default,
         "projects": manifest_projects,
     }
     write_json(output_dir / "projects.json", manifest)
@@ -90,6 +127,12 @@ def build_index_command(args: argparse.Namespace) -> int:
         f"Wrote {output_dir / 'projects.json'} with {len(manifest_projects)} project(s); "
         f"default={manifest['default_project']}"
     )
+    return 0
+
+
+def list_projects_command(_args: argparse.Namespace) -> int:
+    for path in discover_project_paths():
+        print(path.as_posix())
     return 0
 
 
@@ -384,9 +427,13 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     build_index.add_argument(
         "--projects",
-        nargs="+",
-        required=True,
-        help="One or more project YAML files under projects/",
+        nargs="*",
+        help="Project YAML files under projects/ (default: all projects/*.yml)",
+    )
+    build_index.add_argument(
+        "--from-cache",
+        action="store_true",
+        help="Rebuild manifest from existing per-project JSON without fetching data",
     )
     build_index.add_argument(
         "--output-dir",
@@ -408,6 +455,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Require --projects to be inside projects/",
     )
     build_index.set_defaults(func=build_index_command)
+
+    list_projects = sub.add_parser(
+        "list-projects",
+        help="Print project YAML paths under projects/",
+    )
+    list_projects.set_defaults(func=list_projects_command)
 
     tracker_config = sub.add_parser(
         "tracker-config",

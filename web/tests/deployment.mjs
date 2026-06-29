@@ -63,8 +63,16 @@ assert(packageJson.scripts.ci, 'package.json must define npm run ci');
 const ciCheckScript = readFileSync('scripts/ci-check.sh', 'utf8');
 assert(ciCheckScript.includes('CI_MODE'), 'ci-check.sh must support CI_MODE');
 assert(
-  ciCheckScript.includes('PROJECT_CONFIG="${PROJECT_CONFIG:-projects/example.yml}"'),
-  'build step must default to projects/example.yml'
+  ciCheckScript.includes('--projects projects/example.yml'),
+  'build step must use projects/example.yml for CI'
+);
+assert(
+  packageJson.scripts['build:data'],
+  'package.json must define npm run build:data'
+);
+assert(
+  packageJson.scripts['build:ui'],
+  'package.json must define npm run build:ui'
 );
 assert(ciCheckScript.includes('ci_test'), 'ci-check.sh must define test phase');
 assert(ciCheckScript.includes('ci_build_site'), 'ci-check.sh must define build phase');
@@ -82,7 +90,8 @@ assert(
 );
 assert(refreshWorkflow.includes('branches:\n      - main'), 'production deploy must stay on main');
 assert(refreshWorkflow.includes('group: gh-pages-write'), 'production deploy must use shared gh-pages concurrency');
-assert(refreshWorkflow.includes('vars.PROJECT_CONFIG'), 'production deploy must use PROJECT_CONFIG variable');
+assert(refreshWorkflow.includes('DEPLOY_PROJECT'), 'production deploy must set DEPLOY_PROJECT');
+assert(refreshWorkflow.includes('npm run build:site -- --projects "$DEPLOY_PROJECT"'), 'production deploy must pass explicit projects to build:site');
 assert(refreshWorkflow.includes('project_config:'), 'production deploy must allow manual project_config override');
 assert(refreshWorkflow.includes('clean-exclude:'), 'production deploy must preserve previews');
 assert(refreshWorkflow.includes('pr-preview/'), 'production deploy must preserve pr-preview/');
@@ -156,7 +165,7 @@ assert(
   'PR preview must not expose project-specific GitHub token secret'
 );
 assert(
-  previewWorkflow.includes('PROJECT_CONFIG: projects/example.yml'),
+  previewWorkflow.includes('npm run build:site -- --projects projects/example.yml'),
   'PR preview must build example project config'
 );
 assert(
@@ -178,7 +187,8 @@ assert(
   'report workflow must not rerun full CI'
 );
 assert(reportWorkflow.includes('group: gh-pages-write'), 'report workflow must use shared gh-pages concurrency');
-assert(reportWorkflow.includes('vars.PROJECT_CONFIG'), 'report workflow must use PROJECT_CONFIG variable');
+assert(reportWorkflow.includes('DEPLOY_PROJECT'), 'report workflow must set DEPLOY_PROJECT');
+assert(reportWorkflow.includes('npm run build:site -- --projects "$DEPLOY_PROJECT"'), 'report workflow must pass explicit projects to build:site');
 assert(reportWorkflow.includes('project_config:'), 'report workflow must allow manual project_config override');
 assert(reportWorkflow.includes('node scripts/wait-for-url.mjs'), 'report workflow must wait for preview');
 assert(reportWorkflow.includes('node scripts/publish-report-pdf.mjs'), 'report PDF publish script missing');
@@ -191,7 +201,7 @@ assert(reportWorkflow.includes('node scripts/post-deploy-smoke.mjs'), 'report wo
 
 const diagnosticsWorkflow = readFileSync('.github/workflows/integration-diagnostics.yml', 'utf8');
 assert(diagnosticsWorkflow.includes('workflow_dispatch:'), 'diagnostics must be manual only');
-assert(diagnosticsWorkflow.includes('doctor --project "$PROJECT_CONFIG"'), 'diagnostics must run doctor command');
+assert(diagnosticsWorkflow.includes('doctor --project "$DEPLOY_PROJECT"'), 'diagnostics must run doctor command');
 assert(diagnosticsWorkflow.includes('Build dataset (full secrets)'), 'diagnostics must build dataset with full secrets');
 assert(diagnosticsWorkflow.includes('secrets.GITHUB_TOKEN_MOLE'), 'diagnostics must use project-specific GitHub token secret');
 assert(

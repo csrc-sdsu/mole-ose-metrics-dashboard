@@ -1,11 +1,27 @@
 import { execSync } from 'node:child_process';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const output = join(root, 'web', 'public', 'rtd-goatcounter.js');
-const projectConfig = process.env.PROJECT_CONFIG || 'projects/mole.yml';
+const manifestPath = join(root, 'web', 'public', 'data', 'projects.json');
+
+function projectConfigFromManifest() {
+  if (!existsSync(manifestPath)) {
+    return 'projects/example.yml';
+  }
+  const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+  const projectId = manifest.default_project || manifest.projects?.[0]?.id;
+  if (!projectId) {
+    return 'projects/example.yml';
+  }
+  const candidate = join(root, 'projects', `${projectId}.yml`);
+  if (existsSync(candidate)) {
+    return `projects/${projectId}.yml`;
+  }
+  return 'projects/example.yml';
+}
 
 function normalizeSiteUrl(value) {
   if (!value) return '';
@@ -172,6 +188,7 @@ function trackerConfigFromProject(projectPath) {
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+  const projectConfig = projectConfigFromManifest();
   const trackerConfig = trackerConfigFromProject(projectConfig);
   const source = trackerSource(trackerConfig);
 

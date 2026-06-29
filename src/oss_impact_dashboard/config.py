@@ -53,6 +53,12 @@ def load_yaml(path: Path) -> dict[str, Any]:
     return data
 
 
+def discover_project_paths(explicit: list[str] | None = None) -> list[Path]:
+    if explicit:
+        return [validate_project_path(path) for path in explicit]
+    return sorted(Path("projects").glob("*.yml"))
+
+
 def validate_project_path(path: str | Path, *, root: str | Path = ".") -> Path:
     root_path = Path(root).resolve()
     candidate = Path(path)

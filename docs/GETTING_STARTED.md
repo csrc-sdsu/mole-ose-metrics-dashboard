@@ -10,31 +10,52 @@
 ```bash
 python -m pip install -e ".[dev]"
 npm ci
+bash scripts/dev-local.sh --fetch
+```
+
+This copies `.env.example` to `.env` if missing, fetches datasets for every `projects/*.yml`, and starts the Vite dev server at `http://127.0.0.1:5173/`.
+
+For fast UI work after the first fetch:
+
+```bash
 bash scripts/dev-local.sh
 ```
 
-By default this uses `projects/example.yml`, copies `.env.example` to `.env` if missing, builds the dataset, and starts the Vite dev server at `http://127.0.0.1:5173/`.
+## Build commands
 
-Equivalent manual steps:
+| Command | Purpose |
+| --- | --- |
+| `npm run build:data` | Fetch data for all `projects/*.yml` (or pass `-- --projects …`) |
+| `npm run build:ui` | Rebuild Vite from cached JSON only (no API calls) |
+| `npm run build:site` | `build:data` + Vite + post-build checks |
+| `npm run dev` | Vite dev server (expects data already built) |
+| `npm run preview:pages` | Serve `dist/` with GitHub Pages base path |
+
+Examples:
 
 ```bash
-export PROJECT_CONFIG=projects/example.yml
-export VITE_BASE_PATH=/
-npm run build:site
+# Fetch all projects (default)
+npm run build:data
+
+# Compare two MOLE configs with different tokens
+npm run build:data -- --projects projects/mole.yml projects/mole-local.yml --default-project mole-local
+
+# UI-only iteration (seconds, no GitHub API)
+npm run build:ui -- --projects projects/mole.yml projects/mole-local.yml
 npm run dev
 ```
 
-For a GitHub Pages–style preview (builds `dist/` with the correct base path):
+GitHub Pages–style preview:
 
 ```bash
 bash scripts/local-preview.sh
-# or: npm run build:site && npm run preview:pages
+bash scripts/local-preview.sh -- --projects projects/mole.yml projects/mole-local.yml
 ```
 
-Live MOLE data:
+Optional shell tab completion for project YAML paths:
 
 ```bash
-bash scripts/local-preview.sh projects/mole.yml
+source scripts/completion.bash
 ```
 
 ## npm commands
@@ -42,12 +63,10 @@ bash scripts/local-preview.sh projects/mole.yml
 | Command | Purpose |
 | --- | --- |
 | `npm run test` | Lint, pytest, frontend contract tests (no build) |
-| `npm run build:site` | Build dataset + Vite + post-build checks |
-| `npm run ci` | `test` then `build:site` — same as GitHub `test.yml` and pre-push |
-| `npm run dev` | Vite dev server (expects data already built) |
-| `npm run preview:pages` | Serve `dist/` with GitHub Pages base path |
+| `npm run ci` | `test` then build example project — same as GitHub `test.yml` and pre-push |
+| `npm run build:site` | Fetch data + Vite + post-build checks |
 
-Set `PROJECT_CONFIG=projects/my-project.yml` before `npm run build:site` to choose which project to build.
+CI always builds `projects/example.yml` only (fast, no secrets). Local commands default to all `projects/*.yml`.
 
 ## Configure a project
 
@@ -64,21 +83,10 @@ Each tracked repository has one YAML file under `projects/`. Copy `projects/exam
 
 Project id maps to env suffixes: `mole-local` → `MOLE_LOCAL`, `example` → `EXAMPLE`.
 
-Build datasets (populates the project picker when using multiple files):
+List available project configs:
 
 ```bash
-PROJECT_CONFIG=projects/my-project.yml npm run build:site
-```
-
-Or call the CLI directly for multiple projects:
-
-```bash
-python -m oss_impact_dashboard.cli build-index \
-  --projects projects/a.yml projects/b.yml \
-  --safe-project \
-  --output-dir web/public/data
-npm run build
-npm run test:build
+python -m oss_impact_dashboard.cli list-projects
 ```
 
 Check integration setup:
@@ -117,7 +125,7 @@ Note: GitHub Actions also provides a built-in `GITHUB_TOKEN` for the runner. Tha
 1. Create a site at [goatcounter.com](https://www.goatcounter.com/)
 2. Open **Settings → Sites → your site → API** and copy the key
 3. Set `documentation_analytics.site_url` in project YAML and `GOATCOUNTER_API_KEY_<SUFFIX>` in env
-4. For Read the Docs: `PROJECT_CONFIG=projects/mole.yml npm run generate:rtd-tracker` and add the script URL to RTD custom JavaScript
+4. Run `npm run build:data`, then `npm run generate:rtd-tracker`, and add the script URL to RTD custom JavaScript
 
 Tokens are used only by Python collectors. They must never appear in generated JSON, frontend files, or deployed artifacts.
 
@@ -135,7 +143,7 @@ npm run ci
 
 This validates all `projects/*.yml` schemas, runs tests, and builds from `projects/example.yml` with `--safe-project` (no secrets required).
 
-4. Open a pull request — `test.yml` runs `npm run ci`; PR previews run `npm run build:site` only and deploy sanitized data without repository secrets
+4. Open a pull request — `test.yml` runs `npm run ci`; PR previews run `npm run build:site -- --projects projects/example.yml` without repository secrets
 
 Pre-push hooks install automatically on `npm ci`. To install manually: `npm run install:hooks`.
 
@@ -165,14 +173,6 @@ This repository deploys the MOLE dashboard to GitHub Pages. Merged code is teste
 Settings → Pages → Deploy from a branch → gh-pages → /(root)
 ```
 
-### Repository variable
-
-Set **Settings → Secrets and variables → Actions → Variables**:
-
-| Name | Value |
-| --- | --- |
-| `PROJECT_CONFIG` | `projects/mole.yml` |
-
 ### Repository secrets
 
 | Name | Purpose |
@@ -191,16 +191,17 @@ If upgrading from older env names, rename secrets:
 
 | Workflow | Trigger | What it runs |
 | --- | --- | --- |
-| `test.yml` | push, pull request | `npm run ci` (test + build) |
-| `refresh-deploy.yml` | main, schedule, manual | `npm run build:site` + publish to `gh-pages` |
-| `generate-report.yml` | schedule, manual | `npm run build:site` + PDF publish |
-| `pr-preview.yml` | pull request | `npm run build:site` (example only) + preview upload |
+| `test.yml` | push, pull request | `npm run ci` (test + build example) |
+| `refresh-deploy.yml` | main, schedule, manual | `npm run build:site -- --projects projects/mole.yml` + publish |
+| `generate-report.yml` | schedule, manual | `npm run build:site -- --projects projects/mole.yml` + PDF |
+| `pr-preview.yml` | pull request | `npm run build:site -- --projects projects/example.yml` |
 | `integration-diagnostics.yml` | manual | `doctor` + build with secrets |
 
 Verify live collection locally:
 
 ```bash
-bash scripts/local-preview.sh projects/mole.yml
+npm run build:data -- --projects projects/mole.yml
+bash scripts/local-preview.sh -- --projects projects/mole.yml
 ```
 
 ### PDF reports
@@ -208,7 +209,7 @@ bash scripts/local-preview.sh projects/mole.yml
 ```bash
 python -m pip install -e ".[report]"
 python -m playwright install chromium
-npm run build:site
+npm run build:site -- --projects projects/mole.yml
 npm run preview:pages
 python -m oss_impact_dashboard.report_pdf \
   --url http://127.0.0.1:4173/<repo-name>/report.html \
