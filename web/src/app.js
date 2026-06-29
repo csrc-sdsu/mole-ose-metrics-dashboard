@@ -12,21 +12,36 @@ import {
   text
 } from './safe-dom.js';
 
-const CHART_COLORS = {
-  blue: '#0969da',
-  green: '#1a7f37',
-  purple: '#8250df',
-  orange: '#bc4c00',
-  teal: '#1b7c83',
-  magenta: '#bf3989'
+const CHART_COLOR_VARS = {
+  blue: '--chart-blue',
+  green: '--chart-green',
+  purple: '--chart-purple',
+  orange: '--chart-orange',
+  teal: '--chart-teal',
+  magenta: '--chart-magenta',
+  red: '--chart-red',
+  gray: '--chart-gray'
+};
+
+const CHART_COLOR_FALLBACKS = {
+  blue: '#4f9bf0',
+  green: '#10b981',
+  purple: '#a371f7',
+  orange: '#f59e0b',
+  teal: '#2dd4bf',
+  magenta: '#ec4899',
+  red: '#ef4444',
+  gray: '#8b8b94'
 };
 
 function cssVar(name) {
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#57606a';
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#a1a1aa';
 }
 
 function chartColor(name) {
-  return CHART_COLORS[name] || CHART_COLORS.blue;
+  const varName = CHART_COLOR_VARS[name];
+  const resolved = varName ? cssVar(varName) : '';
+  return resolved || CHART_COLOR_FALLBACKS[name] || CHART_COLOR_FALLBACKS.blue;
 }
 
 const numberFormat = new Intl.NumberFormat('en-US');
