@@ -18,19 +18,19 @@ git worktree add --detach "$worktree" origin/gh-pages
 target_dir="${worktree}/rtd-cache/${PROJECT_ID}"
 mkdir -p "$target_dir"
 for file in latest.json history.json collection-state.json; do
-  if [ -f "${CACHE_DIR}/${file}" ]; then
+  if [ -s "${CACHE_DIR}/${file}" ]; then
     cp "${CACHE_DIR}/${file}" "${target_dir}/${file}"
   fi
 done
 
 cd "$worktree"
-if git diff --quiet; then
+git add "rtd-cache/${PROJECT_ID}"
+if git diff --cached --quiet; then
   echo "No RTD cache changes to publish."
   git worktree remove --force "$worktree"
   exit 0
 fi
 
-git add "rtd-cache/${PROJECT_ID}"
 git commit -m "Update Read the Docs cache for ${PROJECT_ID}"
 for attempt in 1 2 3; do
   if git push origin HEAD:gh-pages; then
@@ -40,7 +40,7 @@ for attempt in 1 2 3; do
   git reset --hard origin/gh-pages
   mkdir -p "$target_dir"
   for file in latest.json history.json collection-state.json; do
-    if [ -f "${ROOT_DIR}/${CACHE_DIR}/${file}" ]; then
+    if [ -s "${ROOT_DIR}/${CACHE_DIR}/${file}" ]; then
       cp "${ROOT_DIR}/${CACHE_DIR}/${file}" "${target_dir}/${file}"
     fi
   done
