@@ -9,6 +9,9 @@ from oss_impact_dashboard.collectors.github import (
     fetch_github,
 )
 from oss_impact_dashboard.collectors.github_actions import fetch_github_actions
+from oss_impact_dashboard.collectors.github_activity import fetch_github_activity
+from oss_impact_dashboard.collectors.github_governance import fetch_github_governance
+from oss_impact_dashboard.collectors.github_security import fetch_github_security
 from oss_impact_dashboard.collectors.github_traffic import fetch_github_traffic
 from oss_impact_dashboard.collectors.goatcounter import (
     LIMITATIONS as GOATCOUNTER_LIMITATIONS,
@@ -247,6 +250,40 @@ def build_dataset(
         source_url=f"https://api.github.com/repos/{config.repository}/actions/runs",
         limitation="Requires Actions read permissions and an authenticated token.",
     )
+    activity_raw, activity_status = _try_source(
+        "github_activity",
+        source_enabled(config, "github") and bool(github_token),
+        lambda: fetch_github_activity(owner, repo, token=github_token),
+        source_url=f"https://api.github.com/repos/{config.repository}/stats/participation",
+        limitation="Repository statistics may be computed asynchronously by GitHub.",
+    )
+    if activity_raw and activity_raw.get("partial"):
+        activity_status = {
+            **activity_status,
+            "status": "partial",
+            "message": "GitHub statistics were not fully available at collection time.",
+        }
+    security_raw, github_security_status = _try_source(
+        "github_security",
+        source_enabled(config, "github") and bool(github_token),
+        lambda: fetch_github_security(owner, repo, token=github_token),
+        source_url=f"https://api.github.com/repos/{config.repository}/code-scanning/alerts",
+        limitation="Aggregated alert counts only; sensitive vulnerability details are omitted.",
+    )
+    governance_raw, github_governance_status = _try_source(
+        "github_governance",
+        (
+            source_enabled(config, "community_standards")
+            or source_enabled(config, "github_traffic")
+        )
+        and bool(github_token),
+        lambda: fetch_github_governance(owner, repo, token=github_token),
+        source_url=f"https://api.github.com/repos/{config.repository}/community/profile",
+        limitation=(
+            "Branch protection, rulesets, environments, and community profile data require "
+            "repository admin access."
+        ),
+    )
     readthedocs_cfg = config.sources.get("readthedocs") or {}
     readthedocs_raw, readthedocs_status = _try_source(
         "readthedocs",
@@ -293,7 +330,15 @@ def build_dataset(
                     source_url=f"https://github.com/{config.repository}/community",
                 )
             except Exception as exc:  # noqa: BLE001
-                community_status = source_status("error", str(exc))
+                if governance_raw and governance_raw.get("community_standards_raw"):
+                    community_raw = governance_raw["community_standards_raw"]
+                    community_status = source_status(
+                        "partial",
+                        "Community profile unavailable; using repository contents fallback.",
+                        source_url=f"https://github.com/{config.repository}",
+                    )
+                else:
+                    community_status = source_status("error", str(exc))
 
     community_standards = build_community_standards(community_raw)
 
@@ -382,6 +427,9 @@ def build_dataset(
             ),
             "github_traffic": traffic_status,
             "github_actions": actions_status,
+            "github_activity": activity_status,
+            "github_security": github_security_status,
+            "github_governance": github_governance_status,
             "documentation_analytics": documentation_status,
             "readthedocs": readthedocs_status,
             "snapshots": source_status(
@@ -405,6 +453,12 @@ def build_dataset(
             "unique_contributors": contributors.get("unique_contributors"),
             "bus_factor": contributors.get("bus_factor"),
             "github_traffic_views": (traffic_raw or {}).get("views_total"),
+            "github_traffic_clones": (traffic_raw or {}).get("clones_total"),
+            "github_traffic_views_unique": (traffic_raw or {}).get("views_unique"),
+            "github_traffic_clones_unique": (traffic_raw or {}).get("clones_unique"),
+            "github_commits_last_4w": (activity_raw or {}).get("commits_last_4w"),
+            "github_commits_last_52w": (activity_raw or {}).get("total_commits_52w"),
+            "github_open_security_alerts": (security_raw or {}).get("total_open_alerts"),
             "readthedocs_views": (readthedocs_raw or {}).get("views_total"),
             "documentation_visitors": documentation_analytics.get("visitor_count"),
             "documentation_page_hits": documentation_analytics.get("page_hit_count"),
@@ -453,6 +507,13 @@ def build_dataset(
         "impact": impact,
         "github_traffic": traffic_raw or {},
         "github_actions": actions_raw or {},
+        "github_activity": activity_raw or {},
+        "github_security": security_raw or {},
+        "github_governance": {
+            key: value
+            for key, value in (governance_raw or {}).items()
+            if key != "community_standards_raw"
+        },
         "documentation_analytics": documentation_analytics,
         "readthedocs": readthedocs_raw or {},
         "snapshots": {
@@ -522,6 +583,23 @@ def build_dataset(
             "targets_progress": (
                 "Progress toward annual target metrics defined in"
                 " project-data.yml, expressed as a 0-1 ratio."
+            ),
+            "github_traffic_views": "GitHub repository page views over the last 14 days.",
+            "github_traffic_clones": "GitHub repository clone events over the last 14 days.",
+            "github_traffic_views_unique": "Unique visitors to the GitHub repository over 14 days.",
+            "github_traffic_clones_unique": "Unique cloners of the GitHub repository over 14 days.",
+            "github_commits_last_4w": (
+                "Total commits in the last four weeks from GitHub statistics."
+            ),
+            "github_commits_last_52w": "Total commits in the last 52 weeks from GitHub statistics.",
+            "github_open_security_alerts": (
+                "Aggregate count of open code scanning, Dependabot, and secret scanning alerts."
+            ),
+            "github_activity_weekly_commits": (
+                "Weekly commit counts from GitHub repository statistics."
+            ),
+            "github_governance_health_percentage": (
+                "GitHub community profile health percentage when available."
             ),
         },
     }

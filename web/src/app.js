@@ -170,6 +170,26 @@ function documentationAvailable(data) {
     || data.documentation_analytics?.status === 'partial';
 }
 
+function githubTrafficAvailable(data) {
+  const status = data.source_status?.github_traffic?.status;
+  return status === 'available' || status === 'partial';
+}
+
+function githubActivityAvailable(data) {
+  const status = data.source_status?.github_activity?.status;
+  return status === 'available' || status === 'partial';
+}
+
+function githubSecurityAvailable(data) {
+  const status = data.source_status?.github_security?.status;
+  return status === 'available' || status === 'partial';
+}
+
+function githubGovernanceAvailable(data) {
+  const status = data.source_status?.github_governance?.status;
+  return status === 'available' || status === 'partial';
+}
+
 function documentationValue(data, key) {
   return documentationAvailable(data) ? number(data.documentation_analytics?.[key]) : 'Unavailable';
 }
@@ -331,6 +351,12 @@ function renderImpactSummary(data, periodId = activePeriodId(data)) {
     ['Zenodo downloads', number(impact.zenodo?.downloads)],
     ['Zenodo views', number(impact.zenodo?.views)],
     ['Citation count', number(impact.openalex?.cited_by_count)],
+    ['Repo views (14d)', githubTrafficAvailable(data) ? number(data.github_traffic?.views_total) : '—', '', 'GitHub traffic window'],
+    ['Unique visitors (14d)', githubTrafficAvailable(data) ? number(data.github_traffic?.views_unique) : '—'],
+    ['Clones (14d)', githubTrafficAvailable(data) ? number(data.github_traffic?.clones_total) : '—'],
+    ['Unique cloners (14d)', githubTrafficAvailable(data) ? number(data.github_traffic?.clones_unique) : '—'],
+    ['Stars', number(data.repository_metadata?.stars ?? data.summary?.stars)],
+    ['Forks', number(data.repository_metadata?.forks ?? data.summary?.forks)],
     ['Unique contributors', number(data.contributors?.unique_contributors)],
     ['Releases in period', number(releasePeriod.releases), '', comparisonText(releaseComparisons.releases)],
     ['New contributors', number(contributorPeriod.new_contributors), '', comparisonText(contributorComparisons.new_contributors)],
@@ -393,6 +419,226 @@ function renderDefinitions(data) {
         element('p', { textContent: definition })
       ])
     );
+  }
+}
+
+function renderGithubTraffic(data) {
+  const host = document.querySelector('[data-section="githubReach"]');
+  if (!host) return;
+  const h2 = host.querySelector('h2, h3');
+  clear(host);
+  if (h2) host.append(h2);
+  const traffic = data.github_traffic || {};
+  if (!githubTrafficAvailable(data)) {
+    host.append(element('p', {
+      className: 'muted',
+      textContent: data.source_status?.github_traffic?.message
+        || 'GitHub repository traffic requires repository admin access.'
+    }));
+    host.style.display = '';
+    return;
+  }
+  const rows = [
+    ['Repo page views (14d)', number(traffic.views_total)],
+    ['Unique visitors (14d)', number(traffic.views_unique)],
+    ['Clones (14d)', number(traffic.clones_total)],
+    ['Unique cloners (14d)', number(traffic.clones_unique)],
+    ['Unique view rate', traffic.unique_view_rate === null || traffic.unique_view_rate === undefined ? 'N/A' : percent(traffic.unique_view_rate)],
+    ['Clone-to-view rate', traffic.clone_to_view_rate === null || traffic.clone_to_view_rate === undefined ? 'N/A' : percent(traffic.clone_to_view_rate)]
+  ];
+  for (const [label, value] of rows) {
+    host.append(element('div', { className: 'compact-row' }, [
+      element('b', { textContent: label }),
+      element('span', { textContent: value })
+    ]));
+  }
+  const dailyViews = traffic.daily_views || [];
+  const dailyClones = traffic.daily_clones || [];
+  if (dailyViews.length || dailyClones.length) {
+    const labels = (dailyViews.length ? dailyViews : dailyClones).map((item) => item.date);
+    const canvas = element('canvas', { id: 'githubTrafficChart' });
+    host.append(element('div', { className: 'chart-container', style: 'height:180px;' }, [canvas]));
+    chart('githubTrafficChart', {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Views', data: dailyViews.map((item) => item.count), borderColor: chartColor('blue'), tension: 0.3 },
+          { label: 'Clones', data: dailyClones.map((item) => item.count), borderColor: chartColor('green'), tension: 0.3 }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: chartPlugins(data, 'GitHub traffic (14-day window)'),
+        scales: chartScales()
+      }
+    });
+  }
+  host.append(element('h3', { textContent: 'Popular paths', style: 'margin-top: var(--space-3);' }));
+  const paths = traffic.popular_paths || [];
+  if (!paths.length) host.append(element('p', { className: 'muted', textContent: 'No popular paths reported in the last 14 days.' }));
+  for (const item of paths.slice(0, 5)) {
+    host.append(element('p', { textContent: `${item.path}: ${number(item.count)} views` }));
+  }
+  host.append(element('h3', { textContent: 'Top referrers' }));
+  const referrers = traffic.popular_referrers || [];
+  if (!referrers.length) host.append(element('p', { className: 'muted', textContent: 'No referrers reported in the last 14 days.' }));
+  for (const item of referrers.slice(0, 5)) {
+    host.append(element('p', { textContent: `${item.referrer}: ${number(item.count)}` }));
+  }
+  host.append(element('p', { className: 'muted-text', textContent: 'GitHub only exposes repository traffic for the last 14 days.' }));
+  if ((traffic.clones_total || 0) > 0 && !(traffic.views_total || 0)) {
+    host.append(element('p', {
+      className: 'muted-text',
+      textContent: 'This repository has clone activity but no recorded page views in the current 14-day window.'
+    }));
+  }
+}
+
+function renderDevelopmentVelocity(data) {
+  const host = document.querySelector('[data-section="developmentVelocity"]');
+  if (!host) return;
+  const h2 = host.querySelector('h2, h3');
+  clear(host);
+  if (h2) host.append(h2);
+  const activity = data.github_activity || {};
+  if (!githubActivityAvailable(data)) {
+    host.append(element('p', { className: 'muted', textContent: 'Development velocity data is unavailable.' }));
+    return;
+  }
+  const rows = [
+    ['Commits (52w)', number(activity.total_commits_52w)],
+    ['Commits (4w)', number(activity.commits_last_4w)],
+    ['Commits (13w)', number(activity.commits_last_13w)],
+    ['Active weeks (52w)', number(activity.active_weeks_52w)],
+    ['Median weekly commits', number(activity.median_weekly_commits_52w)],
+    ['Net code change (52w)', number(activity.net_code_change_52w)],
+    ['Top commit share', activity.top_commit_contributor_share === null || activity.top_commit_contributor_share === undefined ? 'N/A' : percent(activity.top_commit_contributor_share)],
+    ['Commit bus-factor proxy', number(activity.commit_bus_factor_proxy)]
+  ];
+  for (const [label, value] of rows) {
+    host.append(element('div', { className: 'compact-row' }, [
+      element('b', { textContent: label }),
+      element('span', { textContent: value })
+    ]));
+  }
+  const weekly = activity.weekly_commits || [];
+  if (weekly.length) {
+    const canvas = element('canvas', { id: 'developmentVelocityChart' });
+    host.append(element('div', { className: 'chart-container', style: 'height:180px;' }, [canvas]));
+    chart('developmentVelocityChart', {
+      type: 'bar',
+      data: {
+        labels: weekly.map((_, index) => `W${index + 1}`),
+        datasets: [{ label: 'Weekly commits', data: weekly, backgroundColor: chartColor('purple') }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { ...chartPlugins(data, 'Weekly commits (52 weeks)'), legend: { display: false } },
+        scales: chartScales()
+      }
+    });
+  }
+}
+
+function renderGithubGovernance(data) {
+  const host = document.querySelector('[data-section="githubGovernance"]');
+  if (!host) return;
+  const h2 = host.querySelector('h2, h3');
+  clear(host);
+  if (h2) host.append(h2);
+  const governance = data.github_governance || {};
+  if (!githubGovernanceAvailable(data) || !governance.available) {
+    host.append(element('p', { className: 'muted', textContent: 'Repository governance data is unavailable.' }));
+    return;
+  }
+  const profile = governance.community_profile || {};
+  const files = profile.files_present || {};
+  const rows = [
+    ['Community health', profile.health_percentage === null || profile.health_percentage === undefined ? 'N/A' : percent(profile.health_percentage / 100)],
+    ['Default branch protected', governance.default_branch_protected ? 'Yes' : 'No'],
+    ['Required status checks', number(governance.required_status_checks_count)],
+    ['PR reviews required', governance.requires_pull_request_reviews ? 'Yes' : 'No'],
+    ['Required approvals', number(governance.required_approving_review_count)],
+    ['Rulesets', number(governance.rulesets_count)],
+    ['Environments', number(governance.environments_count)],
+    ['Protected environments', number(governance.protected_environments_count)]
+  ];
+  for (const [label, value] of rows) {
+    host.append(element('div', { className: 'compact-row' }, [
+      element('b', { textContent: label }),
+      element('span', { textContent: value })
+    ]));
+  }
+  const checklist = Object.entries(files).filter(([, present]) => present);
+  if (checklist.length) {
+    host.append(element('p', { textContent: `Community files present: ${checklist.map(([key]) => key.replaceAll('_', ' ')).join(', ')}` }));
+  }
+  const deployments = governance.deployments || {};
+  if (deployments.latest_deployment_state) {
+    host.append(element('p', { textContent: `Latest deployment: ${deployments.latest_deployment_state} (${deployments.latest_deployment_environment || 'unknown'})` }));
+  }
+}
+
+function renderGithubSecurity(data) {
+  const host = document.querySelector('[data-section="githubSecurity"]');
+  if (!host) return;
+  const h2 = host.querySelector('h2, h3');
+  clear(host);
+  if (h2) host.append(h2);
+  const security = data.github_security || {};
+  if (!githubSecurityAvailable(data) || !security.available) {
+    host.append(element('p', { className: 'muted', textContent: 'GitHub security alert data is unavailable.' }));
+    return;
+  }
+  const rows = [
+    ['Total open alerts', number(security.total_open_alerts)],
+    ['Highest open severity', text(security.highest_open_severity || 'N/A')],
+    ['Oldest open alert age', days(security.oldest_open_alert_age_days)],
+    ['Code scanning open', number(security.code_scanning?.open_alerts)],
+    ['Dependabot open', number(security.dependabot?.open_alerts)],
+    ['Secret scanning open', number(security.secret_scanning?.open_alerts)],
+    ['Published advisories', number(security.repository_advisories?.published_count)],
+    ['Draft advisories', number(security.repository_advisories?.open_or_draft_count)]
+  ];
+  for (const [label, value] of rows) {
+    host.append(element('div', { className: 'compact-row' }, [
+      element('b', { textContent: label }),
+      element('span', { textContent: value })
+    ]));
+  }
+  host.append(element('p', { className: 'muted-text', textContent: 'Aggregate alert counts only; sensitive vulnerability details are omitted.' }));
+}
+
+function renderReviewLoad(data) {
+  const host = document.querySelector('[data-section="reviewLoad"]');
+  if (!host) return;
+  const h2 = host.querySelector('h2, h3');
+  clear(host);
+  if (h2) host.append(h2);
+  const review = data.operations?.review_load || {};
+  const engagement = data.operations?.engagement || {};
+  if (!Object.keys(review).length) {
+    host.style.display = 'none';
+    return;
+  }
+  const rows = [
+    ['Open PRs waiting for review', number(review.open_prs_waiting_for_review)],
+    ['Requested reviewers', number(review.requested_reviewers_count)],
+    ['Draft PRs', number(review.draft_prs)],
+    ['PRs with changes requested', number(review.prs_with_changes_requested)],
+    ['Median time to first review', days(review.median_time_to_first_review)],
+    ['P90 time to first review', days(review.p90_time_to_first_review)],
+    ['Issue comment coverage', engagement.issue_comment_coverage === null || engagement.issue_comment_coverage === undefined ? 'N/A' : percent(engagement.issue_comment_coverage)],
+    ['PR review coverage', engagement.pr_review_coverage === null || engagement.pr_review_coverage === undefined ? 'N/A' : percent(engagement.pr_review_coverage)]
+  ];
+  for (const [label, value] of rows) {
+    host.append(element('div', { className: 'compact-row' }, [
+      element('b', { textContent: label }),
+      element('span', { textContent: value })
+    ]));
   }
 }
 
@@ -1178,6 +1424,10 @@ function renderImpact(data) {
   renderReleaseAnalytics(data, periodId);
   renderContributorAnalytics(data, periodId);
   renderDocumentationAnalytics(data);
+  renderGithubTraffic(data);
+  renderGithubGovernance(data);
+  renderDevelopmentVelocity(data);
+  renderGithubSecurity(data);
   renderSnapshotTrend(data);
 }
 
@@ -1338,7 +1588,9 @@ function renderSnapshotTrend(data) {
       datasets: [
         { label: 'Zenodo downloads', data: trends.zenodo_downloads || [], borderColor: chartColor('blue') },
         { label: 'Citations', data: trends.citation_count || [], borderColor: chartColor('green') },
-        { label: 'Documentation visitors', data: trends.documentation_visitors || trends.readthedocs_views || [], borderColor: chartColor('orange') }
+        { label: 'Documentation visitors', data: trends.documentation_visitors || trends.readthedocs_views || [], borderColor: chartColor('orange') },
+        { label: 'GitHub views (14d)', data: trends.github_traffic_views || [], borderColor: chartColor('teal') },
+        { label: 'GitHub clones (14d)', data: trends.github_traffic_clones || [], borderColor: chartColor('magenta') }
       ]
     },
     options: {
@@ -1371,6 +1623,37 @@ function renderCiReliability(data) {
     ]));
   }
   host.append(summaryList);
+
+  const byWorkflow = ci.by_workflow || [];
+  if (byWorkflow.length) {
+    host.append(element('h3', { textContent: 'Workflow reliability', style: 'margin-top: var(--space-3);' }));
+    const table = element('table', { className: 'compact-table' });
+    table.append(element('thead', {}, [element('tr', {}, [
+      element('th', { textContent: 'Workflow' }),
+      element('th', { textContent: 'Runs' }),
+      element('th', { textContent: 'Success rate' }),
+      element('th', { textContent: 'Failed' }),
+      element('th', { textContent: 'Median duration' })
+    ])]));
+    const tbody = element('tbody', {});
+    for (const workflow of byWorkflow.slice(0, 8)) {
+      tbody.append(element('tr', {}, [
+        element('td', { textContent: text(workflow.name) }),
+        element('td', { textContent: number(workflow.runs) }),
+        element('td', { textContent: workflow.success_rate === null || workflow.success_rate === undefined ? 'N/A' : percent(workflow.success_rate) }),
+        element('td', { textContent: number(workflow.failed_runs) }),
+        element('td', { textContent: duration(workflow.median_duration_seconds) })
+      ]));
+    }
+    table.append(tbody);
+    host.append(table);
+  }
+  if (ci.latest_default_branch_status) {
+    host.append(element('p', { textContent: `Latest default-branch run: ${text(ci.latest_default_branch_status)}` }));
+  }
+  if (ci.artifact_count || ci.cache_count) {
+    host.append(element('p', { className: 'muted', textContent: `Artifacts: ${number(ci.artifact_count)} (${number(ci.artifact_storage_bytes)} bytes); caches: ${number(ci.cache_count)} (${number(ci.cache_storage_bytes)} bytes)` }));
+  }
 
   const failedRuns = ci.recent_failed_runs || [];
   if (failedRuns.length) {
@@ -1576,6 +1859,8 @@ function renderReport(data, reportStatus = {}) {
     element('article', {}, [element('strong', { textContent: number(data.impact?.openalex?.cited_by_count ?? data.summary?.citation_count) }), element('span', { textContent: 'Citations' })]),
     element('article', {}, [element('strong', { textContent: number(data.releases?.release_asset_downloads) }), element('span', { textContent: 'Release downloads' })]),
     element('article', {}, [element('strong', { textContent: documentationAvailable(data) ? number(data.documentation_analytics?.visitor_count) : '—' }), element('span', { textContent: 'Documentation visitors' })]),
+    element('article', {}, [element('strong', { textContent: githubTrafficAvailable(data) ? number(data.github_traffic?.views_total) : '—' }), element('span', { textContent: 'Repo views (14d)' })]),
+    element('article', {}, [element('strong', { textContent: githubTrafficAvailable(data) ? number(data.github_traffic?.clones_total) : '—' }), element('span', { textContent: 'Clones (14d)' })]),
     element('article', {}, [element('strong', { textContent: number(data.contributors?.unique_contributors) }), element('span', { textContent: 'Contributors' })]),
     element('article', {}, [element('strong', { textContent: number(releasePeriod.releases) }), element('span', { textContent: 'Releases in period' })])
   ]));
@@ -1599,6 +1884,12 @@ function renderReport(data, reportStatus = {}) {
       ['Zenodo views', number(data.impact?.zenodo?.views ?? data.summary?.zenodo_views)],
       ['Release asset downloads', number(data.releases?.release_asset_downloads)],
       ['Documentation visitors', documentationAvailable(data) ? number(data.documentation_analytics?.visitor_count) : '—'],
+      ['Repo page views (14d)', githubTrafficAvailable(data) ? number(data.github_traffic?.views_total) : '—'],
+      ['Unique repo visitors (14d)', githubTrafficAvailable(data) ? number(data.github_traffic?.views_unique) : '—'],
+      ['Repo clones (14d)', githubTrafficAvailable(data) ? number(data.github_traffic?.clones_total) : '—'],
+      ['Unique cloners (14d)', githubTrafficAvailable(data) ? number(data.github_traffic?.clones_unique) : '—'],
+      ['Stars', number(data.repository_metadata?.stars ?? data.summary?.stars)],
+      ['Forks', number(data.repository_metadata?.forks ?? data.summary?.forks)],
       ...(hasDistinctPageHitCount(data)
         ? [['Documentation page hits', number(data.documentation_analytics?.page_hit_count)]]
         : []),
@@ -1607,6 +1898,18 @@ function renderReport(data, reportStatus = {}) {
       ['Documentation 404s', documentationAvailable(data) ? number(data.documentation_analytics?.not_found_count) : '—']
     ].filter(([, value]) => value !== 'N/A' && value !== '—'))
   ]));
+
+  const traffic = data.github_traffic || {};
+  const trafficRows = [
+    ...((traffic.popular_paths || []).slice(0, 5).map((item) => ['Popular repo path', `${item.path}: ${number(item.count)}`])),
+    ...((traffic.popular_referrers || []).slice(0, 5).map((item) => ['Repo referrer', `${item.referrer}: ${number(item.count)}`]))
+  ];
+  if (trafficRows.length) {
+    host.append(element('section', { className: 'report-section' }, [
+      element('h2', { textContent: 'GitHub repository reach highlights' }),
+      compactTable(['Type', 'Value'], trafficRows)
+    ]));
+  }
 
   const docs = data.documentation_analytics || {};
   const docsRows = [
@@ -1628,8 +1931,12 @@ function renderReport(data, reportStatus = {}) {
       ['PRs opened in period', number(periodSummary.prs_opened)],
       ['PRs merged in period', number(periodSummary.prs_merged)],
       ['Open issues', number(data.summary?.open_issues)],
-      ['Open pull requests', number(data.summary?.open_pull_requests)]
-    ].filter(([, value]) => value !== 'N/A'))
+      ['Open pull requests', number(data.summary?.open_pull_requests)],
+      ['Commits (52w)', githubActivityAvailable(data) ? number(data.github_activity?.total_commits_52w) : '—'],
+      ['Commits (4w)', githubActivityAvailable(data) ? number(data.github_activity?.commits_last_4w) : '—'],
+      ['Open PRs waiting for review', number(data.operations?.review_load?.open_prs_waiting_for_review)],
+      ['Draft PRs', number(data.operations?.review_load?.draft_prs)]
+    ].filter(([, value]) => value !== 'N/A' && value !== '—'))
   ]));
 
   host.append(element('section', { className: 'report-section' }, [
@@ -1661,8 +1968,50 @@ function renderReport(data, reportStatus = {}) {
         ['Workflow runs', number(data.github_actions.total_runs)],
         ['Success rate', percent(data.github_actions.success_rate)],
         ['Median duration', duration(data.github_actions.median_duration_seconds)],
+        ['P90 duration', duration(data.github_actions.p90_duration_seconds)],
+        ['Latest default-branch status', text(data.github_actions.latest_default_branch_status || '—')],
         ['Recent failed runs', number((data.github_actions.recent_failed_runs || []).length)]
-      ])
+      ].filter(([, value]) => value !== 'N/A' && value !== '—'))
+    ]));
+    const workflowRows = (data.github_actions.by_workflow || []).slice(0, 6).map((workflow) => [
+      workflow.name,
+      `${number(workflow.runs)} runs · ${workflow.success_rate === null || workflow.success_rate === undefined ? 'N/A' : percent(workflow.success_rate)} success`
+    ]);
+    if (workflowRows.length) {
+      host.append(element('section', { className: 'report-section' }, [
+        element('h2', { textContent: 'Workflow reliability' }),
+        compactTable(['Workflow', 'Summary'], workflowRows)
+      ]));
+    }
+  }
+
+  if (githubGovernanceAvailable(data) && data.github_governance?.available) {
+    const gov = data.github_governance;
+    host.append(element('section', { className: 'report-section' }, [
+      element('h2', { textContent: 'Repository governance' }),
+      compactTable(['Metric', 'Value'], [
+        ['Community health', gov.community_profile?.health_percentage === null || gov.community_profile?.health_percentage === undefined ? '—' : percent(gov.community_profile.health_percentage / 100)],
+        ['Default branch protected', gov.default_branch_protected ? 'Yes' : 'No'],
+        ['Required status checks', number(gov.required_status_checks_count)],
+        ['PR reviews required', gov.requires_pull_request_reviews ? 'Yes' : 'No'],
+        ['Rulesets', number(gov.rulesets_count)],
+        ['Protected environments', number(gov.protected_environments_count)]
+      ].filter(([, value]) => value !== 'N/A' && value !== '—'))
+    ]));
+  }
+
+  if (githubSecurityAvailable(data) && data.github_security?.available) {
+    const ghSec = data.github_security;
+    host.append(element('section', { className: 'report-section' }, [
+      element('h2', { textContent: 'GitHub security posture' }),
+      compactTable(['Metric', 'Value'], [
+        ['Total open alerts', number(ghSec.total_open_alerts)],
+        ['Highest open severity', text(ghSec.highest_open_severity || '—')],
+        ['Code scanning open', number(ghSec.code_scanning?.open_alerts)],
+        ['Dependabot open', number(ghSec.dependabot?.open_alerts)],
+        ['Secret scanning open', number(ghSec.secret_scanning?.open_alerts)],
+        ['Published advisories', number(ghSec.repository_advisories?.published_count)]
+      ].filter(([, value]) => value !== 'N/A' && value !== '—'))
     ]));
   }
 
@@ -1735,6 +2084,7 @@ loadData()
       renderQueues(dashboardData);
       renderTable(dashboardData);
       renderCiReliability(dashboardData);
+      renderReviewLoad(dashboardData);
       renderImpact(dashboardData);
       initSectionNav();
     }

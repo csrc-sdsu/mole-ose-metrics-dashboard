@@ -475,6 +475,87 @@ def add_engagement_metrics(records: list[dict[str, Any]], raw: dict[str, Any]) -
     }
 
 
+def build_review_load(
+    records: list[dict[str, Any]],
+    raw: dict[str, Any],
+    *,
+    stale_days: int,
+) -> dict[str, Any]:
+    pulls_by_number = {pull.get("number"): pull for pull in raw.get("pulls", [])}
+    reviews_by_number: dict[int, list[dict[str, Any]]] = defaultdict(list)
+    for review in raw.get("pull_reviews", []) or []:
+        number = review.get("pull_number")
+        if number is not None:
+            reviews_by_number[int(number)].append(review)
+
+    open_prs = [
+        record
+        for record in records
+        if record.get("type") == "pull_request" and not record.get("closed_at")
+    ]
+    draft_prs = [
+        record
+        for record in open_prs
+        if pulls_by_number.get(record.get("number"), {}).get("draft")
+    ]
+    waiting_for_review = [
+        record
+        for record in open_prs
+        if not record.get("first_review_at")
+        and not pulls_by_number.get(record.get("number"), {}).get("draft")
+    ]
+    changes_requested = []
+    for record in open_prs:
+        number = int(record.get("number") or 0)
+        latest_state = None
+        for review in sorted(
+            reviews_by_number.get(number, []),
+            key=lambda item: item.get("submitted_at") or item.get("created_at") or "",
+            reverse=True,
+        ):
+            latest_state = review.get("state")
+            if latest_state:
+                break
+        if latest_state == "CHANGES_REQUESTED":
+            changes_requested.append(record)
+
+    review_days = [
+        record["first_review_days"]
+        for record in records
+        if record.get("type") == "pull_request" and record.get("first_review_days") is not None
+    ]
+    requested_reviewers_count = sum(
+        len(pulls_by_number.get(record.get("number"), {}).get("requested_reviewers") or [])
+        for record in open_prs
+    )
+
+    open_issues = [
+        record
+        for record in records
+        if record.get("type") == "issue" and not record.get("closed_at")
+    ]
+    issues_with_response = sum(1 for record in open_issues if record.get("first_response_at"))
+    prs_with_review = sum(
+        1 for record in open_prs if record.get("first_review_at") or reviews_by_number.get(
+            int(record.get("number") or 0)
+        )
+    )
+
+    return {
+        "open_prs_waiting_for_review": len(waiting_for_review),
+        "requested_reviewers_count": requested_reviewers_count,
+        "median_time_to_first_review": percentile_stats(review_days)["median"],
+        "p90_time_to_first_review": percentile_stats(review_days)["p90"],
+        "prs_with_changes_requested": len(changes_requested),
+        "draft_prs": len(draft_prs),
+        "review_stale_days": stale_days,
+        "issue_comment_coverage": (
+            round(issues_with_response / len(open_issues), 3) if open_issues else None
+        ),
+        "pr_review_coverage": round(prs_with_review / len(open_prs), 3) if open_prs else None,
+    }
+
+
 def build_operations(
     raw: dict[str, Any],
     repository_name: str,
@@ -506,6 +587,7 @@ def build_operations(
         for issue in raw.get("issues", [])
     ]
     engagement = add_engagement_metrics(records, raw)
+    review_load = build_review_load(records, raw, stale_days=stale_days)
 
     open_records = [record for record in records if not record.get("closed_at")]
     open_issues = [r for r in open_records if r["type"] == "issue"]
@@ -687,7 +769,12 @@ def build_operations(
         "periods": periods,
         "period_summaries": summaries,
         "period_comparisons": comparisons,
-        "engagement": engagement,
+        "engagement": {
+            **engagement,
+            "issue_comment_coverage": review_load["issue_comment_coverage"],
+            "pr_review_coverage": review_load["pr_review_coverage"],
+        },
+        "review_load": review_load,
         "newcomer_funnel": newcomer_funnel,
         "generated_at": generated_at,
         "definitions": {
