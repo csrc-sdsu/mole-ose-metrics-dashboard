@@ -1,6 +1,6 @@
 {
   "collection": {
-    "collected_at": "2026-07-20T11:39:46+00:00",
+    "collected_at": "2026-07-27T12:15:53+00:00",
     "exports": [
       "traffic_200",
       "traffic_404",
@@ -24,34 +24,6 @@
     }
   ],
   "daily_views": [
-    {
-      "date": "2026-04-21",
-      "views": 25
-    },
-    {
-      "date": "2026-04-22",
-      "views": 46
-    },
-    {
-      "date": "2026-04-23",
-      "views": 27
-    },
-    {
-      "date": "2026-04-24",
-      "views": 31
-    },
-    {
-      "date": "2026-04-25",
-      "views": 34
-    },
-    {
-      "date": "2026-04-26",
-      "views": 17
-    },
-    {
-      "date": "2026-04-27",
-      "views": 27
-    },
     {
       "date": "2026-04-28",
       "views": 48
@@ -386,7 +358,35 @@
     },
     {
       "date": "2026-07-20",
-      "views": 19
+      "views": 50
+    },
+    {
+      "date": "2026-07-21",
+      "views": 90
+    },
+    {
+      "date": "2026-07-22",
+      "views": 122
+    },
+    {
+      "date": "2026-07-23",
+      "views": 57
+    },
+    {
+      "date": "2026-07-24",
+      "views": 14
+    },
+    {
+      "date": "2026-07-25",
+      "views": 18
+    },
+    {
+      "date": "2026-07-26",
+      "views": 16
+    },
+    {
+      "date": "2026-07-27",
+      "views": 4
     }
   ],
   "history": {
@@ -414,12 +414,20 @@
         "not_found_count": 27,
         "search_total": 2,
         "views_total": 3519
+      },
+      {
+        "collected_at": "2026-07-27T12:15:53+00:00",
+        "date": "2026-07-27",
+        "no_result_search_count": 2,
+        "not_found_count": 28,
+        "search_total": 2,
+        "views_total": 3664
       }
     ],
     "schema_version": 1
   },
   "no_result_search_count": 2,
-  "not_found_count": 27,
+  "not_found_count": 28,
   "not_found_pages": [
     {
       "path": "/intros/contributing_wrapper.html",
@@ -428,6 +436,11 @@
     },
     {
       "path": "/dev-notes/CONTRIBUTING.md",
+      "version": "main",
+      "views": 2
+    },
+    {
+      "path": "/examples/Elliptic/1D/Elliptic1D-add-Scalar-BC.html",
       "version": "main",
       "views": 2
     },
@@ -447,12 +460,7 @@
       "views": 1
     },
     {
-      "path": "/examples/Time-Integrators/RK4.htmlthere",
-      "version": "main",
-      "views": 1
-    },
-    {
-      "path": "/examples/Time-Integrators/RK4.htmlthere",
+      "path": "/examples/Elliptic/1D/Elliptic1D-add-Scalar-BC.html",
       "version": "main",
       "views": 1
     },
@@ -527,6 +535,16 @@
     {
       "path": "/examples/Sturm-Liouville/Chebyshev.html",
       "version": "main",
+      "views": 91
+    },
+    {
+      "path": "/examples/Sturm-Liouville/Chebyshev.html",
+      "version": "main",
+      "views": 74
+    },
+    {
+      "path": "/examples/Sturm-Liouville/Chebyshev.html",
+      "version": "main",
       "views": 74
     },
     {
@@ -543,6 +561,16 @@
       "path": "/index.html",
       "version": "main",
       "views": 43
+    },
+    {
+      "path": "/examples/Sturm-Liouville/Chebyshev.html",
+      "version": "main",
+      "views": 42
+    },
+    {
+      "path": "/examples/Sturm-Liouville/Chebyshev.html",
+      "version": "main",
+      "views": 38
     },
     {
       "path": "/index.html",
@@ -585,11 +613,6 @@
       "views": 15
     },
     {
-      "path": "/examples/Sturm-Liouville/Chebyshev.html",
-      "version": "main",
-      "views": 15
-    },
-    {
       "path": "/index.html",
       "version": "main",
       "views": 15
@@ -603,23 +626,8 @@
       "path": "/intros/gettingstarted.html",
       "version": "main",
       "views": 15
-    },
-    {
-      "path": "/index.html",
-      "version": "main",
-      "views": 13
-    },
-    {
-      "path": "/index.html",
-      "version": "main",
-      "views": 13
-    },
-    {
-      "path": "/index.html",
-      "version": "main",
-      "views": 12
     }
   ],
-  "unique_pages": 240,
-  "views_total": 3519
+  "unique_pages": 238,
+  "views_total": 3664
 }
