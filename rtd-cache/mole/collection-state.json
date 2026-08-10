@@ -1,5 +1,5 @@
 {
-  "last_attempt_at": "2026-08-03T12:16:27+00:00",
-  "last_error": "locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n  - waiting for locator('#id_login') to be visible\n",
-  "last_success_at": "2026-07-27T12:15:53+00:00"
+  "last_attempt_at": "2026-08-10T10:11:31+00:00",
+  "last_error": null,
+  "last_success_at": "2026-08-10T10:11:31+00:00"
 }
