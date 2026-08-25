@@ -332,7 +332,7 @@
     "unique_contributors": 43
   },
   "documentation_analytics": {
-    "collected_at": "2026-08-25T22:55:25.869066Z",
+    "collected_at": "2026-08-25T22:58:27.459187Z",
     "limitations": [
       "Search queries are intentionally not collected.",
       "Counts use GoatCounter's privacy-aware visitor model."
@@ -462,7 +462,7 @@
     },
     "provider": "goatcounter",
     "rate_limit_remaining": "3",
-    "rate_limit_reset": "1",
+    "rate_limit_reset": "0",
     "reporting_period": {
       "end": "2026-08-25T22:00:00Z",
       "start": "2025-08-30T22:00:00Z"
@@ -1961,7 +1961,7 @@
     ],
     "visitor_count": 969
   },
-  "generated_at": "2026-08-25T22:53:59.103868Z",
+  "generated_at": "2026-08-25T22:57:27.730471Z",
   "github_actions": {
     "artifact_count": 30,
     "artifact_storage_bytes": 20787477,
@@ -7284,7 +7284,7 @@
     ],
     "median_duration_seconds": 68.0,
     "p90_duration_seconds": 315.0,
-    "rate_limit_remaining": "4979",
+    "rate_limit_remaining": "4959",
     "recent_failed_runs": [
       {
         "conclusion": "failure",
@@ -7786,7 +7786,7 @@
       0
     ],
     "partial": false,
-    "rate_limit_remaining": "4833",
+    "rate_limit_remaining": "4696",
     "requests_used": 4,
     "top_commit_contributor_share": 0.001,
     "total_commits_52w": 431,
@@ -7880,7 +7880,7 @@
       "status": "built"
     },
     "protected_environments_count": 0,
-    "rate_limit_remaining": "4804",
+    "rate_limit_remaining": "4679",
     "requests_used": 16,
     "required_approving_review_count": 0,
     "required_status_checks_count": 0,
@@ -7904,7 +7904,7 @@
     },
     "highest_open_severity": "low",
     "oldest_open_alert_age_days": 148.17,
-    "rate_limit_remaining": "4829",
+    "rate_limit_remaining": "4694",
     "repository_advisories": {
       "open_or_draft_count": 0,
       "published_count": 0
@@ -8159,7 +8159,7 @@
         "uniques": 1
       }
     ],
-    "rate_limit_remaining": "4982",
+    "rate_limit_remaining": "4962",
     "requests_used": 4,
     "unique_view_rate": 0.073,
     "views_total": 889,
@@ -8310,7 +8310,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/442"
     },
     {
-      "age_days": 20.74,
+      "age_days": 20.75,
       "author": "bewagner1",
       "closed_at": null,
       "closed_event_months": [],
@@ -8760,7 +8760,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/429"
     },
     {
-      "age_days": 36.34,
+      "age_days": 36.35,
       "author": "valeriabarra",
       "closed_at": "2026-07-21T06:44:04Z",
       "closed_event_months": [
@@ -8874,7 +8874,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/426"
     },
     {
-      "age_days": 49.88,
+      "age_days": 49.89,
       "author": "gpagallo",
       "closed_at": "2026-07-12T14:08:44Z",
       "closed_event_months": [
@@ -9533,7 +9533,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/408"
     },
     {
-      "age_days": 54.22,
+      "age_days": 54.23,
       "author": "jbrzensk",
       "closed_at": "2026-07-07T06:17:11Z",
       "closed_event_months": [
@@ -9679,7 +9679,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/404"
     },
     {
-      "age_days": 55.2,
+      "age_days": 55.21,
       "author": "valeriabarra",
       "closed_at": "2026-07-02T23:22:07Z",
       "closed_event_months": [
@@ -9838,7 +9838,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/400"
     },
     {
-      "age_days": 56.02,
+      "age_days": 56.03,
       "author": "valeriabarra",
       "closed_at": "2026-06-30T22:29:28Z",
       "closed_event_months": [
@@ -9879,7 +9879,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/399"
     },
     {
-      "age_days": 59.91,
+      "age_days": 59.92,
       "author": "cpaolini",
       "closed_at": "2026-07-02T16:26:32Z",
       "closed_event_months": [
@@ -10158,7 +10158,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/392"
     },
     {
-      "age_days": 62.1,
+      "age_days": 62.11,
       "author": "valeriabarra",
       "closed_at": "2026-06-24T20:48:21Z",
       "closed_event_months": [
@@ -10199,7 +10199,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/391"
     },
     {
-      "age_days": 62.15,
+      "age_days": 62.16,
       "author": "valeriabarra",
       "closed_at": "2026-06-24T20:48:21Z",
       "closed_event_months": [
@@ -10869,7 +10869,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/375"
     },
     {
-      "age_days": 93.97,
+      "age_days": 93.98,
       "author": "cpaolini",
       "closed_at": "2026-05-26T15:55:00Z",
       "closed_event_months": [
@@ -11222,7 +11222,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/365"
     },
     {
-      "age_days": 106.02,
+      "age_days": 106.03,
       "author": "valeriabarra",
       "closed_at": "2026-05-12T18:16:29Z",
       "closed_event_months": [
@@ -11368,7 +11368,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/360"
     },
     {
-      "age_days": 110.01,
+      "age_days": 110.02,
       "author": "Tony-Drummond",
       "closed_at": "2026-05-08T14:35:44Z",
       "closed_event_months": [
@@ -11430,7 +11430,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/358"
     },
     {
-      "age_days": 111.98,
+      "age_days": 111.99,
       "author": "Tony-Drummond",
       "closed_at": "2026-08-07T16:59:54Z",
       "closed_event_months": [
@@ -11475,7 +11475,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/357"
     },
     {
-      "age_days": 113.21,
+      "age_days": 113.22,
       "author": "Tony-Drummond",
       "closed_at": "2026-05-04T19:50:40Z",
       "closed_event_months": [
@@ -11543,7 +11543,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/355"
     },
     {
-      "age_days": 116.21,
+      "age_days": 116.22,
       "author": "valeriabarra",
       "closed_at": "2026-06-24T22:13:25Z",
       "closed_event_months": [
@@ -11633,7 +11633,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/353"
     },
     {
-      "age_days": 118.66,
+      "age_days": 118.67,
       "author": "Tony-Drummond",
       "closed_at": "2026-05-08T14:34:24Z",
       "closed_event_months": [
@@ -11873,7 +11873,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/347"
     },
     {
-      "age_days": 120.05,
+      "age_days": 120.06,
       "author": "cpaolini",
       "closed_at": "2026-05-01T17:17:18Z",
       "closed_event_months": [
@@ -11904,7 +11904,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/346"
     },
     {
-      "age_days": 120.68,
+      "age_days": 120.69,
       "author": "Tony-Drummond",
       "closed_at": "2026-04-27T06:45:58Z",
       "closed_event_months": [
@@ -12069,7 +12069,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/342"
     },
     {
-      "age_days": 125.08,
+      "age_days": 125.09,
       "author": "deepanshu-zade",
       "closed_at": "2026-05-04T04:28:17Z",
       "closed_event_months": [
@@ -12159,7 +12159,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/340"
     },
     {
-      "age_days": 126.27,
+      "age_days": 126.28,
       "author": "cpaolini",
       "closed_at": "2026-05-01T17:17:19Z",
       "closed_event_months": [
@@ -12204,7 +12204,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/339"
     },
     {
-      "age_days": 127.0,
+      "age_days": 127.01,
       "author": "Jiya-Rathi",
       "closed_at": "2026-04-24T21:17:32Z",
       "closed_event_months": [
@@ -12371,7 +12371,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/335"
     },
     {
-      "age_days": 131.61,
+      "age_days": 131.62,
       "author": "jb2178-star",
       "closed_at": "2026-07-04T17:14:48Z",
       "closed_event_months": [
@@ -12498,7 +12498,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/332"
     },
     {
-      "age_days": 132.71,
+      "age_days": 132.72,
       "author": "bewagner1",
       "closed_at": "2026-05-18T20:41:22Z",
       "closed_event_months": [
@@ -12740,7 +12740,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/326"
     },
     {
-      "age_days": 137.96,
+      "age_days": 137.97,
       "author": "bewagner1",
       "closed_at": "2026-04-16T17:00:16Z",
       "closed_event_months": [
@@ -12942,7 +12942,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/321"
     },
     {
-      "age_days": 139.07,
+      "age_days": 139.08,
       "author": "Tony-Drummond",
       "closed_at": "2026-05-04T04:30:06Z",
       "closed_event_months": [
@@ -13059,7 +13059,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/318"
     },
     {
-      "age_days": 140.8,
+      "age_days": 140.81,
       "author": "bewagner1",
       "closed_at": "2026-04-27T06:28:11Z",
       "closed_event_months": [
@@ -13239,7 +13239,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/313"
     },
     {
-      "age_days": 151.71,
+      "age_days": 151.72,
       "author": "bewagner1",
       "closed_at": "2026-07-06T18:58:34Z",
       "closed_event_months": [
@@ -13383,7 +13383,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/309"
     },
     {
-      "age_days": 154.14,
+      "age_days": 154.15,
       "author": "mathgeek31415",
       "closed_at": "2026-04-28T16:32:18Z",
       "closed_event_months": [
@@ -13488,7 +13488,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/306"
     },
     {
-      "age_days": 160.18,
+      "age_days": 160.19,
       "author": "jlbaranda",
       "closed_at": "2026-06-16T19:43:45Z",
       "closed_event_months": [
@@ -13874,7 +13874,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/296"
     },
     {
-      "age_days": 174.12,
+      "age_days": 174.13,
       "author": "mdumett",
       "closed_at": "2026-07-04T17:14:54Z",
       "closed_event_months": [
@@ -13997,7 +13997,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/293"
     },
     {
-      "age_days": 174.13,
+      "age_days": 174.14,
       "author": "mdumett",
       "closed_at": "2026-07-04T17:14:56Z",
       "closed_event_months": [
@@ -14038,7 +14038,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/292"
     },
     {
-      "age_days": 174.14,
+      "age_days": 174.15,
       "author": "mdumett",
       "closed_at": "2026-07-04T17:14:58Z",
       "closed_event_months": [
@@ -14151,7 +14151,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/289"
     },
     {
-      "age_days": 175.2,
+      "age_days": 175.21,
       "author": "mdumett",
       "closed_at": "2026-04-21T16:06:15Z",
       "closed_event_months": [
@@ -14182,7 +14182,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/288"
     },
     {
-      "age_days": 175.21,
+      "age_days": 175.22,
       "author": "mdumett",
       "closed_at": "2026-07-04T17:15:00Z",
       "closed_event_months": [
@@ -14321,7 +14321,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/285"
     },
     {
-      "age_days": 175.92,
+      "age_days": 175.93,
       "author": "Tony-Drummond",
       "closed_at": "2026-03-10T20:59:33Z",
       "closed_event_months": [
@@ -14469,7 +14469,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/281"
     },
     {
-      "age_days": 183.11,
+      "age_days": 183.12,
       "author": "valeriabarra",
       "closed_at": "2026-03-04T16:57:18Z",
       "closed_event_months": [
@@ -14506,7 +14506,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/280"
     },
     {
-      "age_days": 189.11,
+      "age_days": 189.12,
       "author": "valeriabarra",
       "closed_at": "2026-02-26T20:50:09Z",
       "closed_event_months": [
@@ -14645,7 +14645,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/276"
     },
     {
-      "age_days": 196.98,
+      "age_days": 196.99,
       "author": "jbrzensk",
       "closed_at": "2026-04-16T17:18:29Z",
       "closed_event_months": [
@@ -14682,7 +14682,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/275"
     },
     {
-      "age_days": 199.65,
+      "age_days": 199.66,
       "author": "yiyuef",
       "closed_at": "2026-04-16T20:54:19Z",
       "closed_event_months": [
@@ -14787,7 +14787,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/272"
     },
     {
-      "age_days": 213.1,
+      "age_days": 213.11,
       "author": "rouson",
       "closed_at": "2026-07-04T17:15:05Z",
       "closed_event_months": [
@@ -14892,7 +14892,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/269"
     },
     {
-      "age_days": 246.13,
+      "age_days": 246.14,
       "author": "joehellmersNOAA",
       "closed_at": "2026-07-04T17:15:07Z",
       "closed_event_months": [
@@ -15053,7 +15053,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/264"
     },
     {
-      "age_days": 251.27,
+      "age_days": 251.28,
       "author": "joehellmersNOAA",
       "closed_at": "2025-12-17T16:28:39Z",
       "closed_event_months": [
@@ -15084,7 +15084,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/263"
     },
     {
-      "age_days": 251.28,
+      "age_days": 251.29,
       "author": "joehellmersNOAA",
       "closed_at": "2025-12-17T16:14:25Z",
       "closed_event_months": [
@@ -15177,7 +15177,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/260"
     },
     {
-      "age_days": 251.99,
+      "age_days": 252.0,
       "author": "jbrzensk",
       "closed_at": "2025-12-22T20:40:14Z",
       "closed_event_months": [
@@ -15500,7 +15500,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/251"
     },
     {
-      "age_days": 256.74,
+      "age_days": 256.75,
       "author": "jbrzensk",
       "closed_at": "2025-12-22T20:40:15Z",
       "closed_event_months": [
@@ -15754,7 +15754,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/243"
     },
     {
-      "age_days": 265.69,
+      "age_days": 265.7,
       "author": "Shane-Stevenson",
       "closed_at": "2025-12-05T22:38:15Z",
       "closed_event_months": [
@@ -15785,7 +15785,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/242"
     },
     {
-      "age_days": 265.69,
+      "age_days": 265.7,
       "author": "Shane-Stevenson",
       "closed_at": "2025-12-05T22:41:14Z",
       "closed_event_months": [
@@ -15915,7 +15915,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/238"
     },
     {
-      "age_days": 278.7,
+      "age_days": 278.71,
       "author": "mathgeek31415",
       "closed_at": "2026-01-19T23:44:37Z",
       "closed_event_months": [
@@ -16045,7 +16045,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/234"
     },
     {
-      "age_days": 286.51,
+      "age_days": 286.52,
       "author": "pritkc",
       "closed_at": "2025-12-17T09:41:15Z",
       "closed_event_months": [
@@ -16110,7 +16110,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/232"
     },
     {
-      "age_days": 287.95,
+      "age_days": 287.96,
       "author": "jbrzensk",
       "closed_at": null,
       "closed_event_months": [
@@ -16150,7 +16150,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/231"
     },
     {
-      "age_days": 297.75,
+      "age_days": 297.76,
       "author": "bewagner1",
       "closed_at": "2025-12-05T22:33:44Z",
       "closed_event_months": [
@@ -16212,7 +16212,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/229"
     },
     {
-      "age_days": 300.67,
+      "age_days": 300.68,
       "author": "mathgeek31415",
       "closed_at": "2026-01-19T23:44:38Z",
       "closed_event_months": [
@@ -16243,7 +16243,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/228"
     },
     {
-      "age_days": 310.09,
+      "age_days": 310.1,
       "author": "pritkc",
       "closed_at": "2025-11-13T21:07:48Z",
       "closed_event_months": [
@@ -16274,7 +16274,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/227"
     },
     {
-      "age_days": 314.1,
+      "age_days": 314.11,
       "author": "joehellmersNOAA",
       "closed_at": "2025-10-16T00:16:25Z",
       "closed_event_months": [
@@ -16412,7 +16412,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/223"
     },
     {
-      "age_days": 320.79,
+      "age_days": 320.8,
       "author": "Tony-Drummond",
       "closed_at": "2025-11-13T21:07:49Z",
       "closed_event_months": [
@@ -16474,7 +16474,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/221"
     },
     {
-      "age_days": 321.04,
+      "age_days": 321.05,
       "author": "valeriabarra",
       "closed_at": "2025-10-08T23:08:37Z",
       "closed_event_months": [
@@ -16783,7 +16783,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/212"
     },
     {
-      "age_days": 333.77,
+      "age_days": 333.78,
       "author": "yiyuef",
       "closed_at": "2026-04-16T20:54:21Z",
       "closed_event_months": [
@@ -16913,7 +16913,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/208"
     },
     {
-      "age_days": 347.17,
+      "age_days": 347.18,
       "author": "rouson",
       "closed_at": "2025-09-15T22:33:46Z",
       "closed_event_months": [
@@ -16944,7 +16944,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/207"
     },
     {
-      "age_days": 347.93,
+      "age_days": 347.94,
       "author": "Tony-Drummond",
       "closed_at": "2025-09-12T22:09:37Z",
       "closed_event_months": [
@@ -17119,7 +17119,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/202"
     },
     {
-      "age_days": 350.75,
+      "age_days": 350.76,
       "author": "rouson",
       "closed_at": "2025-09-10T17:49:19Z",
       "closed_event_months": [
@@ -17386,7 +17386,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/194"
     },
     {
-      "age_days": 364.97,
+      "age_days": 364.98,
       "author": "jbrzensk",
       "closed_at": "2025-10-31T22:54:51Z",
       "closed_event_months": [
@@ -17488,7 +17488,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/191"
     },
     {
-      "age_days": 365.06,
+      "age_days": 365.07,
       "author": "valeriabarra",
       "closed_at": "2025-08-26T01:08:18Z",
       "closed_event_months": [
@@ -17599,7 +17599,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/188"
     },
     {
-      "age_days": 371.92,
+      "age_days": 371.93,
       "author": "valeriabarra",
       "closed_at": "2025-08-19T01:15:41Z",
       "closed_event_months": [
@@ -17880,7 +17880,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/180"
     },
     {
-      "age_days": 386.06,
+      "age_days": 386.07,
       "author": "valeriabarra",
       "closed_at": "2025-08-19T23:30:40Z",
       "closed_event_months": [
@@ -17911,7 +17911,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/179"
     },
     {
-      "age_days": 386.06,
+      "age_days": 386.07,
       "author": "valeriabarra",
       "closed_at": "2025-08-19T23:30:15Z",
       "closed_event_months": [
@@ -17948,7 +17948,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/178"
     },
     {
-      "age_days": 386.06,
+      "age_days": 386.07,
       "author": "valeriabarra",
       "closed_at": "2025-08-19T00:33:25Z",
       "closed_event_months": [
@@ -17979,7 +17979,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/177"
     },
     {
-      "age_days": 392.12,
+      "age_days": 392.13,
       "author": "jbrzensk",
       "closed_at": "2025-07-30T19:48:00Z",
       "closed_event_months": [
@@ -18047,7 +18047,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/175"
     },
     {
-      "age_days": 392.13,
+      "age_days": 392.14,
       "author": "jbrzensk",
       "closed_at": "2025-07-30T19:48:01Z",
       "closed_event_months": [
@@ -18208,7 +18208,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/170"
     },
     {
-      "age_days": 405.64,
+      "age_days": 405.65,
       "author": "JananiPSrinivasan",
       "closed_at": "2025-07-24T00:24:53Z",
       "closed_event_months": [
@@ -18344,7 +18344,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/166"
     },
     {
-      "age_days": 414.24,
+      "age_days": 414.25,
       "author": "valeriabarra",
       "closed_at": "2025-07-11T16:32:34Z",
       "closed_event_months": [
@@ -18515,7 +18515,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/161"
     },
     {
-      "age_days": 433.21,
+      "age_days": 433.22,
       "author": "JananiPSrinivasan",
       "closed_at": "2025-06-18T17:50:32Z",
       "closed_event_months": [
@@ -18636,7 +18636,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/158"
     },
     {
-      "age_days": 433.39,
+      "age_days": 433.4,
       "author": "mdumett",
       "closed_at": "2026-07-04T17:15:19Z",
       "closed_event_months": [
@@ -18722,7 +18722,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/156"
     },
     {
-      "age_days": 437.05,
+      "age_days": 437.06,
       "author": "pritkc",
       "closed_at": "2025-07-22T23:25:05Z",
       "closed_event_months": [
@@ -18968,7 +18968,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/149"
     },
     {
-      "age_days": 447.16,
+      "age_days": 447.17,
       "author": "pritkc",
       "closed_at": "2025-06-21T13:00:14Z",
       "closed_event_months": [
@@ -19085,7 +19085,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/146"
     },
     {
-      "age_days": 452.1,
+      "age_days": 452.11,
       "author": "jbrzensk",
       "closed_at": "2025-05-30T21:15:08Z",
       "closed_event_months": [
@@ -19157,7 +19157,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/144"
     },
     {
-      "age_days": 452.12,
+      "age_days": 452.13,
       "author": "valeriabarra",
       "closed_at": null,
       "closed_event_months": [
@@ -19200,7 +19200,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/143"
     },
     {
-      "age_days": 452.15,
+      "age_days": 452.16,
       "author": "jbrzensk",
       "closed_at": "2025-06-02T20:50:42Z",
       "closed_event_months": [
@@ -19237,7 +19237,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/142"
     },
     {
-      "age_days": 453.09,
+      "age_days": 453.1,
       "author": "pritkc",
       "closed_at": null,
       "closed_event_months": [
@@ -19394,7 +19394,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/138"
     },
     {
-      "age_days": 459.2,
+      "age_days": 459.21,
       "author": "valeriabarra",
       "closed_at": "2025-05-23T20:39:14Z",
       "closed_event_months": [
@@ -19586,7 +19586,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/131"
     },
     {
-      "age_days": 468.22,
+      "age_days": 468.23,
       "author": "pritkc",
       "closed_at": "2025-05-14T17:33:59Z",
       "closed_event_months": [
@@ -19648,7 +19648,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/129"
     },
     {
-      "age_days": 469.06,
+      "age_days": 469.07,
       "author": "jbrzensk",
       "closed_at": "2025-05-19T16:37:39Z",
       "closed_event_months": [
@@ -19784,7 +19784,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/122"
     },
     {
-      "age_days": 482.13,
+      "age_days": 482.14,
       "author": "pritkc",
       "closed_at": "2025-05-28T19:57:13Z",
       "closed_event_months": [
@@ -19877,7 +19877,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/119"
     },
     {
-      "age_days": 487.29,
+      "age_days": 487.3,
       "author": "pritkc",
       "closed_at": "2025-04-28T21:05:53Z",
       "closed_event_months": [
@@ -19973,7 +19973,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/116"
     },
     {
-      "age_days": 488.02,
+      "age_days": 488.03,
       "author": "pritkc",
       "closed_at": "2025-04-24T22:19:05Z",
       "closed_event_months": [
@@ -20035,7 +20035,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/113"
     },
     {
-      "age_days": 495.7,
+      "age_days": 495.71,
       "author": "JananiPSrinivasan",
       "closed_at": "2025-04-24T22:19:44Z",
       "closed_event_months": [
@@ -20189,7 +20189,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/109"
     },
     {
-      "age_days": 510.37,
+      "age_days": 510.38,
       "author": "jbrzensk",
       "closed_at": "2025-04-04T00:09:13Z",
       "closed_event_months": [
@@ -20323,7 +20323,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/105"
     },
     {
-      "age_days": 519.92,
+      "age_days": 519.93,
       "author": "pritkc",
       "closed_at": "2025-05-23T23:06:16Z",
       "closed_event_months": [
@@ -20441,7 +20441,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/102"
     },
     {
-      "age_days": 524.06,
+      "age_days": 524.07,
       "author": "jbrzensk",
       "closed_at": "2025-04-08T17:20:31Z",
       "closed_event_months": [
@@ -20472,7 +20472,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/101"
     },
     {
-      "age_days": 524.73,
+      "age_days": 524.74,
       "author": "katayoonk",
       "closed_at": "2025-04-04T22:19:14Z",
       "closed_event_months": [
@@ -20503,7 +20503,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/100"
     },
     {
-      "age_days": 526.0,
+      "age_days": 526.01,
       "author": "mdumett",
       "closed_at": "2025-04-25T15:27:40Z",
       "closed_event_months": [
@@ -20699,7 +20699,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/94"
     },
     {
-      "age_days": 543.14,
+      "age_days": 543.15,
       "author": "pritkc",
       "closed_at": "2025-03-04T17:54:51Z",
       "closed_event_months": [
@@ -20736,7 +20736,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/93"
     },
     {
-      "age_days": 547.61,
+      "age_days": 547.62,
       "author": "pritkc",
       "closed_at": "2025-02-25T00:32:24Z",
       "closed_event_months": [
@@ -20812,7 +20812,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/91"
     },
     {
-      "age_days": 547.7,
+      "age_days": 547.71,
       "author": "JananiPSrinivasan",
       "closed_at": "2025-02-24T22:12:45Z",
       "closed_event_months": [
@@ -20849,7 +20849,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/90"
     },
     {
-      "age_days": 547.95,
+      "age_days": 547.96,
       "author": "jbrzensk",
       "closed_at": "2025-02-24T22:12:46Z",
       "closed_event_months": [
@@ -20989,7 +20989,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/86"
     },
     {
-      "age_days": 548.65,
+      "age_days": 548.66,
       "author": "pritkc",
       "closed_at": "2026-07-04T17:15:23Z",
       "closed_event_months": [
@@ -21265,7 +21265,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/79"
     },
     {
-      "age_days": 550.06,
+      "age_days": 550.07,
       "author": "JananiPSrinivasan",
       "closed_at": "2025-02-21T21:24:19Z",
       "closed_event_months": [
@@ -21358,7 +21358,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/76"
     },
     {
-      "age_days": 552.09,
+      "age_days": 552.1,
       "author": "pritkc",
       "closed_at": "2025-02-24T18:03:04Z",
       "closed_event_months": [
@@ -21535,7 +21535,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/71"
     },
     {
-      "age_days": 557.1,
+      "age_days": 557.11,
       "author": "arrowguy234",
       "closed_at": "2025-05-28T21:36:10Z",
       "closed_event_months": [
@@ -21628,7 +21628,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/68"
     },
     {
-      "age_days": 558.08,
+      "age_days": 558.09,
       "author": "pritkc",
       "closed_at": "2025-02-24T20:19:45Z",
       "closed_event_months": [
@@ -21764,7 +21764,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/64"
     },
     {
-      "age_days": 559.62,
+      "age_days": 559.63,
       "author": "edfink234",
       "closed_at": "2025-04-04T22:18:30Z",
       "closed_event_months": [
@@ -21932,7 +21932,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/59"
     },
     {
-      "age_days": 564.82,
+      "age_days": 564.83,
       "author": "pritkc",
       "closed_at": "2025-02-12T19:03:14Z",
       "closed_event_months": [
@@ -22071,7 +22071,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/55"
     },
     {
-      "age_days": 572.98,
+      "age_days": 572.99,
       "author": "jbrzensk",
       "closed_at": "2025-02-26T18:08:31Z",
       "closed_event_months": [
@@ -22442,7 +22442,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/44"
     },
     {
-      "age_days": 592.78,
+      "age_days": 592.79,
       "author": "JananiPSrinivasan",
       "closed_at": "2025-01-10T18:30:25Z",
       "closed_event_months": [
@@ -22603,7 +22603,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/39"
     },
     {
-      "age_days": 604.66,
+      "age_days": 604.67,
       "author": "pritkc",
       "closed_at": "2025-01-15T20:09:52Z",
       "closed_event_months": [
@@ -22829,7 +22829,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/32"
     },
     {
-      "age_days": 627.73,
+      "age_days": 627.74,
       "author": "aneeshs1729",
       "closed_at": "2025-01-27T03:40:32Z",
       "closed_event_months": [
@@ -23103,7 +23103,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/24"
     },
     {
-      "age_days": 647.11,
+      "age_days": 647.12,
       "author": "arrowguy234",
       "closed_at": "2025-03-24T14:22:41Z",
       "closed_event_months": [
@@ -23173,7 +23173,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/22"
     },
     {
-      "age_days": 648.97,
+      "age_days": 648.98,
       "author": "aneeshs1729",
       "closed_at": "2025-03-17T20:55:34Z",
       "closed_event_months": [
@@ -23241,7 +23241,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/20"
     },
     {
-      "age_days": 650.25,
+      "age_days": 650.26,
       "author": "pritkc",
       "closed_at": "2025-02-05T07:00:13Z",
       "closed_event_months": [
@@ -23324,7 +23324,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/18"
     },
     {
-      "age_days": 650.71,
+      "age_days": 650.72,
       "author": "pritkc",
       "closed_at": "2024-11-22T18:04:51Z",
       "closed_event_months": [
@@ -23369,7 +23369,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/17"
     },
     {
-      "age_days": 657.9,
+      "age_days": 657.91,
       "author": "pritkc",
       "closed_at": "2024-11-22T18:04:52Z",
       "closed_event_months": [
@@ -23593,7 +23593,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/11"
     },
     {
-      "age_days": 682.98,
+      "age_days": 682.99,
       "author": "jbrzensk",
       "closed_at": "2024-10-16T18:34:40Z",
       "closed_event_months": [
@@ -23624,7 +23624,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/10"
     },
     {
-      "age_days": 745.43,
+      "age_days": 745.44,
       "author": "jbrzensk",
       "closed_at": "2024-08-12T20:43:09Z",
       "closed_event_months": [
@@ -23748,7 +23748,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/6"
     },
     {
-      "age_days": 1036.09,
+      "age_days": 1036.1,
       "author": "carusonahuel",
       "closed_at": "2024-08-04T18:01:49Z",
       "closed_event_months": [
@@ -23779,7 +23779,7 @@
       "url": "https://github.com/csrc-sdsu/mole/issues/5"
     },
     {
-      "age_days": 1082.18,
+      "age_days": 1082.19,
       "author": "jbrzensk",
       "closed_at": "2023-09-29T21:12:44Z",
       "closed_event_months": [
@@ -23872,7 +23872,7 @@
       "url": "https://github.com/csrc-sdsu/mole/pull/2"
     },
     {
-      "age_days": 1852.27,
+      "age_days": 1852.28,
       "author": "jcorbino",
       "closed_at": "2021-07-30T16:22:05Z",
       "closed_event_months": [
@@ -24092,7 +24092,7 @@
       "review_count": 103,
       "reviews_available": true
     },
-    "generated_at": "2026-08-25T22:53:59.103868Z",
+    "generated_at": "2026-08-25T22:57:27.730471Z",
     "items": [
       {
         "age_days": 0.25,
@@ -24208,7 +24208,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/442"
       },
       {
-        "age_days": 20.74,
+        "age_days": 20.75,
         "author": "bewagner1",
         "closed_at": null,
         "closed_event_months": [],
@@ -24658,7 +24658,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/429"
       },
       {
-        "age_days": 36.34,
+        "age_days": 36.35,
         "author": "valeriabarra",
         "closed_at": "2026-07-21T06:44:04Z",
         "closed_event_months": [
@@ -24772,7 +24772,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/426"
       },
       {
-        "age_days": 49.88,
+        "age_days": 49.89,
         "author": "gpagallo",
         "closed_at": "2026-07-12T14:08:44Z",
         "closed_event_months": [
@@ -25431,7 +25431,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/408"
       },
       {
-        "age_days": 54.22,
+        "age_days": 54.23,
         "author": "jbrzensk",
         "closed_at": "2026-07-07T06:17:11Z",
         "closed_event_months": [
@@ -25577,7 +25577,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/404"
       },
       {
-        "age_days": 55.2,
+        "age_days": 55.21,
         "author": "valeriabarra",
         "closed_at": "2026-07-02T23:22:07Z",
         "closed_event_months": [
@@ -25736,7 +25736,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/400"
       },
       {
-        "age_days": 56.02,
+        "age_days": 56.03,
         "author": "valeriabarra",
         "closed_at": "2026-06-30T22:29:28Z",
         "closed_event_months": [
@@ -25777,7 +25777,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/399"
       },
       {
-        "age_days": 59.91,
+        "age_days": 59.92,
         "author": "cpaolini",
         "closed_at": "2026-07-02T16:26:32Z",
         "closed_event_months": [
@@ -26056,7 +26056,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/392"
       },
       {
-        "age_days": 62.1,
+        "age_days": 62.11,
         "author": "valeriabarra",
         "closed_at": "2026-06-24T20:48:21Z",
         "closed_event_months": [
@@ -26097,7 +26097,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/391"
       },
       {
-        "age_days": 62.15,
+        "age_days": 62.16,
         "author": "valeriabarra",
         "closed_at": "2026-06-24T20:48:21Z",
         "closed_event_months": [
@@ -26767,7 +26767,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/375"
       },
       {
-        "age_days": 93.97,
+        "age_days": 93.98,
         "author": "cpaolini",
         "closed_at": "2026-05-26T15:55:00Z",
         "closed_event_months": [
@@ -27120,7 +27120,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/365"
       },
       {
-        "age_days": 106.02,
+        "age_days": 106.03,
         "author": "valeriabarra",
         "closed_at": "2026-05-12T18:16:29Z",
         "closed_event_months": [
@@ -27266,7 +27266,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/360"
       },
       {
-        "age_days": 110.01,
+        "age_days": 110.02,
         "author": "Tony-Drummond",
         "closed_at": "2026-05-08T14:35:44Z",
         "closed_event_months": [
@@ -27328,7 +27328,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/358"
       },
       {
-        "age_days": 111.98,
+        "age_days": 111.99,
         "author": "Tony-Drummond",
         "closed_at": "2026-08-07T16:59:54Z",
         "closed_event_months": [
@@ -27373,7 +27373,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/357"
       },
       {
-        "age_days": 113.21,
+        "age_days": 113.22,
         "author": "Tony-Drummond",
         "closed_at": "2026-05-04T19:50:40Z",
         "closed_event_months": [
@@ -27441,7 +27441,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/355"
       },
       {
-        "age_days": 116.21,
+        "age_days": 116.22,
         "author": "valeriabarra",
         "closed_at": "2026-06-24T22:13:25Z",
         "closed_event_months": [
@@ -27531,7 +27531,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/353"
       },
       {
-        "age_days": 118.66,
+        "age_days": 118.67,
         "author": "Tony-Drummond",
         "closed_at": "2026-05-08T14:34:24Z",
         "closed_event_months": [
@@ -27771,7 +27771,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/347"
       },
       {
-        "age_days": 120.05,
+        "age_days": 120.06,
         "author": "cpaolini",
         "closed_at": "2026-05-01T17:17:18Z",
         "closed_event_months": [
@@ -27802,7 +27802,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/346"
       },
       {
-        "age_days": 120.68,
+        "age_days": 120.69,
         "author": "Tony-Drummond",
         "closed_at": "2026-04-27T06:45:58Z",
         "closed_event_months": [
@@ -27967,7 +27967,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/342"
       },
       {
-        "age_days": 125.08,
+        "age_days": 125.09,
         "author": "deepanshu-zade",
         "closed_at": "2026-05-04T04:28:17Z",
         "closed_event_months": [
@@ -28057,7 +28057,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/340"
       },
       {
-        "age_days": 126.27,
+        "age_days": 126.28,
         "author": "cpaolini",
         "closed_at": "2026-05-01T17:17:19Z",
         "closed_event_months": [
@@ -28102,7 +28102,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/339"
       },
       {
-        "age_days": 127.0,
+        "age_days": 127.01,
         "author": "Jiya-Rathi",
         "closed_at": "2026-04-24T21:17:32Z",
         "closed_event_months": [
@@ -28269,7 +28269,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/335"
       },
       {
-        "age_days": 131.61,
+        "age_days": 131.62,
         "author": "jb2178-star",
         "closed_at": "2026-07-04T17:14:48Z",
         "closed_event_months": [
@@ -28396,7 +28396,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/332"
       },
       {
-        "age_days": 132.71,
+        "age_days": 132.72,
         "author": "bewagner1",
         "closed_at": "2026-05-18T20:41:22Z",
         "closed_event_months": [
@@ -28638,7 +28638,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/326"
       },
       {
-        "age_days": 137.96,
+        "age_days": 137.97,
         "author": "bewagner1",
         "closed_at": "2026-04-16T17:00:16Z",
         "closed_event_months": [
@@ -28840,7 +28840,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/321"
       },
       {
-        "age_days": 139.07,
+        "age_days": 139.08,
         "author": "Tony-Drummond",
         "closed_at": "2026-05-04T04:30:06Z",
         "closed_event_months": [
@@ -28957,7 +28957,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/318"
       },
       {
-        "age_days": 140.8,
+        "age_days": 140.81,
         "author": "bewagner1",
         "closed_at": "2026-04-27T06:28:11Z",
         "closed_event_months": [
@@ -29137,7 +29137,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/313"
       },
       {
-        "age_days": 151.71,
+        "age_days": 151.72,
         "author": "bewagner1",
         "closed_at": "2026-07-06T18:58:34Z",
         "closed_event_months": [
@@ -29281,7 +29281,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/309"
       },
       {
-        "age_days": 154.14,
+        "age_days": 154.15,
         "author": "mathgeek31415",
         "closed_at": "2026-04-28T16:32:18Z",
         "closed_event_months": [
@@ -29386,7 +29386,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/306"
       },
       {
-        "age_days": 160.18,
+        "age_days": 160.19,
         "author": "jlbaranda",
         "closed_at": "2026-06-16T19:43:45Z",
         "closed_event_months": [
@@ -29772,7 +29772,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/296"
       },
       {
-        "age_days": 174.12,
+        "age_days": 174.13,
         "author": "mdumett",
         "closed_at": "2026-07-04T17:14:54Z",
         "closed_event_months": [
@@ -29895,7 +29895,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/293"
       },
       {
-        "age_days": 174.13,
+        "age_days": 174.14,
         "author": "mdumett",
         "closed_at": "2026-07-04T17:14:56Z",
         "closed_event_months": [
@@ -29936,7 +29936,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/292"
       },
       {
-        "age_days": 174.14,
+        "age_days": 174.15,
         "author": "mdumett",
         "closed_at": "2026-07-04T17:14:58Z",
         "closed_event_months": [
@@ -30049,7 +30049,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/289"
       },
       {
-        "age_days": 175.2,
+        "age_days": 175.21,
         "author": "mdumett",
         "closed_at": "2026-04-21T16:06:15Z",
         "closed_event_months": [
@@ -30080,7 +30080,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/288"
       },
       {
-        "age_days": 175.21,
+        "age_days": 175.22,
         "author": "mdumett",
         "closed_at": "2026-07-04T17:15:00Z",
         "closed_event_months": [
@@ -30219,7 +30219,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/285"
       },
       {
-        "age_days": 175.92,
+        "age_days": 175.93,
         "author": "Tony-Drummond",
         "closed_at": "2026-03-10T20:59:33Z",
         "closed_event_months": [
@@ -30367,7 +30367,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/281"
       },
       {
-        "age_days": 183.11,
+        "age_days": 183.12,
         "author": "valeriabarra",
         "closed_at": "2026-03-04T16:57:18Z",
         "closed_event_months": [
@@ -30404,7 +30404,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/280"
       },
       {
-        "age_days": 189.11,
+        "age_days": 189.12,
         "author": "valeriabarra",
         "closed_at": "2026-02-26T20:50:09Z",
         "closed_event_months": [
@@ -30543,7 +30543,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/276"
       },
       {
-        "age_days": 196.98,
+        "age_days": 196.99,
         "author": "jbrzensk",
         "closed_at": "2026-04-16T17:18:29Z",
         "closed_event_months": [
@@ -30580,7 +30580,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/275"
       },
       {
-        "age_days": 199.65,
+        "age_days": 199.66,
         "author": "yiyuef",
         "closed_at": "2026-04-16T20:54:19Z",
         "closed_event_months": [
@@ -30685,7 +30685,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/272"
       },
       {
-        "age_days": 213.1,
+        "age_days": 213.11,
         "author": "rouson",
         "closed_at": "2026-07-04T17:15:05Z",
         "closed_event_months": [
@@ -30790,7 +30790,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/269"
       },
       {
-        "age_days": 246.13,
+        "age_days": 246.14,
         "author": "joehellmersNOAA",
         "closed_at": "2026-07-04T17:15:07Z",
         "closed_event_months": [
@@ -30951,7 +30951,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/264"
       },
       {
-        "age_days": 251.27,
+        "age_days": 251.28,
         "author": "joehellmersNOAA",
         "closed_at": "2025-12-17T16:28:39Z",
         "closed_event_months": [
@@ -30982,7 +30982,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/263"
       },
       {
-        "age_days": 251.28,
+        "age_days": 251.29,
         "author": "joehellmersNOAA",
         "closed_at": "2025-12-17T16:14:25Z",
         "closed_event_months": [
@@ -31075,7 +31075,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/260"
       },
       {
-        "age_days": 251.99,
+        "age_days": 252.0,
         "author": "jbrzensk",
         "closed_at": "2025-12-22T20:40:14Z",
         "closed_event_months": [
@@ -31398,7 +31398,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/251"
       },
       {
-        "age_days": 256.74,
+        "age_days": 256.75,
         "author": "jbrzensk",
         "closed_at": "2025-12-22T20:40:15Z",
         "closed_event_months": [
@@ -31652,7 +31652,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/243"
       },
       {
-        "age_days": 265.69,
+        "age_days": 265.7,
         "author": "Shane-Stevenson",
         "closed_at": "2025-12-05T22:38:15Z",
         "closed_event_months": [
@@ -31683,7 +31683,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/242"
       },
       {
-        "age_days": 265.69,
+        "age_days": 265.7,
         "author": "Shane-Stevenson",
         "closed_at": "2025-12-05T22:41:14Z",
         "closed_event_months": [
@@ -31813,7 +31813,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/238"
       },
       {
-        "age_days": 278.7,
+        "age_days": 278.71,
         "author": "mathgeek31415",
         "closed_at": "2026-01-19T23:44:37Z",
         "closed_event_months": [
@@ -31943,7 +31943,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/234"
       },
       {
-        "age_days": 286.51,
+        "age_days": 286.52,
         "author": "pritkc",
         "closed_at": "2025-12-17T09:41:15Z",
         "closed_event_months": [
@@ -32008,7 +32008,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/232"
       },
       {
-        "age_days": 287.95,
+        "age_days": 287.96,
         "author": "jbrzensk",
         "closed_at": null,
         "closed_event_months": [
@@ -32048,7 +32048,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/231"
       },
       {
-        "age_days": 297.75,
+        "age_days": 297.76,
         "author": "bewagner1",
         "closed_at": "2025-12-05T22:33:44Z",
         "closed_event_months": [
@@ -32110,7 +32110,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/229"
       },
       {
-        "age_days": 300.67,
+        "age_days": 300.68,
         "author": "mathgeek31415",
         "closed_at": "2026-01-19T23:44:38Z",
         "closed_event_months": [
@@ -32141,7 +32141,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/228"
       },
       {
-        "age_days": 310.09,
+        "age_days": 310.1,
         "author": "pritkc",
         "closed_at": "2025-11-13T21:07:48Z",
         "closed_event_months": [
@@ -32172,7 +32172,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/227"
       },
       {
-        "age_days": 314.1,
+        "age_days": 314.11,
         "author": "joehellmersNOAA",
         "closed_at": "2025-10-16T00:16:25Z",
         "closed_event_months": [
@@ -32310,7 +32310,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/223"
       },
       {
-        "age_days": 320.79,
+        "age_days": 320.8,
         "author": "Tony-Drummond",
         "closed_at": "2025-11-13T21:07:49Z",
         "closed_event_months": [
@@ -32372,7 +32372,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/221"
       },
       {
-        "age_days": 321.04,
+        "age_days": 321.05,
         "author": "valeriabarra",
         "closed_at": "2025-10-08T23:08:37Z",
         "closed_event_months": [
@@ -32681,7 +32681,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/212"
       },
       {
-        "age_days": 333.77,
+        "age_days": 333.78,
         "author": "yiyuef",
         "closed_at": "2026-04-16T20:54:21Z",
         "closed_event_months": [
@@ -32811,7 +32811,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/208"
       },
       {
-        "age_days": 347.17,
+        "age_days": 347.18,
         "author": "rouson",
         "closed_at": "2025-09-15T22:33:46Z",
         "closed_event_months": [
@@ -32842,7 +32842,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/207"
       },
       {
-        "age_days": 347.93,
+        "age_days": 347.94,
         "author": "Tony-Drummond",
         "closed_at": "2025-09-12T22:09:37Z",
         "closed_event_months": [
@@ -33017,7 +33017,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/202"
       },
       {
-        "age_days": 350.75,
+        "age_days": 350.76,
         "author": "rouson",
         "closed_at": "2025-09-10T17:49:19Z",
         "closed_event_months": [
@@ -33284,7 +33284,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/194"
       },
       {
-        "age_days": 364.97,
+        "age_days": 364.98,
         "author": "jbrzensk",
         "closed_at": "2025-10-31T22:54:51Z",
         "closed_event_months": [
@@ -33386,7 +33386,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/191"
       },
       {
-        "age_days": 365.06,
+        "age_days": 365.07,
         "author": "valeriabarra",
         "closed_at": "2025-08-26T01:08:18Z",
         "closed_event_months": [
@@ -33497,7 +33497,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/188"
       },
       {
-        "age_days": 371.92,
+        "age_days": 371.93,
         "author": "valeriabarra",
         "closed_at": "2025-08-19T01:15:41Z",
         "closed_event_months": [
@@ -33778,7 +33778,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/180"
       },
       {
-        "age_days": 386.06,
+        "age_days": 386.07,
         "author": "valeriabarra",
         "closed_at": "2025-08-19T23:30:40Z",
         "closed_event_months": [
@@ -33809,7 +33809,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/179"
       },
       {
-        "age_days": 386.06,
+        "age_days": 386.07,
         "author": "valeriabarra",
         "closed_at": "2025-08-19T23:30:15Z",
         "closed_event_months": [
@@ -33846,7 +33846,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/178"
       },
       {
-        "age_days": 386.06,
+        "age_days": 386.07,
         "author": "valeriabarra",
         "closed_at": "2025-08-19T00:33:25Z",
         "closed_event_months": [
@@ -33877,7 +33877,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/177"
       },
       {
-        "age_days": 392.12,
+        "age_days": 392.13,
         "author": "jbrzensk",
         "closed_at": "2025-07-30T19:48:00Z",
         "closed_event_months": [
@@ -33945,7 +33945,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/175"
       },
       {
-        "age_days": 392.13,
+        "age_days": 392.14,
         "author": "jbrzensk",
         "closed_at": "2025-07-30T19:48:01Z",
         "closed_event_months": [
@@ -34106,7 +34106,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/170"
       },
       {
-        "age_days": 405.64,
+        "age_days": 405.65,
         "author": "JananiPSrinivasan",
         "closed_at": "2025-07-24T00:24:53Z",
         "closed_event_months": [
@@ -34242,7 +34242,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/166"
       },
       {
-        "age_days": 414.24,
+        "age_days": 414.25,
         "author": "valeriabarra",
         "closed_at": "2025-07-11T16:32:34Z",
         "closed_event_months": [
@@ -34413,7 +34413,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/161"
       },
       {
-        "age_days": 433.21,
+        "age_days": 433.22,
         "author": "JananiPSrinivasan",
         "closed_at": "2025-06-18T17:50:32Z",
         "closed_event_months": [
@@ -34534,7 +34534,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/158"
       },
       {
-        "age_days": 433.39,
+        "age_days": 433.4,
         "author": "mdumett",
         "closed_at": "2026-07-04T17:15:19Z",
         "closed_event_months": [
@@ -34620,7 +34620,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/156"
       },
       {
-        "age_days": 437.05,
+        "age_days": 437.06,
         "author": "pritkc",
         "closed_at": "2025-07-22T23:25:05Z",
         "closed_event_months": [
@@ -34866,7 +34866,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/149"
       },
       {
-        "age_days": 447.16,
+        "age_days": 447.17,
         "author": "pritkc",
         "closed_at": "2025-06-21T13:00:14Z",
         "closed_event_months": [
@@ -34983,7 +34983,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/146"
       },
       {
-        "age_days": 452.1,
+        "age_days": 452.11,
         "author": "jbrzensk",
         "closed_at": "2025-05-30T21:15:08Z",
         "closed_event_months": [
@@ -35055,7 +35055,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/144"
       },
       {
-        "age_days": 452.12,
+        "age_days": 452.13,
         "author": "valeriabarra",
         "closed_at": null,
         "closed_event_months": [
@@ -35098,7 +35098,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/143"
       },
       {
-        "age_days": 452.15,
+        "age_days": 452.16,
         "author": "jbrzensk",
         "closed_at": "2025-06-02T20:50:42Z",
         "closed_event_months": [
@@ -35135,7 +35135,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/142"
       },
       {
-        "age_days": 453.09,
+        "age_days": 453.1,
         "author": "pritkc",
         "closed_at": null,
         "closed_event_months": [
@@ -35292,7 +35292,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/138"
       },
       {
-        "age_days": 459.2,
+        "age_days": 459.21,
         "author": "valeriabarra",
         "closed_at": "2025-05-23T20:39:14Z",
         "closed_event_months": [
@@ -35484,7 +35484,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/131"
       },
       {
-        "age_days": 468.22,
+        "age_days": 468.23,
         "author": "pritkc",
         "closed_at": "2025-05-14T17:33:59Z",
         "closed_event_months": [
@@ -35546,7 +35546,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/129"
       },
       {
-        "age_days": 469.06,
+        "age_days": 469.07,
         "author": "jbrzensk",
         "closed_at": "2025-05-19T16:37:39Z",
         "closed_event_months": [
@@ -35682,7 +35682,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/122"
       },
       {
-        "age_days": 482.13,
+        "age_days": 482.14,
         "author": "pritkc",
         "closed_at": "2025-05-28T19:57:13Z",
         "closed_event_months": [
@@ -35775,7 +35775,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/119"
       },
       {
-        "age_days": 487.29,
+        "age_days": 487.3,
         "author": "pritkc",
         "closed_at": "2025-04-28T21:05:53Z",
         "closed_event_months": [
@@ -35871,7 +35871,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/116"
       },
       {
-        "age_days": 488.02,
+        "age_days": 488.03,
         "author": "pritkc",
         "closed_at": "2025-04-24T22:19:05Z",
         "closed_event_months": [
@@ -35933,7 +35933,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/113"
       },
       {
-        "age_days": 495.7,
+        "age_days": 495.71,
         "author": "JananiPSrinivasan",
         "closed_at": "2025-04-24T22:19:44Z",
         "closed_event_months": [
@@ -36087,7 +36087,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/109"
       },
       {
-        "age_days": 510.37,
+        "age_days": 510.38,
         "author": "jbrzensk",
         "closed_at": "2025-04-04T00:09:13Z",
         "closed_event_months": [
@@ -36221,7 +36221,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/105"
       },
       {
-        "age_days": 519.92,
+        "age_days": 519.93,
         "author": "pritkc",
         "closed_at": "2025-05-23T23:06:16Z",
         "closed_event_months": [
@@ -36339,7 +36339,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/102"
       },
       {
-        "age_days": 524.06,
+        "age_days": 524.07,
         "author": "jbrzensk",
         "closed_at": "2025-04-08T17:20:31Z",
         "closed_event_months": [
@@ -36370,7 +36370,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/101"
       },
       {
-        "age_days": 524.73,
+        "age_days": 524.74,
         "author": "katayoonk",
         "closed_at": "2025-04-04T22:19:14Z",
         "closed_event_months": [
@@ -36401,7 +36401,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/100"
       },
       {
-        "age_days": 526.0,
+        "age_days": 526.01,
         "author": "mdumett",
         "closed_at": "2025-04-25T15:27:40Z",
         "closed_event_months": [
@@ -36597,7 +36597,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/94"
       },
       {
-        "age_days": 543.14,
+        "age_days": 543.15,
         "author": "pritkc",
         "closed_at": "2025-03-04T17:54:51Z",
         "closed_event_months": [
@@ -36634,7 +36634,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/93"
       },
       {
-        "age_days": 547.61,
+        "age_days": 547.62,
         "author": "pritkc",
         "closed_at": "2025-02-25T00:32:24Z",
         "closed_event_months": [
@@ -36710,7 +36710,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/91"
       },
       {
-        "age_days": 547.7,
+        "age_days": 547.71,
         "author": "JananiPSrinivasan",
         "closed_at": "2025-02-24T22:12:45Z",
         "closed_event_months": [
@@ -36747,7 +36747,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/90"
       },
       {
-        "age_days": 547.95,
+        "age_days": 547.96,
         "author": "jbrzensk",
         "closed_at": "2025-02-24T22:12:46Z",
         "closed_event_months": [
@@ -36887,7 +36887,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/86"
       },
       {
-        "age_days": 548.65,
+        "age_days": 548.66,
         "author": "pritkc",
         "closed_at": "2026-07-04T17:15:23Z",
         "closed_event_months": [
@@ -37163,7 +37163,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/79"
       },
       {
-        "age_days": 550.06,
+        "age_days": 550.07,
         "author": "JananiPSrinivasan",
         "closed_at": "2025-02-21T21:24:19Z",
         "closed_event_months": [
@@ -37256,7 +37256,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/76"
       },
       {
-        "age_days": 552.09,
+        "age_days": 552.1,
         "author": "pritkc",
         "closed_at": "2025-02-24T18:03:04Z",
         "closed_event_months": [
@@ -37433,7 +37433,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/71"
       },
       {
-        "age_days": 557.1,
+        "age_days": 557.11,
         "author": "arrowguy234",
         "closed_at": "2025-05-28T21:36:10Z",
         "closed_event_months": [
@@ -37526,7 +37526,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/68"
       },
       {
-        "age_days": 558.08,
+        "age_days": 558.09,
         "author": "pritkc",
         "closed_at": "2025-02-24T20:19:45Z",
         "closed_event_months": [
@@ -37662,7 +37662,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/64"
       },
       {
-        "age_days": 559.62,
+        "age_days": 559.63,
         "author": "edfink234",
         "closed_at": "2025-04-04T22:18:30Z",
         "closed_event_months": [
@@ -37830,7 +37830,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/59"
       },
       {
-        "age_days": 564.82,
+        "age_days": 564.83,
         "author": "pritkc",
         "closed_at": "2025-02-12T19:03:14Z",
         "closed_event_months": [
@@ -37969,7 +37969,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/55"
       },
       {
-        "age_days": 572.98,
+        "age_days": 572.99,
         "author": "jbrzensk",
         "closed_at": "2025-02-26T18:08:31Z",
         "closed_event_months": [
@@ -38340,7 +38340,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/44"
       },
       {
-        "age_days": 592.78,
+        "age_days": 592.79,
         "author": "JananiPSrinivasan",
         "closed_at": "2025-01-10T18:30:25Z",
         "closed_event_months": [
@@ -38501,7 +38501,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/39"
       },
       {
-        "age_days": 604.66,
+        "age_days": 604.67,
         "author": "pritkc",
         "closed_at": "2025-01-15T20:09:52Z",
         "closed_event_months": [
@@ -38727,7 +38727,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/32"
       },
       {
-        "age_days": 627.73,
+        "age_days": 627.74,
         "author": "aneeshs1729",
         "closed_at": "2025-01-27T03:40:32Z",
         "closed_event_months": [
@@ -39001,7 +39001,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/24"
       },
       {
-        "age_days": 647.11,
+        "age_days": 647.12,
         "author": "arrowguy234",
         "closed_at": "2025-03-24T14:22:41Z",
         "closed_event_months": [
@@ -39071,7 +39071,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/22"
       },
       {
-        "age_days": 648.97,
+        "age_days": 648.98,
         "author": "aneeshs1729",
         "closed_at": "2025-03-17T20:55:34Z",
         "closed_event_months": [
@@ -39139,7 +39139,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/20"
       },
       {
-        "age_days": 650.25,
+        "age_days": 650.26,
         "author": "pritkc",
         "closed_at": "2025-02-05T07:00:13Z",
         "closed_event_months": [
@@ -39222,7 +39222,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/18"
       },
       {
-        "age_days": 650.71,
+        "age_days": 650.72,
         "author": "pritkc",
         "closed_at": "2024-11-22T18:04:51Z",
         "closed_event_months": [
@@ -39267,7 +39267,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/17"
       },
       {
-        "age_days": 657.9,
+        "age_days": 657.91,
         "author": "pritkc",
         "closed_at": "2024-11-22T18:04:52Z",
         "closed_event_months": [
@@ -39491,7 +39491,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/11"
       },
       {
-        "age_days": 682.98,
+        "age_days": 682.99,
         "author": "jbrzensk",
         "closed_at": "2024-10-16T18:34:40Z",
         "closed_event_months": [
@@ -39522,7 +39522,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/10"
       },
       {
-        "age_days": 745.43,
+        "age_days": 745.44,
         "author": "jbrzensk",
         "closed_at": "2024-08-12T20:43:09Z",
         "closed_event_months": [
@@ -39646,7 +39646,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/6"
       },
       {
-        "age_days": 1036.09,
+        "age_days": 1036.1,
         "author": "carusonahuel",
         "closed_at": "2024-08-04T18:01:49Z",
         "closed_event_months": [
@@ -39677,7 +39677,7 @@
         "url": "https://github.com/csrc-sdsu/mole/issues/5"
       },
       {
-        "age_days": 1082.18,
+        "age_days": 1082.19,
         "author": "jbrzensk",
         "closed_at": "2023-09-29T21:12:44Z",
         "closed_event_months": [
@@ -39770,7 +39770,7 @@
         "url": "https://github.com/csrc-sdsu/mole/pull/2"
       },
       {
-        "age_days": 1852.27,
+        "age_days": 1852.28,
         "author": "jcorbino",
         "closed_at": "2021-07-30T16:22:05Z",
         "closed_event_months": [
@@ -42464,8 +42464,8 @@
         "description": "Improvements or additions to documentation",
         "issues": 56,
         "label": "Documentation",
-        "max_age_days": 453.09,
-        "median_age_days": 452.12,
+        "max_age_days": 453.1,
+        "median_age_days": 452.13,
         "median_close_days": 5.87,
         "median_first_response_days": 0.24,
         "median_first_review_days": 0.07,
@@ -42521,7 +42521,7 @@
         "description": "No recent activity; scheduled for automatic closure.",
         "issues": 35,
         "label": "stale",
-        "max_age_days": 453.09,
+        "max_age_days": 453.1,
         "median_age_days": 98.85,
         "median_close_days": 123.03,
         "median_first_response_days": 39.77,
@@ -42597,8 +42597,8 @@
         "description": "Addition or improvement of examples that showcase the main functionality of the library",
         "issues": 12,
         "label": "Examples",
-        "max_age_days": 453.09,
-        "median_age_days": 370.03,
+        "max_age_days": 453.1,
+        "median_age_days": 370.04,
         "median_close_days": 68.57,
         "median_first_response_days": 31.78,
         "median_first_review_days": null,
@@ -42654,8 +42654,8 @@
         "description": "Good for newcomers",
         "issues": 13,
         "label": "Good first issue",
-        "max_age_days": 453.09,
-        "median_age_days": 227.56,
+        "max_age_days": 453.1,
+        "median_age_days": 227.57,
         "median_close_days": 52.77,
         "median_first_response_days": 17.04,
         "median_first_review_days": null,
@@ -42825,8 +42825,8 @@
         "description": "Extra attention is needed",
         "issues": 3,
         "label": "Help wanted",
-        "max_age_days": 453.09,
-        "median_age_days": 453.09,
+        "max_age_days": 453.1,
+        "median_age_days": 453.1,
         "median_close_days": null,
         "median_first_response_days": 2.98,
         "median_first_review_days": null,
@@ -43017,8 +43017,8 @@
           "issues": 56,
           "issues_closed": 23,
           "label": "Documentation",
-          "max_age_days": 453.09,
-          "median_age_days": 452.12,
+          "max_age_days": 453.1,
+          "median_age_days": 452.13,
           "median_close_days": 3.02,
           "median_merge_days": 0.84,
           "merged": 15,
@@ -43074,7 +43074,7 @@
           "issues": 35,
           "issues_closed": 26,
           "label": "stale",
-          "max_age_days": 453.09,
+          "max_age_days": 453.1,
           "median_age_days": 98.85,
           "median_close_days": 123.03,
           "median_merge_days": null,
@@ -43150,8 +43150,8 @@
           "issues": 12,
           "issues_closed": 7,
           "label": "Examples",
-          "max_age_days": 453.09,
-          "median_age_days": 370.03,
+          "max_age_days": 453.1,
+          "median_age_days": 370.04,
           "median_close_days": 79.38,
           "median_merge_days": 36.7,
           "merged": 4,
@@ -43226,8 +43226,8 @@
           "issues": 13,
           "issues_closed": 8,
           "label": "Good first issue",
-          "max_age_days": 453.09,
-          "median_age_days": 227.56,
+          "max_age_days": 453.1,
+          "median_age_days": 227.57,
           "median_close_days": 27.0,
           "median_merge_days": null,
           "merged": 0,
@@ -43454,8 +43454,8 @@
           "issues": 3,
           "issues_closed": 0,
           "label": "Help wanted",
-          "max_age_days": 453.09,
-          "median_age_days": 453.09,
+          "max_age_days": 453.1,
+          "median_age_days": 453.1,
           "median_close_days": null,
           "median_merge_days": null,
           "merged": 0,
@@ -43570,8 +43570,8 @@
           "issues": 56,
           "issues_closed": 13,
           "label": "Documentation",
-          "max_age_days": 453.09,
-          "median_age_days": 452.12,
+          "max_age_days": 453.1,
+          "median_age_days": 452.13,
           "median_close_days": 3.02,
           "median_merge_days": 0.88,
           "merged": 10,
@@ -43589,7 +43589,7 @@
           "issues": 35,
           "issues_closed": 24,
           "label": "stale",
-          "max_age_days": 453.09,
+          "max_age_days": 453.1,
           "median_age_days": 98.85,
           "median_close_days": 123.03,
           "median_merge_days": null,
@@ -43665,8 +43665,8 @@
           "issues": 12,
           "issues_closed": 7,
           "label": "Examples",
-          "max_age_days": 453.09,
-          "median_age_days": 370.03,
+          "max_age_days": 453.1,
+          "median_age_days": 370.04,
           "median_close_days": 79.38,
           "median_merge_days": null,
           "merged": 2,
@@ -43684,8 +43684,8 @@
           "issues": 13,
           "issues_closed": 7,
           "label": "Good first issue",
-          "max_age_days": 453.09,
-          "median_age_days": 227.56,
+          "max_age_days": 453.1,
+          "median_age_days": 227.57,
           "median_close_days": 1.22,
           "median_merge_days": null,
           "merged": 0,
@@ -43969,8 +43969,8 @@
           "issues": 3,
           "issues_closed": 0,
           "label": "Help wanted",
-          "max_age_days": 453.09,
-          "median_age_days": 453.09,
+          "max_age_days": 453.1,
+          "median_age_days": 453.1,
           "median_close_days": null,
           "median_merge_days": null,
           "merged": 0,
@@ -44142,8 +44142,8 @@
           "issues": 56,
           "issues_closed": 20,
           "label": "Documentation",
-          "max_age_days": 453.09,
-          "median_age_days": 452.12,
+          "max_age_days": 453.1,
+          "median_age_days": 452.13,
           "median_close_days": 3.03,
           "median_merge_days": 0.99,
           "merged": 13,
@@ -44180,7 +44180,7 @@
           "issues": 35,
           "issues_closed": 26,
           "label": "stale",
-          "max_age_days": 453.09,
+          "max_age_days": 453.1,
           "median_age_days": 98.85,
           "median_close_days": 123.03,
           "median_merge_days": null,
@@ -44256,8 +44256,8 @@
           "issues": 12,
           "issues_closed": 7,
           "label": "Examples",
-          "max_age_days": 453.09,
-          "median_age_days": 370.03,
+          "max_age_days": 453.1,
+          "median_age_days": 370.04,
           "median_close_days": 79.38,
           "median_merge_days": 36.7,
           "merged": 4,
@@ -44332,8 +44332,8 @@
           "issues": 13,
           "issues_closed": 8,
           "label": "Good first issue",
-          "max_age_days": 453.09,
-          "median_age_days": 227.56,
+          "max_age_days": 453.1,
+          "median_age_days": 227.57,
           "median_close_days": 27.0,
           "median_merge_days": null,
           "merged": 0,
@@ -44560,8 +44560,8 @@
           "issues": 3,
           "issues_closed": 0,
           "label": "Help wanted",
-          "max_age_days": 453.09,
-          "median_age_days": 453.09,
+          "max_age_days": 453.1,
+          "median_age_days": 453.1,
           "median_close_days": null,
           "median_merge_days": null,
           "merged": 0,
@@ -44676,8 +44676,8 @@
           "issues": 56,
           "issues_closed": 53,
           "label": "Documentation",
-          "max_age_days": 453.09,
-          "median_age_days": 452.12,
+          "max_age_days": 453.1,
+          "median_age_days": 452.13,
           "median_close_days": 5.87,
           "median_merge_days": 3.94,
           "merged": 35,
@@ -44771,7 +44771,7 @@
           "issues": 35,
           "issues_closed": 26,
           "label": "stale",
-          "max_age_days": 453.09,
+          "max_age_days": 453.1,
           "median_age_days": 98.85,
           "median_close_days": 123.03,
           "median_merge_days": null,
@@ -44809,8 +44809,8 @@
           "issues": 12,
           "issues_closed": 8,
           "label": "Examples",
-          "max_age_days": 453.09,
-          "median_age_days": 370.03,
+          "max_age_days": 453.1,
+          "median_age_days": 370.04,
           "median_close_days": 68.57,
           "median_merge_days": 4.84,
           "merged": 5,
@@ -44866,8 +44866,8 @@
           "issues": 13,
           "issues_closed": 11,
           "label": "Good first issue",
-          "max_age_days": 453.09,
-          "median_age_days": 227.56,
+          "max_age_days": 453.1,
+          "median_age_days": 227.57,
           "median_close_days": 52.77,
           "median_merge_days": null,
           "merged": 0,
@@ -45056,8 +45056,8 @@
           "issues": 3,
           "issues_closed": 2,
           "label": "Help wanted",
-          "max_age_days": 453.09,
-          "median_age_days": 453.09,
+          "max_age_days": 453.1,
+          "median_age_days": 453.1,
           "median_close_days": null,
           "median_merge_days": null,
           "merged": 0,
@@ -46666,25 +46666,25 @@
       "default": "12m",
       "options": [
         {
-          "end": "2026-08-25T22:53:59.103868Z",
+          "end": "2026-08-25T22:57:27.730471Z",
           "id": "3m",
           "label": "3 months",
           "start": "2026-06-01T00:00:00Z"
         },
         {
-          "end": "2026-08-25T22:53:59.103868Z",
+          "end": "2026-08-25T22:57:27.730471Z",
           "id": "6m",
           "label": "6 months",
           "start": "2026-03-01T00:00:00Z"
         },
         {
-          "end": "2026-08-25T22:53:59.103868Z",
+          "end": "2026-08-25T22:57:27.730471Z",
           "id": "12m",
           "label": "12 months",
           "start": "2025-09-01T00:00:00Z"
         },
         {
-          "end": "2026-08-25T22:53:59.103868Z",
+          "end": "2026-08-25T22:57:27.730471Z",
           "id": "all",
           "label": "All time",
           "start": null
@@ -46812,7 +46812,7 @@
       ],
       "oldest_open_issues": [
         {
-          "age_days": 453.09,
+          "age_days": 453.1,
           "author": "pritkc",
           "closed_at": null,
           "closed_event_months": [
@@ -46861,7 +46861,7 @@
           "url": "https://github.com/csrc-sdsu/mole/issues/141"
         },
         {
-          "age_days": 452.12,
+          "age_days": 452.13,
           "author": "valeriabarra",
           "closed_at": null,
           "closed_event_months": [
@@ -46904,7 +46904,7 @@
           "url": "https://github.com/csrc-sdsu/mole/issues/143"
         },
         {
-          "age_days": 287.95,
+          "age_days": 287.96,
           "author": "jbrzensk",
           "closed_at": null,
           "closed_event_months": [
@@ -47347,7 +47347,7 @@
       ],
       "open_over_threshold": [
         {
-          "age_days": 453.09,
+          "age_days": 453.1,
           "author": "pritkc",
           "closed_at": null,
           "closed_event_months": [
@@ -47396,7 +47396,7 @@
           "url": "https://github.com/csrc-sdsu/mole/issues/141"
         },
         {
-          "age_days": 452.12,
+          "age_days": 452.13,
           "author": "valeriabarra",
           "closed_at": null,
           "closed_event_months": [
@@ -47439,7 +47439,7 @@
           "url": "https://github.com/csrc-sdsu/mole/issues/143"
         },
         {
-          "age_days": 287.95,
+          "age_days": 287.96,
           "author": "jbrzensk",
           "closed_at": null,
           "closed_event_months": [
@@ -47761,7 +47761,7 @@
           "url": "https://github.com/csrc-sdsu/mole/issues/313"
         },
         {
-          "age_days": 453.09,
+          "age_days": 453.1,
           "author": "pritkc",
           "closed_at": null,
           "closed_event_months": [
@@ -47810,7 +47810,7 @@
           "url": "https://github.com/csrc-sdsu/mole/issues/141"
         },
         {
-          "age_days": 452.12,
+          "age_days": 452.13,
           "author": "valeriabarra",
           "closed_at": null,
           "closed_event_months": [
@@ -47853,7 +47853,7 @@
           "url": "https://github.com/csrc-sdsu/mole/issues/143"
         },
         {
-          "age_days": 287.95,
+          "age_days": 287.96,
           "author": "jbrzensk",
           "closed_at": null,
           "closed_event_months": [
@@ -48028,7 +48028,7 @@
           "url": "https://github.com/csrc-sdsu/mole/issues/440"
         },
         {
-          "age_days": 20.74,
+          "age_days": 20.75,
           "author": "bewagner1",
           "closed_at": null,
           "closed_event_months": [],
@@ -48797,7 +48797,7 @@
         "traffic_404",
         "search"
       ],
-      "last_error": "locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n  - waiting for locator('#id_login') to be visible\n",
+      "last_error": "Unable to locate a visible input field (#id_login, input[name=\"login\"], input[type=\"email\"])",
       "project_slug": "mole-docs",
       "retention_days": 90,
       "stale": true
@@ -49565,25 +49565,25 @@
       "default": "12m",
       "options": [
         {
-          "end": "2026-08-25T22:53:59.103868Z",
+          "end": "2026-08-25T22:57:27.730471Z",
           "id": "3m",
           "label": "3 months",
           "start": "2026-06-01T00:00:00Z"
         },
         {
-          "end": "2026-08-25T22:53:59.103868Z",
+          "end": "2026-08-25T22:57:27.730471Z",
           "id": "6m",
           "label": "6 months",
           "start": "2026-03-01T00:00:00Z"
         },
         {
-          "end": "2026-08-25T22:53:59.103868Z",
+          "end": "2026-08-25T22:57:27.730471Z",
           "id": "12m",
           "label": "12 months",
           "start": "2025-09-01T00:00:00Z"
         },
         {
-          "end": "2026-08-25T22:53:59.103868Z",
+          "end": "2026-08-25T22:57:27.730471Z",
           "id": "all",
           "label": "All time",
           "start": null
@@ -49918,11 +49918,44 @@
           "watchers": null,
           "zenodo_downloads": 394,
           "zenodo_views": 556
+        },
+        {
+          "adoption_found_count": null,
+          "bus_factor": 2,
+          "change_request_closure_ratio": 0.828,
+          "citation_count": 5,
+          "community_standards_compliance_score": null,
+          "date": "2026-08-25",
+          "documentation_no_result_search_count": 0,
+          "documentation_not_found_count": 12,
+          "documentation_page_hits": null,
+          "documentation_search_count": 24,
+          "documentation_visitors": 969,
+          "environment": "production",
+          "forks": 85,
+          "generated_at": "2026-08-25T22:53:59.103868Z",
+          "github_commits_last_52w": 431,
+          "github_open_security_alerts": 1,
+          "github_traffic_clones": 656,
+          "github_traffic_clones_unique": 212,
+          "github_traffic_views": 889,
+          "median_bug_close_days": 5.52,
+          "newcomer_first_pr_authors": 17,
+          "newcomer_first_pr_merged": 15,
+          "openssf_score": null,
+          "project_id": "mole",
+          "readthedocs_views": 2833,
+          "release_cadence_stddev_days": 75.4,
+          "stars": 40,
+          "watchers": 10,
+          "zenodo_downloads": 394,
+          "zenodo_views": 559
         }
       ]
     },
     "trends": {
       "adoption_found_count": [
+        null,
         null,
         null,
         null,
@@ -49942,7 +49975,8 @@
         null,
         null,
         null,
-        null
+        null,
+        2
       ],
       "change_request_closure_ratio": [
         0.821,
@@ -49953,9 +49987,11 @@
         null,
         null,
         null,
-        null
+        null,
+        0.828
       ],
       "citation_count": [
+        5,
         5,
         5,
         5,
@@ -49975,6 +50011,7 @@
         null,
         null,
         null,
+        null,
         null
       ],
       "dates": [
@@ -49986,7 +50023,8 @@
         "2026-08-03",
         "2026-08-10",
         "2026-08-17",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "documentation_no_result_search_count": [
         0,
@@ -49995,6 +50033,7 @@
         1,
         1,
         1,
+        0,
         0,
         0,
         0
@@ -50008,9 +50047,11 @@
         3,
         12,
         12,
+        12,
         12
       ],
       "documentation_page_hits": [
+        null,
         null,
         null,
         null,
@@ -50030,6 +50071,7 @@
         3,
         18,
         18,
+        24,
         24
       ],
       "documentation_visitors": [
@@ -50041,7 +50083,8 @@
         661,
         817,
         876,
-        948
+        948,
+        969
       ],
       "forks": [
         83,
@@ -50052,7 +50095,8 @@
         null,
         null,
         null,
-        null
+        null,
+        85
       ],
       "github_commits_last_52w": [
         288,
@@ -50063,7 +50107,8 @@
         null,
         null,
         null,
-        null
+        null,
+        431
       ],
       "github_open_security_alerts": [
         6,
@@ -50074,7 +50119,8 @@
         0,
         0,
         0,
-        0
+        0,
+        1
       ],
       "github_traffic_clones": [
         1459,
@@ -50085,7 +50131,8 @@
         null,
         null,
         null,
-        null
+        null,
+        656
       ],
       "github_traffic_views": [
         911,
@@ -50096,7 +50143,8 @@
         null,
         null,
         null,
-        null
+        null,
+        889
       ],
       "median_bug_close_days": [
         3.46,
@@ -50107,7 +50155,8 @@
         null,
         null,
         null,
-        null
+        null,
+        5.52
       ],
       "newcomer_first_pr_authors": [
         16,
@@ -50118,7 +50167,8 @@
         null,
         null,
         null,
-        null
+        null,
+        17
       ],
       "newcomer_first_pr_merged": [
         15,
@@ -50129,9 +50179,11 @@
         null,
         null,
         null,
-        null
+        null,
+        15
       ],
       "openssf_score": [
+        null,
         null,
         null,
         null,
@@ -50151,6 +50203,7 @@
         3664,
         3113,
         2833,
+        2833,
         2833
       ],
       "release_cadence_stddev_days": [
@@ -50162,7 +50215,8 @@
         null,
         null,
         null,
-        null
+        null,
+        75.4
       ],
       "stars": [
         39,
@@ -50173,7 +50227,8 @@
         null,
         null,
         null,
-        null
+        null,
+        40
       ],
       "watchers": [
         10,
@@ -50184,7 +50239,8 @@
         null,
         null,
         null,
-        null
+        null,
+        10
       ],
       "zenodo_downloads": [
         366,
@@ -50195,21 +50251,22 @@
         384,
         389,
         392,
+        394,
         394
       ]
     }
   },
   "source_status": {
     "community_standards": {
-      "last_updated": "2026-08-25T22:55:26.050500Z",
+      "last_updated": "2026-08-25T22:58:27.619308Z",
       "limitation": "Enable sources.community_standards to collect this source.",
       "message": "Access not configured",
       "source_url": "https://github.com/csrc-sdsu/mole/community",
       "status": "unavailable"
     },
     "documentation_analytics": {
-      "collected_at": "2026-08-25T22:55:25.869066Z",
-      "last_updated": "2026-08-25T22:55:25.869182Z",
+      "collected_at": "2026-08-25T22:58:27.459187Z",
+      "last_updated": "2026-08-25T22:58:27.459310Z",
       "limitation": "Uses GoatCounter aggregate API endpoints only.",
       "message": "GoatCounter hits pagination reached its safety budget.",
       "provider": "goatcounter",
@@ -50218,73 +50275,73 @@
       "status": "partial"
     },
     "engagement": {
-      "last_updated": "2026-08-25T22:55:26.121521Z",
+      "last_updated": "2026-08-25T22:58:27.689061Z",
       "limitation": "First-response and review metrics require collected issue comments and PR reviews. When review data is absent, review timing is reported as unavailable.",
       "message": "Derived from collected issue comments and bounded recent PR review data.",
       "status": "available"
     },
     "github": {
       "authenticated": true,
-      "last_updated": "2026-08-25T22:54:46.388874Z",
+      "last_updated": "2026-08-25T22:58:01.007499Z",
       "limitation": "Uses public GitHub repository, issue, pull request, release and contributor APIs. Some historic label and reopen events may be unavailable.",
       "message": null,
-      "rate_limit_remaining": "4938",
+      "rate_limit_remaining": "4999",
       "requests_used": 72,
       "review_collection_error": null,
       "source_url": "https://github.com/csrc-sdsu/mole",
       "status": "available"
     },
     "github_actions": {
-      "last_updated": "2026-08-25T22:54:53.387441Z",
+      "last_updated": "2026-08-25T22:58:04.852516Z",
       "limitation": "Requires Actions read permissions and an authenticated token.",
       "message": null,
       "source_url": "https://api.github.com/repos/csrc-sdsu/mole/actions/runs",
       "status": "available"
     },
     "github_activity": {
-      "last_updated": "2026-08-25T22:54:55.117264Z",
+      "last_updated": "2026-08-25T22:58:05.811959Z",
       "limitation": "Repository statistics may be computed asynchronously by GitHub.",
       "message": null,
       "source_url": "https://api.github.com/repos/csrc-sdsu/mole/stats/participation",
       "status": "available"
     },
     "github_governance": {
-      "last_updated": "2026-08-25T22:55:02.016321Z",
+      "last_updated": "2026-08-25T22:58:10.440457Z",
       "limitation": "Branch protection, rulesets, environments, and community profile data require repository admin access.",
       "message": null,
       "source_url": "https://api.github.com/repos/csrc-sdsu/mole/community/profile",
       "status": "available"
     },
     "github_security": {
-      "last_updated": "2026-08-25T22:54:56.288954Z",
+      "last_updated": "2026-08-25T22:58:06.543653Z",
       "limitation": "Aggregated alert counts only; sensitive vulnerability details are omitted.",
       "message": null,
       "source_url": "https://api.github.com/repos/csrc-sdsu/mole/code-scanning/alerts",
       "status": "available"
     },
     "github_traffic": {
-      "last_updated": "2026-08-25T22:54:49.149629Z",
+      "last_updated": "2026-08-25T22:58:02.452328Z",
       "limitation": "Requires repository traffic permissions; implementation is credential-gated.",
       "message": null,
       "source_url": "https://api.github.com/repos/csrc-sdsu/mole/traffic",
       "status": "available"
     },
     "openalex": {
-      "last_updated": "2026-08-25T22:54:48.126879Z",
+      "last_updated": "2026-08-25T22:58:01.863694Z",
       "limitation": "OpenAlex citation counts can lag publisher and Crossref updates.",
       "message": null,
       "source_url": "https://openalex.org/doi:10.21105/joss.06288",
       "status": "available"
     },
     "openssf_scorecard": {
-      "last_updated": "2026-08-25T22:55:26.050480Z",
+      "last_updated": "2026-08-25T22:58:27.619284Z",
       "limitation": "OpenSSF Scorecard evaluates the top 1M GitHub projects; repos outside this set may not have scores.",
       "message": "No OpenSSF Scorecard result was found for this repository.",
       "source_url": "https://scorecard.dev/viewer/?uri=github.com/csrc-sdsu/mole",
       "status": "unavailable"
     },
     "package_adoption": {
-      "last_updated": "2026-08-25T22:55:26.050509Z",
+      "last_updated": "2026-08-25T22:58:27.619316Z",
       "limitation": "Checks Spack, conda-forge, PyPI, and ecosyste.ms for package registry presence.",
       "message": "Access not configured",
       "source_url": "https://packages.ecosyste.ms/api/v1/packages/lookup?repository_url=https://github.com/csrc-sdsu/mole",
@@ -50292,7 +50349,7 @@
     },
     "readthedocs": {
       "collected_at": "2026-08-17T09:34:24+00:00",
-      "last_updated": "2026-08-25T22:55:02.016570Z",
+      "last_updated": "2026-08-25T22:58:10.440723Z",
       "limitation": "Reuses the last successful Read the Docs dataset when collection fails.",
       "message": "Reusing the last successful Read the Docs dataset because the latest scheduled collection failed.",
       "project_slug": "mole-docs",
@@ -50301,14 +50358,14 @@
       "status": "partial"
     },
     "snapshots": {
-      "last_updated": "2026-08-25T22:55:26.121531Z",
+      "last_updated": "2026-08-25T22:58:27.689072Z",
       "limitation": "Stores only cumulative metrics that cannot be reconstructed from issue, PR or release timestamps.",
       "message": null,
       "source_url": "metrics-history.json",
       "status": "available"
     },
     "zenodo": {
-      "last_updated": "2026-08-25T22:54:47.544796Z",
+      "last_updated": "2026-08-25T22:58:01.602418Z",
       "limitation": "Zenodo statistics are cumulative public record totals.",
       "message": null,
       "source_url": "https://zenodo.org/records/20128874",
