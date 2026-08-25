@@ -6,7 +6,7 @@
       "traffic_404",
       "search"
     ],
-    "last_error": "locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n  - waiting for locator('#id_login') to be visible\n",
+    "last_error": "Unable to locate a visible input field (#id_login, input[name=\"login\"], input[type=\"email\"])",
     "project_slug": "mole-docs",
     "retention_days": 90,
     "stale": true
