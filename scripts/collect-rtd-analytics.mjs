@@ -90,13 +90,21 @@ async function waitForFirstVisible(page, selectors, timeout = 15_000) {
 }
 
 async function activateEmailLogin(page) {
-  const loginSelectors = ['#id_login', 'input[name="login"]', 'input[type="email"]'];
+  const loginSelectors = [
+    '#id_login',
+    'input[name="login"]',
+    'input[type="email"]',
+    'input[autocomplete="email"]',
+    'input[placeholder*="Username"]',
+  ];
   if (!(await firstVisible(page, loginSelectors))) {
     const emailTab = page
-      .locator('a[data-tab="email"], [role="tab"][data-tab="email"]')
+      .locator(
+        'a[data-tab="email"], [role="tab"][data-tab="email"], a.item:has-text("Email")'
+      )
       .first();
     if (await emailTab.count() && await emailTab.isVisible()) {
-      await emailTab.click();
+      await emailTab.click({ force: true });
     }
   }
   await waitForFirstVisible(page, loginSelectors);
@@ -152,7 +160,9 @@ async function waitForAuthenticated(page) {
 }
 
 async function login(page, { username, password, totpEnvName }) {
-  await page.goto(`${RTD_APP}/accounts/login/`, { waitUntil: 'domcontentloaded' });
+  // RTD uses the #/email hash to select the email form. Opening the base
+  // login route leaves the form in a hidden tab in some headless runs.
+  await page.goto(`${RTD_APP}/accounts/login/#/email`, { waitUntil: 'domcontentloaded' });
   await activateEmailLogin(page);
   await fillFirstVisible(page, ['#id_login', 'input[name="login"]', 'input[type="email"]'], username);
   await fillFirstVisible(page, ['#id_password', 'input[name="password"]', 'input[type="password"]'], password);

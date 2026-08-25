@@ -277,6 +277,7 @@ assert(
 );
 assert(rtdCollector.includes('input[name="login"]'), 'RTD collector must support the current email login form');
 assert(rtdCollector.includes('data-tab="email"'), 'RTD collector must select the email login tab by data attribute');
+assert(rtdCollector.includes('/accounts/login/#/email'), 'RTD collector must open the email login route directly');
 assert(rtdCollector.includes('waitForFirstVisible'), 'RTD collector must wait for login fields to become visible');
 assert(!rtdCollector.includes("a:has-text('Email')"), 'RTD collector must not depend on tab text');
 
