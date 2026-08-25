@@ -1,15 +1,15 @@
 {
   "collection": {
-    "collected_at": "2026-08-17T09:34:24+00:00",
+    "collected_at": "2026-08-25T23:54:30+00:00",
     "exports": [
       "traffic_200",
       "traffic_404",
       "search"
     ],
-    "last_error": "Unable to locate a visible input field (#id_login, input[name=\"login\"], input[type=\"email\"])",
+    "last_error": null,
     "project_slug": "mole-docs",
     "retention_days": 90,
-    "stale": true
+    "stale": false
   },
   "daily_no_result_searches": [
     {
@@ -24,38 +24,6 @@
     }
   ],
   "daily_views": [
-    {
-      "date": "2026-05-19",
-      "views": 26
-    },
-    {
-      "date": "2026-05-20",
-      "views": 31
-    },
-    {
-      "date": "2026-05-21",
-      "views": 28
-    },
-    {
-      "date": "2026-05-22",
-      "views": 65
-    },
-    {
-      "date": "2026-05-23",
-      "views": 16
-    },
-    {
-      "date": "2026-05-24",
-      "views": 11
-    },
-    {
-      "date": "2026-05-25",
-      "views": 26
-    },
-    {
-      "date": "2026-05-26",
-      "views": 32
-    },
     {
       "date": "2026-05-27",
       "views": 21
@@ -386,7 +354,39 @@
     },
     {
       "date": "2026-08-17",
-      "views": 5
+      "views": 10
+    },
+    {
+      "date": "2026-08-18",
+      "views": 29
+    },
+    {
+      "date": "2026-08-19",
+      "views": 40
+    },
+    {
+      "date": "2026-08-20",
+      "views": 17
+    },
+    {
+      "date": "2026-08-21",
+      "views": 7
+    },
+    {
+      "date": "2026-08-22",
+      "views": 17
+    },
+    {
+      "date": "2026-08-23",
+      "views": 18
+    },
+    {
+      "date": "2026-08-24",
+      "views": 21
+    },
+    {
+      "date": "2026-08-25",
+      "views": 15
     }
   ],
   "history": {
@@ -438,11 +438,18 @@
         "not_found_count": 17,
         "search_total": 2,
         "views_total": 2833
+      },
+      {
+        "collected_at": "2026-08-25T23:54:30+00:00",
+        "date": "2026-08-25",
+        "no_result_search_count": 2,
+        "not_found_count": 17,
+        "search_total": 2,
+        "views_total": 2767
       }
     ],
     "schema_version": 1
   },
-  "message": "Reusing the last successful Read the Docs dataset because the latest scheduled collection failed.",
   "no_result_search_count": 2,
   "not_found_count": 17,
   "not_found_pages": [
@@ -462,13 +469,13 @@
       "views": 1
     },
     {
-      "path": "/dev-notes/CONTRIBUTING.md",
+      "path": "/examples/Elliptic/1D/Elliptic1D-add-Scalar-BC.html",
       "version": "main",
       "views": 1
     },
     {
-      "path": "/examples/Elliptic/1D/Elliptic1D-add-Scalar-BC.html",
-      "version": "main",
+      "path": "/index.html",
+      "version": "latest",
       "views": 1
     },
     {
@@ -528,7 +535,6 @@
   },
   "provider": "readthedocs",
   "search_total": 2,
-  "status": "stale",
   "top_pages": [
     {
       "path": "/examples/Sturm-Liouville/Chebyshev.html",
@@ -576,6 +582,11 @@
       "views": 15
     },
     {
+      "path": "/examples/Time-Integrators/RK4.html",
+      "version": "main",
+      "views": 13
+    },
+    {
       "path": "/index.html",
       "version": "main",
       "views": 13
@@ -606,11 +617,6 @@
       "views": 10
     },
     {
-      "path": "/index.html",
-      "version": "main",
-      "views": 10
-    },
-    {
       "path": "/api/matlab_octave/api.html",
       "version": "main",
       "views": 9
@@ -626,11 +632,11 @@
       "views": 9
     },
     {
-      "path": "/examples/Time-Integrators/RK4.html",
+      "path": "/examples/index.html",
       "version": "main",
       "views": 9
     }
   ],
-  "unique_pages": 201,
-  "views_total": 2833
+  "unique_pages": 199,
+  "views_total": 2767
 }
