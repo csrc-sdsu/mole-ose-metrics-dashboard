@@ -6,10 +6,10 @@
       "traffic_404",
       "search"
     ],
-    "last_error": null,
+    "last_error": "Unable to locate a visible input field (#id_login, input[name=\"login\"], input[type=\"email\"], input[autocomplete=\"email\"], input[placeholder*=\"Username\"])",
     "project_slug": "mole-docs",
     "retention_days": 90,
-    "stale": false
+    "stale": true
   },
   "daily_no_result_searches": [
     {
@@ -458,6 +458,7 @@
     ],
     "schema_version": 1
   },
+  "message": "Reusing the last successful Read the Docs dataset because the latest scheduled collection failed.",
   "no_result_search_count": 2,
   "not_found_count": 14,
   "not_found_pages": [
@@ -533,6 +534,7 @@
   },
   "provider": "readthedocs",
   "search_total": 2,
+  "status": "stale",
   "top_pages": [
     {
       "path": "/examples/Sturm-Liouville/Chebyshev.html",
