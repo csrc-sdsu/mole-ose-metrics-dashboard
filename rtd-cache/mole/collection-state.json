@@ -1,5 +1,5 @@
 {
-  "last_attempt_at": "2026-09-14T15:33:47+00:00",
-  "last_error": null,
+  "last_attempt_at": "2026-09-14T16:24:36+00:00",
+  "last_error": "Unable to locate a visible input field (#id_login, input[name=\"login\"], input[type=\"email\"], input[autocomplete=\"email\"], input[placeholder*=\"Username\"])",
   "last_success_at": "2026-09-14T15:33:47+00:00"
 }
