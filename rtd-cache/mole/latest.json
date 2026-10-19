@@ -1,47 +1,19 @@
 {
   "collection": {
-    "collected_at": "2026-10-12T19:52:44+00:00",
+    "collected_at": "2026-10-19T17:01:36+00:00",
     "exports": [
       "traffic_200",
       "traffic_404",
       "search"
     ],
-    "last_error": "Unable to locate a visible input field (#id_login, input[name=\"login\"], input[type=\"email\"], input[autocomplete=\"email\"], input[placeholder*=\"Username\"])",
+    "last_error": null,
     "project_slug": "mole-docs",
     "retention_days": 90,
-    "stale": true
+    "stale": false
   },
   "daily_no_result_searches": [],
   "daily_searches": [],
   "daily_views": [
-    {
-      "date": "2026-07-14",
-      "views": 72
-    },
-    {
-      "date": "2026-07-15",
-      "views": 39
-    },
-    {
-      "date": "2026-07-16",
-      "views": 28
-    },
-    {
-      "date": "2026-07-17",
-      "views": 41
-    },
-    {
-      "date": "2026-07-18",
-      "views": 110
-    },
-    {
-      "date": "2026-07-19",
-      "views": 92
-    },
-    {
-      "date": "2026-07-20",
-      "views": 50
-    },
     {
       "date": "2026-07-21",
       "views": 90
@@ -376,7 +348,35 @@
     },
     {
       "date": "2026-10-12",
-      "views": 15
+      "views": 49
+    },
+    {
+      "date": "2026-10-13",
+      "views": 34
+    },
+    {
+      "date": "2026-10-14",
+      "views": 48
+    },
+    {
+      "date": "2026-10-15",
+      "views": 29
+    },
+    {
+      "date": "2026-10-16",
+      "views": 23
+    },
+    {
+      "date": "2026-10-17",
+      "views": 28
+    },
+    {
+      "date": "2026-10-18",
+      "views": 10
+    },
+    {
+      "date": "2026-10-19",
+      "views": 7
     }
   ],
   "history": {
@@ -476,13 +476,20 @@
         "not_found_count": 47,
         "search_total": 0,
         "views_total": 3565
+      },
+      {
+        "collected_at": "2026-10-19T17:01:36+00:00",
+        "date": "2026-10-19",
+        "no_result_search_count": 0,
+        "not_found_count": 48,
+        "search_total": 0,
+        "views_total": 3346
       }
     ],
     "schema_version": 1
   },
-  "message": "Reusing the last successful Read the Docs dataset because the latest scheduled collection failed.",
   "no_result_search_count": 0,
-  "not_found_count": 47,
+  "not_found_count": 48,
   "not_found_pages": [
     {
       "path": "/intros/contributing_wrapper.html",
@@ -575,13 +582,13 @@
       "views": 1
     },
     {
-      "path": "/examples/Elliptic/1D/Elliptic1D-add-Scalar-BC.html",
-      "version": "main",
+      "path": "/dev-notes/RELEASING.html",
+      "version": "docs-fix-ose-org-images-2.0",
       "views": 1
     },
     {
-      "path": "/examples/Mixed/3D/Convection-Diffusion.html",
-      "version": "latest",
+      "path": "/dev-notes/RELEASING.html",
+      "version": "docs-fix-ose-org-images-222",
       "views": 1
     }
   ],
@@ -591,7 +598,6 @@
   },
   "provider": "readthedocs",
   "search_total": 0,
-  "status": "stale",
   "top_pages": [
     {
       "path": "/index.html",
@@ -606,32 +612,12 @@
     {
       "path": "/examples/Sturm-Liouville/Chebyshev.html",
       "version": "main",
-      "views": 107
-    },
-    {
-      "path": "/examples/Sturm-Liouville/Chebyshev.html",
-      "version": "main",
       "views": 91
     },
     {
       "path": "/examples/Sturm-Liouville/Chebyshev.html",
       "version": "main",
       "views": 74
-    },
-    {
-      "path": "/examples/Sturm-Liouville/Chebyshev.html",
-      "version": "main",
-      "views": 74
-    },
-    {
-      "path": "/examples/Sturm-Liouville/Bessel.html",
-      "version": "main",
-      "views": 46
-    },
-    {
-      "path": "/examples/Sturm-Liouville/Chebyshev.html",
-      "version": "main",
-      "views": 42
     },
     {
       "path": "/examples/Sturm-Liouville/Chebyshev.html",
@@ -654,9 +640,9 @@
       "views": 18
     },
     {
-      "path": "/examples/Sturm-Liouville/Chebyshev.html",
+      "path": "/api/cpp/operators.html",
       "version": "main",
-      "views": 15
+      "views": 17
     },
     {
       "path": "/examples/Sturm-Liouville/Helmholtz.html",
@@ -689,11 +675,31 @@
       "views": 10
     },
     {
-      "path": "/api/matlab_octave/api.html",
+      "path": "/examples/Time-Integrators/RK4.html",
       "version": "main",
       "views": 9
+    },
+    {
+      "path": "/index.html",
+      "version": "main",
+      "views": 9
+    },
+    {
+      "path": "/intros/contributing_wrapper.html",
+      "version": "main",
+      "views": 9
+    },
+    {
+      "path": "/intros/gettingstarted.html",
+      "version": "main",
+      "views": 9
+    },
+    {
+      "path": "/examples/Time-Integrators/RK4.html",
+      "version": "main",
+      "views": 8
     }
   ],
-  "unique_pages": 214,
-  "views_total": 3565
+  "unique_pages": 212,
+  "views_total": 3346
 }
