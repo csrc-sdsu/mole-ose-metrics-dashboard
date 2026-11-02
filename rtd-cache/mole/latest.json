@@ -1,47 +1,19 @@
 {
   "collection": {
-    "collected_at": "2026-10-26T16:50:01+00:00",
+    "collected_at": "2026-11-02T20:24:33+00:00",
     "exports": [
       "traffic_200",
       "traffic_404",
       "search"
     ],
-    "last_error": "Unable to locate a visible input field (#id_login, input[name=\"login\"], input[type=\"email\"], input[autocomplete=\"email\"], input[placeholder*=\"Username\"])",
+    "last_error": null,
     "project_slug": "mole-docs",
     "retention_days": 90,
-    "stale": true
+    "stale": false
   },
   "daily_no_result_searches": [],
   "daily_searches": [],
   "daily_views": [
-    {
-      "date": "2026-07-28",
-      "views": 11
-    },
-    {
-      "date": "2026-07-29",
-      "views": 8
-    },
-    {
-      "date": "2026-07-30",
-      "views": 11
-    },
-    {
-      "date": "2026-07-31",
-      "views": 12
-    },
-    {
-      "date": "2026-08-01",
-      "views": 13
-    },
-    {
-      "date": "2026-08-02",
-      "views": 15
-    },
-    {
-      "date": "2026-08-03",
-      "views": 40
-    },
     {
       "date": "2026-08-04",
       "views": 30
@@ -376,7 +348,35 @@
     },
     {
       "date": "2026-10-26",
-      "views": 11
+      "views": 19
+    },
+    {
+      "date": "2026-10-27",
+      "views": 20
+    },
+    {
+      "date": "2026-10-28",
+      "views": 31
+    },
+    {
+      "date": "2026-10-29",
+      "views": 24
+    },
+    {
+      "date": "2026-10-30",
+      "views": 68
+    },
+    {
+      "date": "2026-10-31",
+      "views": 14
+    },
+    {
+      "date": "2026-11-01",
+      "views": 10
+    },
+    {
+      "date": "2026-11-02",
+      "views": 17
     }
   ],
   "history": {
@@ -500,13 +500,20 @@
         "not_found_count": 52,
         "search_total": 0,
         "views_total": 3177
+      },
+      {
+        "collected_at": "2026-11-02T20:24:33+00:00",
+        "date": "2026-11-02",
+        "no_result_search_count": 0,
+        "not_found_count": 58,
+        "search_total": 0,
+        "views_total": 3259
       }
     ],
     "schema_version": 1
   },
-  "message": "Reusing the last successful Read the Docs dataset because the latest scheduled collection failed.",
   "no_result_search_count": 0,
-  "not_found_count": 52,
+  "not_found_count": 58,
   "not_found_pages": [
     {
       "path": "/intros/contributing_wrapper.html",
@@ -521,6 +528,11 @@
     {
       "path": "/api/matlab_octave/matlab_index.html",
       "version": "main",
+      "views": 2
+    },
+    {
+      "path": "/index.html",
+      "version": "latest",
       "views": 2
     },
     {
@@ -579,6 +591,11 @@
       "views": 1
     },
     {
+      "path": "/api/matlab_octave/index-beta.html",
+      "version": "main",
+      "views": 1
+    },
+    {
       "path": "/api/matlab_octave/matlab_index.html",
       "version": "main",
       "views": 1
@@ -597,16 +614,6 @@
       "path": "/dev-notes/CONTRIBUTING.md",
       "version": "main",
       "views": 1
-    },
-    {
-      "path": "/dev-notes/RELEASING.html",
-      "version": "docs-fix-ose-org-images-2.0",
-      "views": 1
-    },
-    {
-      "path": "/dev-notes/RELEASING.html",
-      "version": "docs-fix-ose-org-images-222",
-      "views": 1
     }
   ],
   "provenance": {
@@ -615,7 +622,6 @@
   },
   "provider": "readthedocs",
   "search_total": 0,
-  "status": "stale",
   "top_pages": [
     {
       "path": "/index.html",
@@ -653,7 +659,17 @@
       "views": 15
     },
     {
+      "path": "/examples/Elliptic/1D/Elliptic1D.html",
+      "version": "main",
+      "views": 13
+    },
+    {
       "path": "/examples/Time-Integrators/RK4.html",
+      "version": "main",
+      "views": 13
+    },
+    {
+      "path": "/intros/contributing_wrapper.html",
       "version": "main",
       "views": 13
     },
@@ -703,21 +719,11 @@
       "views": 9
     },
     {
-      "path": "/examples/Time-Integrators/RK4.html",
-      "version": "main",
-      "views": 8
-    },
-    {
-      "path": "/index.html",
-      "version": "main",
-      "views": 8
-    },
-    {
       "path": "/index.html",
       "version": "main",
       "views": 8
     }
   ],
-  "unique_pages": 211,
-  "views_total": 3177
+  "unique_pages": 206,
+  "views_total": 3259
 }
